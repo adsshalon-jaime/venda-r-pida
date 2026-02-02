@@ -7,6 +7,7 @@ export interface Product {
   standardMeterage: number;
   basePrice: number;
   pricePerSquareMeter: boolean;
+  isRental: boolean;
   createdAt: Date;
 }
 

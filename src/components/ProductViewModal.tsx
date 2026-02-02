@@ -108,6 +108,13 @@ export function ProductViewModal({ open, onOpenChange, product }: ProductViewMod
               </div>
 
               <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
+                <span className="text-muted-foreground">Disponível para Locação</span>
+                <Badge variant={product.isRental ? "default" : "secondary"}>
+                  {product.isRental ? 'Sim' : 'Não'}
+                </Badge>
+              </div>
+
+              <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
                 <span className="text-muted-foreground">ID do Produto</span>
                 <span className="font-mono text-sm">{product.id}</span>
               </div>

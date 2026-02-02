@@ -47,6 +47,7 @@ export type Database = {
           category: string
           created_at: string
           id: string
+          is_rental: boolean
           name: string
           price_per_square_meter: boolean
           standard_meterage: number
@@ -57,6 +58,7 @@ export type Database = {
           category: string
           created_at?: string
           id?: string
+          is_rental?: boolean
           name: string
           price_per_square_meter?: boolean
           standard_meterage?: number
@@ -67,6 +69,7 @@ export type Database = {
           category?: string
           created_at?: string
           id?: string
+          is_rental?: boolean
           name?: string
           price_per_square_meter?: boolean
           standard_meterage?: number

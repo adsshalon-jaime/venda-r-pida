@@ -24,6 +24,7 @@ export function useProducts() {
         standardMeterage: Number(p.standard_meterage),
         basePrice: Number(p.base_price),
         pricePerSquareMeter: p.price_per_square_meter,
+        isRental: p.is_rental || false,
         createdAt: new Date(p.created_at),
       }));
 
@@ -46,6 +47,7 @@ export function useProducts() {
           standard_meterage: productData.standardMeterage,
           base_price: productData.basePrice,
           price_per_square_meter: productData.pricePerSquareMeter,
+          is_rental: productData.isRental,
         })
         .select()
         .single();
@@ -59,6 +61,7 @@ export function useProducts() {
         standardMeterage: Number(data.standard_meterage),
         basePrice: Number(data.base_price),
         pricePerSquareMeter: data.price_per_square_meter,
+        isRental: data.is_rental || false,
         createdAt: new Date(data.created_at),
       };
 
@@ -81,6 +84,7 @@ export function useProducts() {
           standard_meterage: productData.standardMeterage,
           base_price: productData.basePrice,
           price_per_square_meter: productData.pricePerSquareMeter,
+          is_rental: productData.isRental,
         })
         .eq('id', id)
         .select()
@@ -95,6 +99,7 @@ export function useProducts() {
         standardMeterage: Number(data.standard_meterage),
         basePrice: Number(data.base_price),
         pricePerSquareMeter: data.price_per_square_meter,
+        isRental: data.is_rental || false,
         createdAt: new Date(data.created_at),
       };
 

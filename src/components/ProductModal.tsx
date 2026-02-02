@@ -26,6 +26,7 @@ export function ProductModal({ open, onOpenChange, product, onSave }: ProductMod
   const [category, setCategory] = useState<ProductCategory>('lona');
   const [basePrice, setBasePrice] = useState<number>(0);
   const [pricePerSquareMeter, setPricePerSquareMeter] = useState(true);
+  const [isRental, setIsRental] = useState(false);
 
   useEffect(() => {
     if (product) {
@@ -33,11 +34,13 @@ export function ProductModal({ open, onOpenChange, product, onSave }: ProductMod
       setCategory(product.category);
       setBasePrice(product.basePrice);
       setPricePerSquareMeter(product.pricePerSquareMeter);
+      setIsRental(product.isRental || false);
     } else {
       setName('');
       setCategory('lona');
       setBasePrice(0);
       setPricePerSquareMeter(true);
+      setIsRental(false);
     }
   }, [product, open]);
 
@@ -58,6 +61,7 @@ export function ProductModal({ open, onOpenChange, product, onSave }: ProductMod
       standardMeterage: 0,
       basePrice,
       pricePerSquareMeter: category === 'lona' ? pricePerSquareMeter : false,
+      isRental,
     });
 
     onOpenChange(false);
@@ -182,6 +186,23 @@ export function ProductModal({ open, onOpenChange, product, onSave }: ProductMod
               />
             </div>
           )}
+
+          {/* Rental toggle */}
+          <div className="flex items-center justify-between p-4 rounded-xl bg-muted/50 border border-border/50">
+            <div className="space-y-0.5">
+              <Label htmlFor="is-rental" className="cursor-pointer font-medium">
+                Produto para Locação
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                Marcar como produto disponível para aluguel
+              </p>
+            </div>
+            <Switch
+              id="is-rental"
+              checked={isRental}
+              onCheckedChange={setIsRental}
+            />
+          </div>
 
           {/* Actions */}
           <div className="flex gap-3 pt-2">
