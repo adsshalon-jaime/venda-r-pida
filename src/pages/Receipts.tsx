@@ -259,8 +259,8 @@ export default function Receipts() {
                       </div>
                     )}
                   </div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">Tendas Carpa</h1>
-                  <p className="text-gray-600 mb-4">RECIBO DE {selectedSale.isRental ? 'LOCAÇÃO' : 'VENDA'}</p>
+                  <h1 className="text-xl font-bold text-gray-900 mb-2">Tendas Carpa</h1>
+                  <p className="text-sm text-gray-600 mb-4">RECIBO DE {selectedSale.isRental ? 'LOCAÇÃO' : 'VENDA'}</p>
                   <div className="flex justify-center gap-6 text-sm text-gray-500">
                     <span>📞 (63) 98502-8838</span>
                     <span>📧 contato@tendascarpas.ind.br</span>
@@ -274,7 +274,7 @@ export default function Receipts() {
 
                 {/* Informações da venda */}
                 <div className="mb-8">
-                  <h2 className="text-lg font-semibold mb-4">Dados da Transação</h2>
+                  <h2 className="text-base font-semibold mb-4">Dados da Transação</h2>
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Data:</span>
@@ -312,7 +312,7 @@ export default function Receipts() {
                 {/* Dados do cliente */}
                 {includeCustomerData && selectedCustomer && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-semibold mb-4">Dados do Cliente</h2>
+                    <h2 className="text-base font-semibold mb-4">Dados do Cliente</h2>
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Nome:</span>
@@ -337,8 +337,8 @@ export default function Receipts() {
                 {/* Valor */}
                 <div className="mb-8 border-t pt-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-xl font-semibold">VALOR TOTAL:</span>
-                    <span className="text-2xl font-bold text-blue-600">{formatCurrency(selectedSale.totalValue)}</span>
+                    <span className="text-lg font-semibold">VALOR TOTAL:</span>
+                    <span className="text-xl font-bold text-blue-600">{formatCurrency(selectedSale.totalValue)}</span>
                   </div>
                 </div>
 
@@ -350,16 +350,14 @@ export default function Receipts() {
                         <p className="text-sm text-gray-500">Assinatura do Vendedor</p>
                       </div>
                     </div>
-                    <p className="text-xs text-gray-400">
-                      Gerado em {format(new Date(), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}
-                    </p>
                   </div>
                 </div>
 
                 {/* Rodapé */}
                 <div className="mt-8 pt-4 border-t text-center text-xs text-gray-500">
-                  <p className="text-sm text-gray-500">© 2026 Tendas Carpa - Todos os direitos reservados</p>
-                  <p className="mt-1">Documento válido como comprovante de transação</p>
+                  <p className="text-sm text-gray-500">
+                    Gerado em {format(new Date(), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}
+                  </p>
                 </div>
               </div>
             </CardContent>
