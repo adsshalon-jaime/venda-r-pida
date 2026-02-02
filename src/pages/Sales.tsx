@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Plus, Search, Calendar, Trash2, ShoppingBag } from 'lucide-react';
+import { Plus, Search, Calendar, Trash2, ShoppingBag, Eye, Edit, Key } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 import {
   Table,
   TableBody,
@@ -24,6 +25,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Layout } from '@/components/Layout';
 import { NewSaleModal } from '@/components/NewSaleModal';
 import { useProducts } from '@/hooks/useProducts';
@@ -32,6 +39,7 @@ import { useSales } from '@/hooks/useSales';
 import { Sale } from '@/types';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { formatCurrency } from '@/utils/currency';
 
 export default function Sales() {
   const { products, loading: productsLoading } = useProducts();
@@ -39,6 +47,8 @@ export default function Sales() {
   const { sales, loading: salesLoading, addSale, deleteSale } = useSales();
   const [saleModalOpen, setSaleModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [editingSale, setEditingSale] = useState<Sale | null>(null);
 
   const isLoading = productsLoading || customersLoading || salesLoading;
 
@@ -47,6 +57,16 @@ export default function Sales() {
       sale.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       sale.customerName?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleView = (sale: Sale) => {
+    setEditingSale(sale);
+    setViewModalOpen(true);
+  };
+
+  const handleEdit = (sale: Sale) => {
+    // TODO: Implementar edição de venda
+    toast.info('Funcionalidade de edição em desenvolvimento');
+  };
 
   const handleSaleComplete = async (saleData: Omit<Sale, 'id' | 'createdAt'>) => {
     await addSale(saleData);
@@ -132,12 +152,23 @@ export default function Sales() {
                     <TableCell className="text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4" />
-                        {format(new Date(sale.createdAt), "dd/MM/yyyy", { locale: ptBR })}
+                        {format(new Date(sale.saleDate), "dd/MM/yyyy", { locale: ptBR })}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div>
-                        <p className="font-medium">{sale.productName}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium">{sale.productName}</p>
+                          {sale.isRental && (
+                            <Badge
+                              variant="outline"
+                              className="text-xs bg-amber-50 text-amber-700 border-amber-200 flex items-center gap-1"
+                            >
+                              <Key className="h-3 w-3" />
+                              Locação
+                            </Badge>
+                          )}
+                        </div>
                         <Badge
                           variant="secondary"
                           className={cn(
@@ -166,35 +197,53 @@ export default function Sales() {
                     </TableCell>
                     <TableCell className="text-right">
                       <span className="font-semibold text-success">
-                        R$ {sale.totalValue.toFixed(2)}
+                        {formatCurrency(sale.totalValue)}
                       </span>
                     </TableCell>
                     <TableCell>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Excluir venda?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Esta ação não pode ser desfeita. A venda será removida permanentemente.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(sale.id)}>
-                              Excluir
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => handleView(sale)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => handleEdit(sale)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Excluir {sale.isRental ? 'locação' : 'venda'}?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Esta ação não pode ser desfeita. A {sale.isRental ? 'locação' : 'venda'} será removida permanentemente.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(sale.id)}>
+                                Excluir
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -210,6 +259,96 @@ export default function Sales() {
           customers={customers}
           onSaleComplete={handleSaleComplete}
         />
+
+        {/* Sale View Modal */}
+        <Dialog open={viewModalOpen} onOpenChange={setViewModalOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                {editingSale?.isRental ? (
+                  <>
+                    <Key className="h-5 w-5 text-amber-600" />
+                    Detalhes da Locação
+                  </>
+                ) : (
+                  <>
+                    <ShoppingBag className="h-5 w-5 text-primary" />
+                    Detalhes da Venda
+                  </>
+                )}
+              </DialogTitle>
+            </DialogHeader>
+            {editingSale && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm text-muted-foreground">Data</Label>
+                    <p className="font-medium">
+                      {format(new Date(editingSale.saleDate), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-sm text-muted-foreground">Tipo</Label>
+                    <div className="flex items-center gap-2 mt-1">
+                      {editingSale.isRental ? (
+                        <Badge className="bg-amber-50 text-amber-700 border-amber-200">
+                          <Key className="h-3 w-3 mr-1" />
+                          Locação
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-primary/10 text-primary">
+                          Venda
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-sm text-muted-foreground">Produto</Label>
+                  <div className="flex items-center gap-2 mt-1">
+                    <p className="font-medium">{editingSale.productName}</p>
+                    <Badge
+                      variant="secondary"
+                      className={cn(
+                        "text-xs",
+                        editingSale.category === 'lona'
+                          ? 'bg-primary/10 text-primary'
+                          : 'bg-chart-2/10 text-chart-2'
+                      )}
+                    >
+                      {editingSale.category === 'lona' ? 'Lona' : 'Tenda'}
+                    </Badge>
+                  </div>
+                </div>
+
+                {editingSale.customerName && (
+                  <div>
+                    <Label className="text-sm text-muted-foreground">Cliente</Label>
+                    <p className="font-medium">{editingSale.customerName}</p>
+                  </div>
+                )}
+
+                <div>
+                  <Label className="text-sm text-muted-foreground">Detalhes</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {editingSale.squareMeters && (
+                      <span>{editingSale.width}m × {editingSale.length}m = {editingSale.squareMeters.toFixed(1)} m²</span>
+                    )}
+                    {editingSale.quantity && <span>{editingSale.quantity}x unidade(s)</span>}
+                  </p>
+                </div>
+
+                <div>
+                  <Label className="text-sm text-muted-foreground">Valor Total</Label>
+                  <p className="text-xl font-bold text-success">
+                    {formatCurrency(editingSale.totalValue)}
+                  </p>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );

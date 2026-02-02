@@ -84,10 +84,12 @@ export type Database = {
           customer_id: string | null
           customer_name: string | null
           id: string
+          is_rental: boolean
           length: number | null
           product_id: string | null
           product_name: string
           quantity: number | null
+          sale_date: string
           square_meters: number | null
           total_value: number
           width: number | null
@@ -98,10 +100,12 @@ export type Database = {
           customer_id?: string | null
           customer_name?: string | null
           id?: string
+          is_rental?: boolean
           length?: number | null
           product_id?: string | null
           product_name: string
           quantity?: number | null
+          sale_date?: string
           square_meters?: number | null
           total_value?: number
           width?: number | null
@@ -112,10 +116,12 @@ export type Database = {
           customer_id?: string | null
           customer_name?: string | null
           id?: string
+          is_rental?: boolean
           length?: number | null
           product_id?: string | null
           product_name?: string
           quantity?: number | null
+          sale_date?: string
           square_meters?: number | null
           total_value?: number
           width?: number | null

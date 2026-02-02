@@ -30,6 +30,8 @@ export interface Sale {
   totalValue: number;
   customerId?: string;
   customerName?: string;
+  saleDate: Date;
+  isRental: boolean;
   createdAt: Date;
 }
 

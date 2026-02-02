@@ -59,6 +59,7 @@ export function NewSaleModal({
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
   const [customerSearchOpen, setCustomerSearchOpen] = useState(false);
   const [saleType, setSaleType] = useState<'sale' | 'rental'>('sale');
+  const [saleDate, setSaleDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
@@ -96,6 +97,7 @@ export function NewSaleModal({
       setShowCustomerSearch(false);
       setSelectedCustomerId('');
       setSaleType('sale');
+      setSaleDate(new Date().toISOString().split('T')[0]);
     }
   }, [open, setCustomValueValue]);
 
@@ -126,6 +128,8 @@ export function NewSaleModal({
       totalValue: finalValue,
       customerId: selectedCustomer?.id,
       customerName: selectedCustomer?.name,
+      saleDate: new Date(saleDate),
+      isRental: saleType === 'rental',
     };
 
     onSaleComplete(sale);
@@ -247,6 +251,18 @@ export function NewSaleModal({
                 )}
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Sale Date */}
+          <div className="space-y-2">
+            <Label>Data da {saleType === 'rental' ? 'Locação' : 'Venda'}</Label>
+            <Input
+              type="date"
+              value={saleDate}
+              onChange={(e) => setSaleDate(e.target.value)}
+              max={new Date().toISOString().split('T')[0]}
+              className="h-12"
+            />
           </div>
 
           {/* Dynamic Fields based on product type */}

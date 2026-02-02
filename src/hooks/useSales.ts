@@ -29,6 +29,8 @@ export function useSales() {
         totalValue: Number(s.total_value),
         customerId: s.customer_id || undefined,
         customerName: s.customer_name || undefined,
+        saleDate: new Date(s.sale_date),
+        isRental: s.is_rental || false,
         createdAt: new Date(s.created_at),
       }));
 
@@ -56,6 +58,8 @@ export function useSales() {
           total_value: saleData.totalValue,
           customer_id: saleData.customerId || null,
           customer_name: saleData.customerName || null,
+          sale_date: saleData.saleDate.toISOString().split('T')[0],
+          is_rental: saleData.isRental,
         })
         .select()
         .single();
@@ -74,6 +78,8 @@ export function useSales() {
         totalValue: Number(data.total_value),
         customerId: data.customer_id || undefined,
         customerName: data.customer_name || undefined,
+        saleDate: new Date(data.sale_date),
+        isRental: data.is_rental || false,
         createdAt: new Date(data.created_at),
       };
 
