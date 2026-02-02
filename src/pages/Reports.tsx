@@ -1,16 +1,19 @@
 import { useState } from 'react';
 import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { FileText, Calendar, Download, Users, Package, DollarSign, TrendingUp, ShoppingBag, Key } from 'lucide-react';
+import { FileText, Calendar, Download, Users, Package, DollarSign, TrendingUp, ShoppingBag, Key, Save, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Layout } from '@/components/Layout';
 import { useSales } from '@/hooks/useSales';
 import { useProducts } from '@/hooks/useProducts';
 import { useCustomers } from '@/hooks/useCustomers';
+import { useReports } from '@/hooks/useReports';
 import { Sale, Product, Customer } from '@/types';
 import { formatCurrency } from '@/utils/currency';
 import { toast } from 'sonner';
@@ -44,33 +47,42 @@ export default function Reports() {
   const { sales } = useSales();
   const { products } = useProducts();
   const { customers } = useCustomers();
+  const { reports, saveReport, deleteReport } = useReports();
   const [period, setPeriod] = useState<ReportPeriod>('day');
   const [activeTab, setActiveTab] = useState('sales');
   const [salesReportRef, setSalesReportRef] = useState<HTMLDivElement | null>(null);
   const [productsReportRef, setProductsReportRef] = useState<HTMLDivElement | null>(null);
   const [customersReportRef, setCustomersReportRef] = useState<HTMLDivElement | null>(null);
+  const [customStartDate, setCustomStartDate] = useState<string>('');
+  const [customEndDate, setCustomEndDate] = useState<string>('');
+  const [useCustomDate, setUseCustomDate] = useState(false);
 
   const getFilteredSales = (): Sale[] => {
-    const now = new Date();
     let startDate: Date;
     let endDate: Date;
 
-    switch (period) {
-      case 'day':
-        startDate = startOfDay(now);
-        endDate = endOfDay(now);
-        break;
-      case 'week':
-        startDate = startOfWeek(now, { weekStartsOn: 0 });
-        endDate = endOfWeek(now, { weekStartsOn: 0 });
-        break;
-      case 'month':
-        startDate = startOfMonth(now);
-        endDate = endOfMonth(now);
-        break;
-      default:
-        startDate = startOfDay(now);
-        endDate = endOfDay(now);
+    if (useCustomDate && customStartDate && customEndDate) {
+      startDate = startOfDay(new Date(customStartDate));
+      endDate = endOfDay(new Date(customEndDate));
+    } else {
+      const now = new Date();
+      switch (period) {
+        case 'day':
+          startDate = startOfDay(now);
+          endDate = endOfDay(now);
+          break;
+        case 'week':
+          startDate = startOfWeek(now, { weekStartsOn: 0 });
+          endDate = endOfWeek(now, { weekStartsOn: 0 });
+          break;
+        case 'month':
+          startDate = startOfMonth(now);
+          endDate = endOfMonth(now);
+          break;
+        default:
+          startDate = startOfDay(now);
+          endDate = endOfDay(now);
+      }
     }
 
     return sales.filter(sale => 
@@ -189,6 +201,10 @@ export default function Reports() {
   };
 
   const getPeriodLabel = () => {
+    if (useCustomDate && customStartDate && customEndDate) {
+      return `${format(new Date(customStartDate), 'dd/MM/yyyy')} - ${format(new Date(customEndDate), 'dd/MM/yyyy')}`;
+    }
+    
     const now = new Date();
     switch (period) {
       case 'day':
@@ -202,6 +218,29 @@ export default function Reports() {
       default:
         return '';
     }
+  };
+
+  const saveCurrentReport = async () => {
+    const startDate = useCustomDate && customStartDate ? new Date(customStartDate) : 
+      period === 'day' ? startOfDay(new Date()) :
+      period === 'week' ? startOfWeek(new Date(), { weekStartsOn: 0 }) :
+      startOfMonth(new Date());
+    
+    const endDate = useCustomDate && customEndDate ? new Date(customEndDate) :
+      period === 'day' ? endOfDay(new Date()) :
+      period === 'week' ? endOfWeek(new Date(), { weekStartsOn: 0 }) :
+      endOfMonth(new Date());
+
+    const reportData = {
+      title: `Relatório ${activeTab === 'sales' ? 'de Vendas' : activeTab === 'products' ? 'de Produtos' : 'de Clientes'} - ${getPeriodLabel()}`,
+      type: activeTab as 'sales' | 'products' | 'customers',
+      startDate,
+      endDate,
+      data: activeTab === 'sales' ? salesStats : activeTab === 'products' ? productStats : customerStats,
+    };
+
+    await saveReport(reportData);
+    toast.success('Relatório salvo com sucesso!');
   };
 
   const filteredSales = getFilteredSales();
@@ -247,16 +286,45 @@ export default function Reports() {
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <Select value={period} onValueChange={(value: ReportPeriod) => setPeriod(value)}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Selecione o período" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="day">Dia</SelectItem>
-                <SelectItem value="week">Semana</SelectItem>
-                <SelectItem value="month">Mês</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="useCustomDate"
+                checked={useCustomDate}
+                onChange={(e) => setUseCustomDate(e.target.checked)}
+                className="rounded"
+              />
+              <Label htmlFor="useCustomDate" className="text-sm">Datas personalizadas</Label>
+            </div>
+            
+            {useCustomDate ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  type="date"
+                  value={customStartDate}
+                  onChange={(e) => setCustomStartDate(e.target.value)}
+                  className="w-40"
+                />
+                <span className="text-sm text-muted-foreground">até</span>
+                <Input
+                  type="date"
+                  value={customEndDate}
+                  onChange={(e) => setCustomEndDate(e.target.value)}
+                  className="w-40"
+                />
+              </div>
+            ) : (
+              <Select value={period} onValueChange={(value: ReportPeriod) => setPeriod(value)}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Selecione o período" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="day">Dia</SelectItem>
+                  <SelectItem value="week">Semana</SelectItem>
+                  <SelectItem value="month">Mês</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
           </div>
         </div>
 
@@ -298,7 +366,7 @@ export default function Reports() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{formatCurrency(salesStats.totalValue)}</div>
-                <p className="text-xs text-muted-foreground">Período atual</p>
+                <p className="text-xs text-muted-foreground">Período: {getPeriodLabel()}</p>
               </CardContent>
             </Card>
 
@@ -329,7 +397,11 @@ export default function Reports() {
             </Card>
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <Button onClick={saveCurrentReport} variant="outline">
+              <Save className="h-4 w-4 mr-2" />
+              Salvar Relatório
+            </Button>
             <Button onClick={() => generatePDF(salesReportRef, `relatorio-vendas-${format(new Date(), 'dd-MM-yyyy')}.pdf`)}>
               <Download className="h-4 w-4 mr-2" />
               Exportar Vendas
@@ -457,7 +529,11 @@ export default function Reports() {
             </Card>
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <Button onClick={saveCurrentReport} variant="outline">
+              <Save className="h-4 w-4 mr-2" />
+              Salvar Relatório
+            </Button>
             <Button onClick={() => generatePDF(productsReportRef, `relatorio-produtos-${format(new Date(), 'dd-MM-yyyy')}.pdf`)}>
               <Download className="h-4 w-4 mr-2" />
               Exportar Produtos
@@ -570,7 +646,11 @@ export default function Reports() {
             </Card>
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <Button onClick={saveCurrentReport} variant="outline">
+              <Save className="h-4 w-4 mr-2" />
+              Salvar Relatório
+            </Button>
             <Button onClick={() => generatePDF(customersReportRef, `relatorio-clientes-${format(new Date(), 'dd-MM-yyyy')}.pdf`)}>
               <Download className="h-4 w-4 mr-2" />
               Exportar Clientes
