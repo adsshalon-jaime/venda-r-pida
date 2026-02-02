@@ -29,6 +29,7 @@ import { MoreHorizontal, Pencil, Trash2, FileText, Package, Tent, Eye } from 'lu
 import { Product } from '@/types';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/utils/currency';
+import { Key } from 'lucide-react';
 
 interface ProductListProps {
   products: Product[];
@@ -111,17 +112,28 @@ export function ProductList({ products, onEdit, onDelete, onView, onExport }: Pr
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge
-                    variant="secondary"
-                    className={cn(
-                      "font-medium",
-                      product.category === 'lona'
-                        ? 'bg-primary/10 text-primary hover:bg-primary/20'
-                        : 'bg-chart-2/10 text-chart-2 hover:bg-chart-2/20'
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant="secondary"
+                      className={cn(
+                        "font-medium",
+                        product.category === 'lona'
+                          ? 'bg-primary/10 text-primary hover:bg-primary/20'
+                          : 'bg-chart-2/10 text-chart-2 hover:bg-chart-2/20'
+                      )}
+                    >
+                      {product.category === 'lona' ? 'Lona' : 'Tenda'}
+                    </Badge>
+                    {product.isRental && (
+                      <Badge
+                        variant="outline"
+                        className="font-medium text-xs bg-amber-50 text-amber-700 border-amber-200 flex items-center gap-1"
+                      >
+                        <Key className="h-3 w-3" />
+                        Locação
+                      </Badge>
                     )}
-                  >
-                    {product.category === 'lona' ? 'Lona' : 'Tenda'}
-                  </Badge>
+                  </div>
                 </TableCell>
                 <TableCell className="text-right">
                   <span className="font-semibold text-lg">
