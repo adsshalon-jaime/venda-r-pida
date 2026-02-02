@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Layout } from '@/components/Layout';
 import { useSales } from '@/hooks/useSales';
 import { useProducts } from '@/hooks/useProducts';
 import { useCustomers } from '@/hooks/useCustomers';
@@ -236,27 +237,28 @@ export default function Reports() {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Relatórios</h1>
-          <p className="text-muted-foreground">
-            Gere relatórios detalhados de vendas, produtos e clientes
-          </p>
+    <Layout>
+      <div className="p-8 space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Relatórios</h1>
+            <p className="text-muted-foreground">
+              Gere relatórios detalhados de vendas, produtos e clientes
+            </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <Select value={period} onValueChange={(value: ReportPeriod) => setPeriod(value)}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Selecione o período" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="day">Dia</SelectItem>
+                <SelectItem value="week">Semana</SelectItem>
+                <SelectItem value="month">Mês</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-        <div className="flex items-center gap-4">
-          <Select value={period} onValueChange={(value: ReportPeriod) => setPeriod(value)}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Selecione o período" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="day">Dia</SelectItem>
-              <SelectItem value="week">Semana</SelectItem>
-              <SelectItem value="month">Mês</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="grid w-full grid-cols-3">
@@ -636,6 +638,7 @@ export default function Reports() {
           </div>
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+    </Layout>
   );
 }
