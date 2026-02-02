@@ -255,7 +255,7 @@ export default function Receipts() {
                       </div>
                     ) : (
                       <div className="w-16 h-16 rounded-lg overflow-hidden">
-                        <img src="/logo-tendas-carpa.png" alt="Tendas Carpa" className="w-full h-full object-cover" />
+                        <img src="/logo-recibo.png" alt="Tendas Carpa" className="w-full h-full object-cover" />
                       </div>
                     )}
                   </div>
