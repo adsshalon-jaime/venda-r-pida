@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { DollarSign, Ruler, ShoppingBag, Plus, Users, Package } from 'lucide-react';
+import { format } from 'date-fns';
+import { DollarSign, Ruler, ShoppingBag, Plus, Users, Package, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MetricCard } from '@/components/MetricCard';
 import { ProductDistributionChart } from '@/components/ProductDistributionChart';
 import { RecentSales } from '@/components/RecentSales';
 import { NewSaleModal } from '@/components/NewSaleModal';
+import { MonthSelector } from '@/components/MonthSelector';
 import { Layout } from '@/components/Layout';
 import { useProducts } from '@/hooks/useProducts';
 import { useCustomers } from '@/hooks/useCustomers';
@@ -14,11 +16,15 @@ import { formatCurrency } from '@/utils/currency';
 
 export default function Dashboard() {
   const [saleModalOpen, setSaleModalOpen] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState(format(new Date(), 'yyyy-MM'));
   const { products, loading: productsLoading } = useProducts();
   const { customers, loading: customersLoading } = useCustomers();
-  const { sales, loading: salesLoading, addSale, getMetrics } = useSales();
+  const { sales, loading: salesLoading, addSale, getMonthlyMetrics, getSalesByMonth, getMonthName, getPreviousMonth, calculateGrowth } = useSales();
 
-  const metrics = getMetrics();
+  const currentMonthMetrics = getMonthlyMetrics(selectedMonth);
+  const previousMonth = getPreviousMonth(selectedMonth);
+  const previousMonthMetrics = getMonthlyMetrics(previousMonth);
+  
   const isLoading = productsLoading || customersLoading || salesLoading;
 
   const handleSaleComplete = async (saleData: Omit<Sale, 'id' | 'createdAt'>) => {
@@ -35,21 +41,25 @@ export default function Dashboard() {
               Visão geral do seu negócio
             </p>
           </div>
+          <MonthSelector 
+            selectedMonth={selectedMonth} 
+            onMonthChange={setSelectedMonth} 
+          />
         </div>
 
         {/* Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <MetricCard
-            title="Faturamento do Mês"
-            value={formatCurrency(metrics.monthlyRevenue)}
-            change={metrics.revenueGrowth}
+            title={`Faturamento de ${getMonthName(selectedMonth)}`}
+            value={formatCurrency(currentMonthMetrics.monthlyRevenue)}
+            change={calculateGrowth(currentMonthMetrics.monthlyRevenue, previousMonthMetrics.monthlyRevenue)}
             icon={DollarSign}
             delay={0}
           />
           <MetricCard
-            title="Total de Vendas"
-            value={String(metrics.totalSales)}
-            change={metrics.revenueGrowth}
+            title={`Vendas de ${getMonthName(selectedMonth)}`}
+            value={String(currentMonthMetrics.totalSales)}
+            change={calculateGrowth(currentMonthMetrics.totalSales, previousMonthMetrics.totalSales)}
             icon={ShoppingBag}
             delay={100}
           />
@@ -59,15 +69,26 @@ export default function Dashboard() {
             icon={Package}
             delay={200}
           />
+          <MetricCard
+            title="Comparativo Mensal"
+            value={formatCurrency(previousMonthMetrics.monthlyRevenue)}
+            change={calculateGrowth(previousMonthMetrics.monthlyRevenue, currentMonthMetrics.monthlyRevenue)}
+            icon={TrendingUp}
+            delay={300}
+          />
         </div>
 
         {/* Charts and Recent Sales */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <ProductDistributionChart
-            lonasSold={metrics.lonasSold}
-            tendasSold={metrics.tendasSold}
+            lonasSold={currentMonthMetrics.lonasSold}
+            tendasSold={currentMonthMetrics.tendasSold}
           />
-          <RecentSales sales={sales.slice(0, 5)} />
+          <RecentSales 
+            sales={getSalesByMonth(selectedMonth).slice(0, 5)} 
+            showMonthBadge={true}
+            selectedMonth={selectedMonth}
+          />
         </div>
       </div>
 

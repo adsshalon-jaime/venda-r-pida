@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { format, subMonths, parse } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { Sale, ProductCategory, DashboardMetrics } from '@/types';
 import { toast } from 'sonner';
 
@@ -202,6 +204,82 @@ export function useSales() {
     };
   }, [sales]);
 
+  const getMonthlyMetrics = useCallback((monthString?: string): DashboardMetrics => {
+    const targetMonth = monthString || format(new Date(), 'yyyy-MM');
+    const targetDate = parse(targetMonth, 'yyyy-MM', new Date());
+    
+    const targetMonthStart = new Date(targetDate.getFullYear(), targetDate.getMonth(), 1);
+    const targetMonthEnd = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0);
+    
+    const selectedMonthSales = sales.filter((s) => {
+      const saleDate = new Date(s.createdAt);
+      return saleDate >= targetMonthStart && saleDate <= targetMonthEnd;
+    });
+
+    const previousMonthDate = subMonths(targetDate, 1);
+    const previousMonthStart = new Date(previousMonthDate.getFullYear(), previousMonthDate.getMonth(), 1);
+    const previousMonthEnd = new Date(previousMonthDate.getFullYear(), previousMonthDate.getMonth() + 1, 0);
+    
+    const previousMonthSales = sales.filter((s) => {
+      const saleDate = new Date(s.createdAt);
+      return saleDate >= previousMonthStart && saleDate <= previousMonthEnd;
+    });
+
+    const monthlyRevenue = selectedMonthSales.reduce((sum, s) => sum + s.totalValue, 0);
+    const lastMonthRevenue = previousMonthSales.reduce((sum, s) => sum + s.totalValue, 0);
+    const revenueGrowth = lastMonthRevenue > 0 
+      ? ((monthlyRevenue - lastMonthRevenue) / lastMonthRevenue) * 100 
+      : 0;
+
+    const totalSquareMeters = selectedMonthSales.reduce((sum, s) => sum + (s.squareMeters || 0), 0);
+    const lastMonthSquareMeters = previousMonthSales.reduce((sum, s) => sum + (s.squareMeters || 0), 0);
+    const squareMetersGrowth = lastMonthSquareMeters > 0
+      ? ((totalSquareMeters - lastMonthSquareMeters) / lastMonthSquareMeters) * 100
+      : 0;
+
+    const lonasSold = selectedMonthSales.filter((s) => s.category === 'lona').length;
+    const tendasSold = selectedMonthSales.filter((s) => s.category === 'tenda').length;
+
+    return {
+      monthlyRevenue,
+      revenueGrowth,
+      totalSquareMeters,
+      squareMetersGrowth,
+      totalSales: selectedMonthSales.length,
+      lonasSold,
+      tendasSold,
+    };
+  }, [sales]);
+
+  const getSalesByMonth = useCallback((monthString?: string) => {
+    const targetMonth = monthString || format(new Date(), 'yyyy-MM');
+    const targetDate = parse(targetMonth, 'yyyy-MM', new Date());
+    
+    const targetMonthStart = new Date(targetDate.getFullYear(), targetDate.getMonth(), 1);
+    const targetMonthEnd = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0);
+    
+    return sales.filter((s) => {
+      const saleDate = new Date(s.createdAt);
+      return saleDate >= targetMonthStart && saleDate <= targetMonthEnd;
+    });
+  }, [sales]);
+
+  const getMonthName = useCallback((monthString: string) => {
+    const targetDate = parse(monthString, 'yyyy-MM', new Date());
+    return format(targetDate, "MMMM 'de' yyyy", { locale: ptBR });
+  }, []);
+
+  const getPreviousMonth = useCallback((monthString: string) => {
+    const targetDate = parse(monthString, 'yyyy-MM', new Date());
+    const previousMonth = subMonths(targetDate, 1);
+    return format(previousMonth, 'yyyy-MM');
+  }, []);
+
+  const calculateGrowth = useCallback((current: number, previous: number) => {
+    if (previous === 0) return 0;
+    return ((current - previous) / previous) * 100;
+  }, []);
+
   useEffect(() => {
     fetchSales();
   }, [fetchSales]);
@@ -213,6 +291,11 @@ export function useSales() {
     updateSale,
     deleteSale,
     getMetrics,
+    getMonthlyMetrics,
+    getSalesByMonth,
+    getMonthName,
+    getPreviousMonth,
+    calculateGrowth,
     refetch: fetchSales,
   };
 }
