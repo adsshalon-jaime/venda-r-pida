@@ -254,8 +254,8 @@ export default function Receipts() {
                         <img src={companyLogo} alt="Logo da empresa" className="w-full h-full object-cover" />
                       </div>
                     ) : (
-                      <div className="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <FileText className="h-8 w-8 text-white" />
+                      <div className="w-16 h-16 rounded-lg overflow-hidden">
+                        <img src="/logo-tendas-carpa.png" alt="Tendas Carpa" className="w-full h-full object-cover" />
                       </div>
                     )}
                   </div>
@@ -343,7 +343,7 @@ export default function Receipts() {
                 </div>
 
                 {/* Assinatura */}
-                <div className="mt-16 border-t pt-8">
+                <div className="mt-16 pt-8">
                   <div className="text-center">
                     <div className="mb-4">
                       <div className="border-b-2 border-gray-300 pb-2">
