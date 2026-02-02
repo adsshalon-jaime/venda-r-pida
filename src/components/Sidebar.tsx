@@ -43,7 +43,7 @@ export function Sidebar() {
               <NavLink
                 to={item.url}
                 end={item.url === '/'}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-[#34414b] hover:text-white transition-colors"
                 activeClassName="bg-primary/10 text-primary font-medium"
               >
                 <item.icon className="h-5 w-5" />
@@ -64,7 +64,7 @@ export function Sidebar() {
         )}
         <NavLink
           to="/configuracoes"
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          className="flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-[#34414b] hover:text-white transition-colors"
           activeClassName="bg-primary/10 text-primary font-medium"
         >
           <Settings className="h-5 w-5" />

@@ -134,6 +134,39 @@ export type Database = {
           },
         ]
       }
+      company_settings: {
+        Row: {
+          id: string
+          company_name: string
+          cnpj: string | null
+          phone: string | null
+          theme: 'light' | 'dark'
+          notifications_enabled: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          company_name?: string
+          cnpj?: string | null
+          phone?: string | null
+          theme?: 'light' | 'dark'
+          notifications_enabled?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          company_name?: string
+          cnpj?: string | null
+          phone?: string | null
+          theme?: 'light' | 'dark'
+          notifications_enabled?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -1,11 +1,48 @@
+import { useState, useEffect } from 'react';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Building2, Palette, Bell } from 'lucide-react';
+import { useSettings } from '@/hooks/useSettings';
+import { toast } from 'sonner';
 
 export default function Settings() {
+  const { settings, loading, saving, saveSettings } = useSettings();
+  const [formData, setFormData] = useState({
+    company_name: '',
+    cnpj: '',
+    phone: '',
+    theme: 'light' as 'light' | 'dark',
+    notifications_enabled: true
+  });
+
+  // Update form data when settings are loaded
+  useEffect(() => {
+    if (settings) {
+      setFormData({
+        company_name: settings.company_name,
+        cnpj: settings.cnpj || '',
+        phone: settings.phone || '',
+        theme: settings.theme,
+        notifications_enabled: settings.notifications_enabled
+      });
+    }
+  }, [settings]);
+
+  const handleInputChange = (field: string, value: string | boolean) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = async () => {
+    const result = await saveSettings(formData);
+    if (result.success) {
+      toast.success('Configurações salvas com sucesso!');
+    } else {
+      toast.error(result.error || 'Erro ao salvar configurações');
+    }
+  };
   return (
     <Layout>
       <div className="p-8 max-w-2xl">
@@ -34,15 +71,30 @@ export default function Settings() {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label>Nome da Empresa</Label>
-                <Input defaultValue="Tendas & Lonas" />
+                <Input 
+                  value={formData.company_name}
+                  onChange={(e) => handleInputChange('company_name', e.target.value)}
+                  placeholder="Nome da empresa"
+                  disabled={loading || saving}
+                />
               </div>
               <div className="space-y-2">
                 <Label>CNPJ</Label>
-                <Input placeholder="00.000.000/0000-00" />
+                <Input 
+                  value={formData.cnpj}
+                  onChange={(e) => handleInputChange('cnpj', e.target.value)}
+                  placeholder="00.000.000/0000-00"
+                  disabled={loading || saving}
+                />
               </div>
               <div className="space-y-2">
                 <Label>Telefone</Label>
-                <Input placeholder="(00) 00000-0000" />
+                <Input 
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  placeholder="(00) 00000-0000"
+                  disabled={loading || saving}
+                />
               </div>
             </div>
           </div>
@@ -62,10 +114,20 @@ export default function Settings() {
             </div>
 
             <div className="flex gap-4">
-              <Button variant="outline" className="flex-1">
+              <Button 
+                variant={formData.theme === 'light' ? 'default' : 'outline'} 
+                className="flex-1"
+                onClick={() => handleInputChange('theme', 'light')}
+                disabled={loading || saving}
+              >
                 Modo Claro
               </Button>
-              <Button variant="secondary" className="flex-1">
+              <Button 
+                variant={formData.theme === 'dark' ? 'default' : 'outline'} 
+                className="flex-1"
+                onClick={() => handleInputChange('theme', 'dark')}
+                disabled={loading || saving}
+              >
                 Modo Escuro
               </Button>
             </div>
@@ -85,13 +147,33 @@ export default function Settings() {
               </div>
             </div>
 
-            <p className="text-sm text-muted-foreground">
-              Configurações de notificação disponíveis em breve.
-            </p>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-medium">Notificações por Email</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Receber alertas sobre vendas e atividades
+                  </p>
+                </div>
+                <Button
+                  variant={formData.notifications_enabled ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleInputChange('notifications_enabled', !formData.notifications_enabled)}
+                  disabled={loading || saving}
+                >
+                  {formData.notifications_enabled ? 'Ativado' : 'Desativado'}
+                </Button>
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-end">
-            <Button>Salvar Alterações</Button>
+            <Button 
+              onClick={handleSave}
+              disabled={loading || saving}
+            >
+              {saving ? 'Salvando...' : 'Salvar Alterações'}
+            </Button>
           </div>
         </div>
       </div>

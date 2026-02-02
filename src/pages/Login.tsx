@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { Eye, EyeOff, LogIn, Tent } from 'lucide-react';
+import { Eye, EyeOff, LogIn } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z
@@ -71,11 +71,14 @@ export default function Login() {
       <div className="w-full max-w-md animate-fade-in">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary mb-4">
-            <Tent className="h-8 w-8 text-primary-foreground" />
+          <div className="flex justify-center mb-6">
+            <img 
+              src="/logo.png" 
+              alt="Tendas Carpa - Indústria Brasileira de Tendas Carpa" 
+              className="h-20 w-auto"
+            />
           </div>
-          <h1 className="text-2xl font-bold">Tendas & Lonas</h1>
-          <p className="text-muted-foreground mt-1">Painel Administrativo</p>
+          <p className="text-sm text-muted-foreground">Painel Administrativo</p>
         </div>
 
         {/* Login Card */}
@@ -129,7 +132,12 @@ export default function Login() {
               )}
             </div>
 
-            <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+            <Button 
+              type="submit" 
+              className="w-full bg-[#34414b] hover:bg-[#2c353b] text-white" 
+              size="lg" 
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <span className="flex items-center gap-2">
                   <span className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
