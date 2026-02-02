@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { FileText, Download, User, Search, Calendar, DollarSign, Package } from 'lucide-react';
+import { FileText, Download, User, Search, Calendar, DollarSign, Package, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -24,11 +24,26 @@ export default function Receipts() {
   const [selectedSaleId, setSelectedSaleId] = useState<string>('');
   const [includeCustomerData, setIncludeCustomerData] = useState(true);
   const [receiptRef, setReceiptRef] = useState<HTMLDivElement | null>(null);
+  const [companyLogo, setCompanyLogo] = useState<string>('');
+  const [logoPreview, setLogoPreview] = useState<string>('');
 
   const selectedSale = sales.find(sale => sale.id === selectedSaleId);
   const selectedCustomer = selectedSale?.customerId 
     ? customers.find(c => c.id === selectedSale.customerId)
     : null;
+
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target.result;
+        setCompanyLogo(result as string);
+        setLogoPreview(result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const generateReceiptPDF = async () => {
     if (!selectedSale || !receiptRef) {
@@ -116,6 +131,24 @@ export default function Receipts() {
                 <Label htmlFor="include-customer" className="text-sm">
                   Incluir dados completos do cliente
                 </Label>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="logo-upload">Logo da Empresa (opcional)</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="logo-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    className="flex-1"
+                  />
+                  {logoPreview && (
+                    <div className="w-12 h-12 border rounded-lg overflow-hidden">
+                      <img src={logoPreview} alt="Logo preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
               </div>
 
               <Button 
@@ -216,11 +249,17 @@ export default function Receipts() {
                 {/* Cabeçalho */}
                 <div className="text-center mb-8 border-b pb-6">
                   <div className="flex justify-center mb-4">
-                    <div className="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center">
-                      <FileText className="h-8 w-8 text-white" />
-                    </div>
+                    {companyLogo ? (
+                      <div className="w-16 h-16 rounded-lg overflow-hidden">
+                        <img src={companyLogo} alt="Logo da empresa" className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <FileText className="h-8 w-8 text-white" />
+                      </div>
+                    )}
                   </div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">Tendas e Carpas</h1>
+                  <h1 className="text-2xl font-bold text-gray-900 mb-2">Tendas Carpa</h1>
                   <p className="text-gray-600 mb-4">RECIBO DE {selectedSale.isRental ? 'LOCAÇÃO' : 'VENDA'}</p>
                   <div className="flex justify-center gap-6 text-sm text-gray-500">
                     <span>📞 (63) 98502-8838</span>
@@ -319,7 +358,7 @@ export default function Receipts() {
 
                 {/* Rodapé */}
                 <div className="mt-8 pt-4 border-t text-center text-xs text-gray-500">
-                  <p>© 2026 Tendas e Carpas - Todos os direitos reservados</p>
+                  <p className="text-sm text-gray-500">© 2026 Tendas Carpa - Todos os direitos reservados</p>
                   <p className="mt-1">Documento válido como comprovante de transação</p>
                 </div>
               </div>
