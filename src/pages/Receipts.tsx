@@ -52,7 +52,7 @@ export default function Receipts() {
     }
 
     try {
-      toast.loading('Gerando recibo...');
+      toast.loading('Gerando recibo...', { id: 'receipt-loading' });
       
       const canvas = await html2canvas(receiptRef, {
         scale: 2,
@@ -77,10 +77,10 @@ export default function Receipts() {
       const fileName = `recibo-${selectedSale.productName.replace(/\s+/g, '-')}-${format(new Date(selectedSale.saleDate), 'dd-MM-yyyy')}.pdf`;
       pdf.save(fileName);
       
-      toast.success('Recibo gerado com sucesso!');
+      toast.success('Recibo gerado com sucesso!', { id: 'receipt-loading' });
     } catch (error) {
       console.error('Error generating receipt:', error);
-      toast.error('Erro ao gerar recibo');
+      toast.error('Erro ao gerar recibo', { id: 'receipt-loading' });
     }
   };
 
