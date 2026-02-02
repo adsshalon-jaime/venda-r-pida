@@ -76,16 +76,15 @@ export function NewSaleModal({
   const calculatedValue = useMemo(() => {
     if (!selectedProduct) return 0;
 
+    // Para lonas, usa o preço base diretamente sem cálculo de área
     if (selectedProduct.category === 'lona') {
-      const squareMeters = width * length;
-      return squareMeters * selectedProduct.basePrice;
+      return selectedProduct.basePrice;
     } else {
       return quantity * selectedProduct.basePrice;
     }
-  }, [selectedProduct, width, length, quantity]);
+  }, [selectedProduct, quantity]);
 
   const finalValue = customValueValue > 0 ? customValueValue : calculatedValue;
-  const squareMeters = selectedProduct?.category === 'lona' ? width * length : 0;
 
   useEffect(() => {
     if (!open) {
@@ -107,11 +106,6 @@ export function NewSaleModal({
       return;
     }
 
-    if (selectedProduct.category === 'lona' && (width <= 0 || length <= 0)) {
-      toast.error('Informe as medidas da lona');
-      return;
-    }
-
     if (selectedProduct.category === 'tenda' && quantity <= 0) {
       toast.error('Informe a quantidade');
       return;
@@ -122,9 +116,9 @@ export function NewSaleModal({
       productName: selectedProduct.name,
       category: selectedProduct.category,
       quantity: selectedProduct.category === 'tenda' ? quantity : undefined,
-      width: selectedProduct.category === 'lona' ? width : undefined,
-      length: selectedProduct.category === 'lona' ? length : undefined,
-      squareMeters: selectedProduct.category === 'lona' ? squareMeters : undefined,
+      width: undefined,
+      length: undefined,
+      squareMeters: undefined,
       totalValue: finalValue,
       customerId: selectedCustomer?.id,
       customerName: selectedCustomer?.name,
@@ -270,38 +264,12 @@ export function NewSaleModal({
             <div className="space-y-4 animate-fade-in">
               {selectedProduct.category === 'lona' ? (
                 <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Largura (m)</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={width || ''}
-                        onChange={(e) => setWidth(parseFloat(e.target.value) || 0)}
-                        placeholder="0.00"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Comprimento (m)</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={length || ''}
-                        onChange={(e) => setLength(parseFloat(e.target.value) || 0)}
-                        placeholder="0.00"
-                      />
-                    </div>
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/10 text-primary">
+                    <Calculator className="h-4 w-4" />
+                    <span className="text-sm font-medium">
+                      Produto: {selectedProduct.name}
+                    </span>
                   </div>
-                  {squareMeters > 0 && (
-                    <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/10 text-primary">
-                      <Calculator className="h-4 w-4" />
-                      <span className="text-sm font-medium">
-                        Área total: {squareMeters.toFixed(2)} m²
-                      </span>
-                    </div>
-                  )}
                 </div>
               ) : (
                 <div className="space-y-2">
