@@ -106,6 +106,58 @@ export function useSales() {
     }
   };
 
+  const updateSale = async (id: string, saleData: Omit<Sale, 'id' | 'createdAt'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('sales')
+        .update({
+          product_id: saleData.productId || null,
+          product_name: saleData.productName,
+          category: saleData.category,
+          quantity: saleData.quantity || null,
+          width: saleData.width || null,
+          length: saleData.length || null,
+          square_meters: saleData.squareMeters || null,
+          total_value: saleData.totalValue,
+          customer_id: saleData.customerId || null,
+          customer_name: saleData.customerName || null,
+          sale_date: saleData.saleDate.toISOString().split('T')[0],
+          is_rental: saleData.isRental,
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const updatedSale: Sale = {
+        id: data.id,
+        productId: data.product_id || '',
+        productName: data.product_name,
+        category: data.category as ProductCategory,
+        quantity: data.quantity || undefined,
+        width: data.width ? Number(data.width) : undefined,
+        length: data.length ? Number(data.length) : undefined,
+        squareMeters: data.square_meters ? Number(data.square_meters) : undefined,
+        totalValue: Number(data.total_value),
+        customerId: data.customer_id || undefined,
+        customerName: data.customer_name || undefined,
+        saleDate: new Date(data.sale_date),
+        isRental: data.is_rental || false,
+        createdAt: new Date(data.created_at),
+      };
+
+      setSales((prev) =>
+        prev.map((s) => (s.id === id ? updatedSale : s))
+      );
+      return updatedSale;
+    } catch (error: any) {
+      console.error('Error updating sale:', error);
+      toast.error('Erro ao atualizar venda');
+      throw error;
+    }
+  };
+
   const getMetrics = useCallback((): DashboardMetrics => {
     const now = new Date();
     const currentMonth = now.getMonth();
@@ -158,6 +210,7 @@ export function useSales() {
     sales,
     loading,
     addSale,
+    updateSale,
     deleteSale,
     getMetrics,
     refetch: fetchSales,

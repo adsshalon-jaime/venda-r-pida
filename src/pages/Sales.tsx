@@ -33,6 +33,7 @@ import {
 } from '@/components/ui/dialog';
 import { Layout } from '@/components/Layout';
 import { NewSaleModal } from '@/components/NewSaleModal';
+import { EditSaleModal } from '@/components/EditSaleModal';
 import { useProducts } from '@/hooks/useProducts';
 import { useCustomers } from '@/hooks/useCustomers';
 import { useSales } from '@/hooks/useSales';
@@ -44,8 +45,9 @@ import { formatCurrency } from '@/utils/currency';
 export default function Sales() {
   const { products, loading: productsLoading } = useProducts();
   const { customers, loading: customersLoading } = useCustomers();
-  const { sales, loading: salesLoading, addSale, deleteSale } = useSales();
+  const { sales, loading: salesLoading, addSale, deleteSale, updateSale } = useSales();
   const [saleModalOpen, setSaleModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [editingSale, setEditingSale] = useState<Sale | null>(null);
@@ -64,8 +66,17 @@ export default function Sales() {
   };
 
   const handleEdit = (sale: Sale) => {
-    // TODO: Implementar edição de venda
-    toast.info('Funcionalidade de edição em desenvolvimento');
+    setEditingSale(sale);
+    setEditModalOpen(true);
+  };
+
+  const handleUpdate = async (updatedSale: Sale) => {
+    try {
+      await updateSale(updatedSale.id, updatedSale);
+      toast.success(updatedSale.isRental ? 'Locação atualizada com sucesso!' : 'Venda atualizada com sucesso!');
+    } catch (error) {
+      console.error('Error updating sale:', error);
+    }
   };
 
   const handleSaleComplete = async (saleData: Omit<Sale, 'id' | 'createdAt'>) => {
@@ -258,6 +269,16 @@ export default function Sales() {
           products={products}
           customers={customers}
           onSaleComplete={handleSaleComplete}
+        />
+
+        {/* Edit Sale Modal */}
+        <EditSaleModal
+          open={editModalOpen}
+          onOpenChange={setEditModalOpen}
+          sale={editingSale}
+          products={products}
+          customers={customers}
+          onUpdate={handleUpdate}
         />
 
         {/* Sale View Modal */}
