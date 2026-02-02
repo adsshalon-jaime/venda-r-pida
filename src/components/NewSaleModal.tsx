@@ -28,7 +28,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Check, ChevronsUpDown, User, X, Calculator } from 'lucide-react';
+import { Check, ChevronsUpDown, User, X, Calculator, Key } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Product, Customer, Sale } from '@/types';
 import { toast } from 'sonner';
@@ -58,6 +58,16 @@ export function NewSaleModal({
   const [showCustomerSearch, setShowCustomerSearch] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
   const [customerSearchOpen, setCustomerSearchOpen] = useState(false);
+  const [saleType, setSaleType] = useState<'sale' | 'rental'>('sale');
+
+  const filteredProducts = useMemo(() => {
+    return products.filter(product => {
+      if (saleType === 'rental') {
+        return product.isRental;
+      }
+      return true; // Para venda, mostra todos os produtos
+    });
+  }, [products, saleType]);
 
   const selectedProduct = products.find((p) => p.id === selectedProductId);
   const selectedCustomer = customers.find((c) => c.id === selectedCustomerId);
@@ -85,6 +95,7 @@ export function NewSaleModal({
       setCustomValueValue(0);
       setShowCustomerSearch(false);
       setSelectedCustomerId('');
+      setSaleType('sale');
     }
   }, [open, setCustomValueValue]);
 
@@ -119,49 +130,121 @@ export function NewSaleModal({
 
     onSaleComplete(sale);
     onOpenChange(false);
-    toast.success('Venda registrada com sucesso!');
+    toast.success(saleType === 'rental' ? 'Locação registrada com sucesso!' : 'Venda registrada com sucesso!');
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] animate-scale-in">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Nova Venda</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">
+            {saleType === 'rental' ? 'Nova Locação' : 'Nova Venda'}
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
+          {/* Sale Type Selection */}
+          <div className="space-y-2">
+            <Label>Tipo de Operação</Label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setSaleType('sale');
+                  setSelectedProductId('');
+                }}
+                className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 ${
+                  saleType === 'sale'
+                    ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10'
+                    : 'border-border hover:border-primary/30 hover:bg-muted/50'
+                }`}
+              >
+                <Calculator className={`h-6 w-6 ${saleType === 'sale' ? 'text-primary' : 'text-muted-foreground'}`} />
+                <span className={`font-semibold ${saleType === 'sale' ? 'text-primary' : 'text-muted-foreground'}`}>
+                  Venda
+                </span>
+                {saleType === 'sale' && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-pulse" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSaleType('rental');
+                  setSelectedProductId('');
+                }}
+                className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 ${
+                  saleType === 'rental'
+                    ? 'border-amber-500 bg-amber-50 shadow-lg shadow-amber-500/10'
+                    : 'border-border hover:border-amber-300 hover:bg-amber-50/50'
+                }`}
+              >
+                <Key className={`h-6 w-6 ${saleType === 'rental' ? 'text-amber-600' : 'text-muted-foreground'}`} />
+                <span className={`font-semibold ${saleType === 'rental' ? 'text-amber-600' : 'text-muted-foreground'}`}>
+                  Locação
+                </span>
+                {saleType === 'rental' && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full animate-pulse" />
+                )}
+              </button>
+            </div>
+          </div>
+
           {/* Product Selection */}
           <div className="space-y-2">
             <Label>Produto</Label>
             <Select value={selectedProductId} onValueChange={setSelectedProductId}>
               <SelectTrigger>
-                <SelectValue placeholder="Selecione um produto" />
+                <SelectValue placeholder={`Selecione um produto ${saleType === 'rental' ? 'para locação' : ''}`} />
               </SelectTrigger>
               <SelectContent>
-                <div className="px-2 pb-2">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                    Lonas
-                  </p>
-                  {products
-                    .filter((p) => p.category === 'lona')
-                    .map((product) => (
-                      <SelectItem key={product.id} value={product.id}>
-                        {product.name} - {formatCurrency(product.basePrice)}/m²
-                      </SelectItem>
-                    ))}
-                </div>
-                <div className="px-2 pb-2 border-t pt-2">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                    Tendas
-                  </p>
-                  {products
-                    .filter((p) => p.category === 'tenda')
-                    .map((product) => (
-                      <SelectItem key={product.id} value={product.id}>
-                        {product.name} - {formatCurrency(product.basePrice)}
-                      </SelectItem>
-                    ))}
-                </div>
+                {filteredProducts.length === 0 ? (
+                  <div className="p-4 text-center text-muted-foreground">
+                    {saleType === 'rental' 
+                      ? 'Nenhum produto disponível para locação' 
+                      : 'Nenhum produto encontrado'
+                    }
+                  </div>
+                ) : (
+                  <>
+                    <div className="px-2 pb-2">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                        Lonas
+                      </p>
+                      {filteredProducts
+                        .filter((p) => p.category === 'lona')
+                        .map((product) => (
+                          <SelectItem key={product.id} value={product.id}>
+                            <div className="flex items-center gap-2">
+                              <span>{product.name}</span>
+                              {product.isRental && (
+                                <Key className="h-3 w-3 text-amber-600" />
+                              )}
+                            </div>
+                            <span className="text-muted-foreground"> - {formatCurrency(product.basePrice)}/m²</span>
+                          </SelectItem>
+                        ))}
+                    </div>
+                    <div className="px-2 pb-2 border-t pt-2">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                        Tendas
+                      </p>
+                      {filteredProducts
+                        .filter((p) => p.category === 'tenda')
+                        .map((product) => (
+                          <SelectItem key={product.id} value={product.id}>
+                            <div className="flex items-center gap-2">
+                              <span>{product.name}</span>
+                              {product.isRental && (
+                                <Key className="h-3 w-3 text-amber-600" />
+                              )}
+                            </div>
+                            <span className="text-muted-foreground"> - {formatCurrency(product.basePrice)}</span>
+                          </SelectItem>
+                        ))}
+                    </div>
+                  </>
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -344,7 +427,7 @@ export function NewSaleModal({
               onClick={handleSubmit}
               disabled={!selectedProduct || finalValue <= 0}
             >
-              Registrar Venda
+              {saleType === 'rental' ? 'Registrar Locação' : 'Registrar Venda'}
             </Button>
           </div>
         </div>
