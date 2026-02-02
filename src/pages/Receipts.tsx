@@ -259,9 +259,9 @@ export default function Receipts() {
                       </div>
                     )}
                   </div>
-                  <h1 className="text-xl font-bold text-gray-900 mb-2">Tendas Carpa</h1>
-                  <p className="text-sm text-gray-600 mb-4">RECIBO DE {selectedSale.isRental ? 'LOCAÇÃO' : 'VENDA'}</p>
-                  <div className="flex justify-center gap-6 text-sm text-gray-500">
+                  <h1 className="text-lg font-semibold text-gray-800 mb-2">Tendas Carpa</h1>
+                  <p className="text-xs text-gray-600 mb-4">RECIBO DE {selectedSale.isRental ? 'LOCAÇÃO' : 'VENDA'}</p>
+                  <div className="flex justify-center gap-6 text-xs text-gray-500">
                     <span>📞 (63) 98502-8838</span>
                     <span>📧 contato@tendascarpas.ind.br</span>
                   </div>
@@ -269,41 +269,41 @@ export default function Receipts() {
 
                 {/* Número do recibo */}
                 <div className="mb-6 text-center">
-                  <p className="text-sm text-gray-500">Nº {selectedSale.id.slice(-8).toUpperCase()}</p>
+                  <p className="text-xs text-gray-500">Nº {selectedSale.id.slice(-8).toUpperCase()}</p>
                 </div>
 
                 {/* Informações da venda */}
                 <div className="mb-8">
-                  <h2 className="text-base font-semibold mb-4">Dados da Transação</h2>
+                  <h2 className="text-sm font-medium text-gray-700 mb-4">Dados da Transação</h2>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Data:</span>
-                      <span className="font-medium">{format(new Date(selectedSale.saleDate), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</span>
+                      <span className="text-xs text-gray-600">Data:</span>
+                      <span className="text-xs font-medium">{format(new Date(selectedSale.saleDate), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Tipo:</span>
-                      <span className="font-medium">{selectedSale.isRental ? 'Locação' : 'Venda'}</span>
+                      <span className="text-xs text-gray-600">Tipo:</span>
+                      <span className="text-xs font-medium">{selectedSale.isRental ? 'Locação' : 'Venda'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Produto:</span>
-                      <span className="font-medium">{selectedSale.productName}</span>
+                      <span className="text-xs text-gray-600">Produto:</span>
+                      <span className="text-xs font-medium">{selectedSale.productName}</span>
                     </div>
                     {selectedSale.quantity && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Quantidade:</span>
-                        <span className="font-medium">{selectedSale.quantity}</span>
+                        <span className="text-xs text-gray-600">Quantidade:</span>
+                        <span className="text-xs font-medium">{selectedSale.quantity}</span>
                       </div>
                     )}
                     {selectedSale.width && selectedSale.length && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Medidas:</span>
-                        <span className="font-medium">{selectedSale.width}m × {selectedSale.length}m</span>
+                        <span className="text-xs text-gray-600">Medidas:</span>
+                        <span className="text-xs font-medium">{selectedSale.width}m × {selectedSale.length}m</span>
                       </div>
                     )}
                     {selectedSale.squareMeters && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Área:</span>
-                        <span className="font-medium">{selectedSale.squareMeters}m²</span>
+                        <span className="text-xs text-gray-600">Área:</span>
+                        <span className="text-xs font-medium">{selectedSale.squareMeters}m²</span>
                       </div>
                     )}
                   </div>
@@ -312,22 +312,22 @@ export default function Receipts() {
                 {/* Dados do cliente */}
                 {includeCustomerData && selectedCustomer && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold mb-4">Dados do Cliente</h2>
+                    <h2 className="text-sm font-medium text-gray-700 mb-4">Dados do Cliente</h2>
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Nome:</span>
-                        <span className="font-medium">{selectedCustomer.name}</span>
+                        <span className="text-xs text-gray-600">Nome:</span>
+                        <span className="text-xs font-medium">{selectedCustomer.name}</span>
                       </div>
                       {selectedCustomer.email && (
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Email:</span>
-                          <span className="font-medium">{selectedCustomer.email}</span>
+                          <span className="text-xs text-gray-600">Email:</span>
+                          <span className="text-xs font-medium">{selectedCustomer.email}</span>
                         </div>
                       )}
                       {selectedCustomer.phone && (
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Telefone:</span>
-                          <span className="font-medium">{selectedCustomer.phone}</span>
+                          <span className="text-xs text-gray-600">Telefone:</span>
+                          <span className="text-xs font-medium">{selectedCustomer.phone}</span>
                         </div>
                       )}
                     </div>
@@ -337,8 +337,8 @@ export default function Receipts() {
                 {/* Valor */}
                 <div className="mb-8 border-t pt-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold">VALOR TOTAL:</span>
-                    <span className="text-xl font-bold text-blue-600">{formatCurrency(selectedSale.totalValue)}</span>
+                    <span className="text-base font-semibold">VALOR TOTAL:</span>
+                    <span className="text-lg font-bold text-blue-600">{formatCurrency(selectedSale.totalValue)}</span>
                   </div>
                 </div>
 
@@ -347,15 +347,15 @@ export default function Receipts() {
                   <div className="text-center">
                     <div className="mb-4">
                       <div className="border-b-2 border-gray-300 pb-2">
-                        <p className="text-sm text-gray-500">Assinatura do Vendedor</p>
+                        <p className="text-xs text-gray-500">Assinatura do Vendedor</p>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Rodapé */}
-                <div className="mt-8 pt-4 border-t text-center text-xs text-gray-500">
-                  <p className="text-sm text-gray-500">
+                <div className="mt-8 text-center text-xs text-gray-500">
+                  <p className="text-xs text-gray-500">
                     Gerado em {format(new Date(), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}
                   </p>
                 </div>
