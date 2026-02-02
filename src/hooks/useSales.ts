@@ -212,7 +212,7 @@ export function useSales() {
     const targetMonthEnd = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0);
     
     const selectedMonthSales = sales.filter((s) => {
-      const saleDate = new Date(s.createdAt);
+      const saleDate = new Date(s.saleDate);
       return saleDate >= targetMonthStart && saleDate <= targetMonthEnd;
     });
 
@@ -221,7 +221,7 @@ export function useSales() {
     const previousMonthEnd = new Date(previousMonthDate.getFullYear(), previousMonthDate.getMonth() + 1, 0);
     
     const previousMonthSales = sales.filter((s) => {
-      const saleDate = new Date(s.createdAt);
+      const saleDate = new Date(s.saleDate);
       return saleDate >= previousMonthStart && saleDate <= previousMonthEnd;
     });
 
@@ -259,7 +259,7 @@ export function useSales() {
     const targetMonthEnd = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0);
     
     return sales.filter((s) => {
-      const saleDate = new Date(s.createdAt);
+      const saleDate = new Date(s.saleDate);
       return saleDate >= targetMonthStart && saleDate <= targetMonthEnd;
     });
   }, [sales]);

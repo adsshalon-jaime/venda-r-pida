@@ -17,7 +17,7 @@ export function RecentSales({ sales, className, showMonthBadge = false, selected
   const getMonthBadge = (sale: Sale) => {
     if (!showMonthBadge || !selectedMonth) return null;
     
-    const saleMonth = format(new Date(sale.createdAt), 'yyyy-MM');
+    const saleMonth = format(new Date(sale.saleDate), 'yyyy-MM');
     const isCurrentMonth = saleMonth === selectedMonth;
     
     return (
@@ -59,7 +59,7 @@ export function RecentSales({ sales, className, showMonthBadge = false, selected
                 </Badge>
                 <span className="text-xs text-muted-foreground flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
-                  {format(new Date(sale.createdAt), "dd/MM/yyyy", { locale: ptBR })}
+                  {format(new Date(sale.saleDate), "dd/MM/yyyy", { locale: ptBR })}
                 </span>
               </div>
               {sale.customerId && (
