@@ -159,7 +159,7 @@ export function NewSaleModal({
               >
                 <Calculator className={`h-6 w-6 ${saleType === 'sale' ? 'text-primary' : 'text-muted-foreground'}`} />
                 <span className={`font-semibold ${saleType === 'sale' ? 'text-primary' : 'text-muted-foreground'}`}>
-                  Venda
+                  Venda e Locação
                 </span>
                 {saleType === 'sale' && (
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-pulse" />
