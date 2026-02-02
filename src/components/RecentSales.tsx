@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Sale } from '@/types';
 import { cn } from '@/lib/utils';
 import { User } from 'lucide-react';
+import { formatCurrency } from '@/utils/currency';
 
 interface RecentSalesProps {
   sales: Sale[];
@@ -49,7 +50,7 @@ export function RecentSales({ sales, className }: RecentSalesProps) {
             </div>
             <div className="text-right ml-4">
               <p className="font-semibold text-success">
-                R$ {sale.totalValue.toFixed(2)}
+                {formatCurrency(sale.totalValue)}
               </p>
               <div className="flex items-center gap-1 justify-end mt-1">
                 {sale.customerName ? (

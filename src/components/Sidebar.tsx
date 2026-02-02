@@ -27,10 +27,10 @@ export function Sidebar() {
       <div className="p-6 border-b border-border">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-            <span className="text-xl font-bold text-primary-foreground">T</span>
+            <span className="text-xl font-bold text-primary-foreground">S</span>
           </div>
           <div>
-            <h1 className="font-bold text-lg">Tendas & Lonas</h1>
+            <h1 className="font-bold text-lg">Sistema de Vendas</h1>
             <p className="text-xs text-muted-foreground">Painel Administrativo</p>
           </div>
         </div>

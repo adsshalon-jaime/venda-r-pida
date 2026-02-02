@@ -32,6 +32,8 @@ import { Check, ChevronsUpDown, User, X, Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Product, Customer, Sale } from '@/types';
 import { toast } from 'sonner';
+import { useCurrencyInput } from '@/hooks/useCurrencyInput';
+import { formatCurrency } from '@/utils/currency';
 
 interface NewSaleModalProps {
   open: boolean;
@@ -52,7 +54,7 @@ export function NewSaleModal({
   const [quantity, setQuantity] = useState<number>(1);
   const [width, setWidth] = useState<number>(0);
   const [length, setLength] = useState<number>(0);
-  const [customValue, setCustomValue] = useState<string>('');
+  const [customValueDisplay, customValueValue, updateCustomValue, setCustomValueValue] = useCurrencyInput(0);
   const [showCustomerSearch, setShowCustomerSearch] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
   const [customerSearchOpen, setCustomerSearchOpen] = useState(false);
@@ -71,7 +73,7 @@ export function NewSaleModal({
     }
   }, [selectedProduct, width, length, quantity]);
 
-  const finalValue = customValue ? parseFloat(customValue) : calculatedValue;
+  const finalValue = customValueValue > 0 ? customValueValue : calculatedValue;
   const squareMeters = selectedProduct?.category === 'lona' ? width * length : 0;
 
   useEffect(() => {
@@ -80,11 +82,11 @@ export function NewSaleModal({
       setQuantity(1);
       setWidth(0);
       setLength(0);
-      setCustomValue('');
+      setCustomValueValue(0);
       setShowCustomerSearch(false);
       setSelectedCustomerId('');
     }
-  }, [open]);
+  }, [open, setCustomValueValue]);
 
   const handleSubmit = () => {
     if (!selectedProduct) {
@@ -144,7 +146,7 @@ export function NewSaleModal({
                     .filter((p) => p.category === 'lona')
                     .map((product) => (
                       <SelectItem key={product.id} value={product.id}>
-                        {product.name} - R$ {product.basePrice.toFixed(2)}/m²
+                        {product.name} - {formatCurrency(product.basePrice)}/m²
                       </SelectItem>
                     ))}
                 </div>
@@ -156,7 +158,7 @@ export function NewSaleModal({
                     .filter((p) => p.category === 'tenda')
                     .map((product) => (
                       <SelectItem key={product.id} value={product.id}>
-                        {product.name} - R$ {product.basePrice.toFixed(2)}
+                        {product.name} - {formatCurrency(product.basePrice)}
                       </SelectItem>
                     ))}
                 </div>
@@ -216,21 +218,23 @@ export function NewSaleModal({
 
               {/* Value Field */}
               <div className="space-y-2">
-                <Label>Valor da Venda (R$)</Label>
+                <Label>Valor da Venda</Label>
                 <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
+                    R$
+                  </span>
                   <Input
-                    type="number"
-                    step="0.01"
-                    value={customValue || calculatedValue.toFixed(2)}
-                    onChange={(e) => setCustomValue(e.target.value)}
-                    className="pr-20"
+                    value={customValueDisplay}
+                    onChange={(e) => updateCustomValue(e.target.value)}
+                    placeholder="R$ 0,00"
+                    className="pl-10 pr-20"
                   />
-                  {customValue && (
+                  {customValueValue > 0 && (
                     <Button
                       variant="ghost"
                       size="sm"
                       className="absolute right-2 top-1/2 -translate-y-1/2 h-6 text-xs"
-                      onClick={() => setCustomValue('')}
+                      onClick={() => setCustomValueValue(0)}
                     >
                       Resetar
                     </Button>
@@ -238,8 +242,8 @@ export function NewSaleModal({
                 </div>
                 {calculatedValue > 0 && (
                   <p className="text-xs text-muted-foreground">
-                    Valor calculado: R$ {calculatedValue.toFixed(2)}
-                    {customValue && ` (desconto de R$ ${(calculatedValue - parseFloat(customValue)).toFixed(2)})`}
+                    Valor calculado: {formatCurrency(calculatedValue)}
+                    {customValueValue > 0 && ` (desconto de ${formatCurrency(calculatedValue - customValueValue)})`}
                   </p>
                 )}
               </div>

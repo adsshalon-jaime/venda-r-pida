@@ -25,18 +25,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { MoreHorizontal, Pencil, Trash2, FileText, Package, Tent } from 'lucide-react';
+import { MoreHorizontal, Pencil, Trash2, FileText, Package, Tent, Eye } from 'lucide-react';
 import { Product } from '@/types';
 import { cn } from '@/lib/utils';
+import { formatCurrency } from '@/utils/currency';
 
 interface ProductListProps {
   products: Product[];
   onEdit: (product: Product) => void;
   onDelete: (productId: string) => void;
+  onView: (product: Product) => void;
   onExport: () => void;
 }
 
-export function ProductList({ products, onEdit, onDelete, onExport }: ProductListProps) {
+export function ProductList({ products, onEdit, onDelete, onView, onExport }: ProductListProps) {
   if (products.length === 0) {
     return (
       <div className="text-center py-16">
@@ -123,7 +125,7 @@ export function ProductList({ products, onEdit, onDelete, onExport }: ProductLis
                 </TableCell>
                 <TableCell className="text-right">
                   <span className="font-semibold text-lg">
-                    R$ {product.basePrice.toFixed(2)}
+                    {formatCurrency(product.basePrice)}
                   </span>
                   {product.pricePerSquareMeter && (
                     <span className="text-muted-foreground text-sm ml-1">/m²</span>
@@ -141,6 +143,10 @@ export function ProductList({ products, onEdit, onDelete, onExport }: ProductLis
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-40">
+                      <DropdownMenuItem onClick={() => onView(product)} className="gap-2">
+                        <Eye className="h-4 w-4" />
+                        Visualizar
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onEdit(product)} className="gap-2">
                         <Pencil className="h-4 w-4" />
                         Editar

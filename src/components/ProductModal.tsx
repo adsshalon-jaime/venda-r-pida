@@ -12,6 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { Product, ProductCategory } from '@/types';
 import { toast } from 'sonner';
 import { Package, Tent } from 'lucide-react';
+import { formatCurrency } from '@/utils/currency';
 
 interface ProductModalProps {
   open: boolean;

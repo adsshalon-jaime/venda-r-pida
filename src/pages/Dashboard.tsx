@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DollarSign, Ruler, ShoppingBag, Plus } from 'lucide-react';
+import { DollarSign, Ruler, ShoppingBag, Plus, Users, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MetricCard } from '@/components/MetricCard';
 import { ProductDistributionChart } from '@/components/ProductDistributionChart';
@@ -10,6 +10,7 @@ import { useProducts } from '@/hooks/useProducts';
 import { useCustomers } from '@/hooks/useCustomers';
 import { useSales } from '@/hooks/useSales';
 import { Sale } from '@/types';
+import { formatCurrency } from '@/utils/currency';
 
 export default function Dashboard() {
   const [saleModalOpen, setSaleModalOpen] = useState(false);
@@ -40,22 +41,22 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <MetricCard
             title="Faturamento do Mês"
-            value={`R$ ${metrics.monthlyRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+            value={formatCurrency(metrics.monthlyRevenue)}
             change={metrics.revenueGrowth}
             icon={DollarSign}
             delay={0}
           />
           <MetricCard
-            title="Metragem Vendida"
-            value={`${metrics.totalSquareMeters.toFixed(2)} m²`}
-            change={metrics.squareMetersGrowth}
-            icon={Ruler}
+            title="Total de Vendas"
+            value={String(metrics.totalSales)}
+            change={metrics.revenueGrowth}
+            icon={ShoppingBag}
             delay={100}
           />
           <MetricCard
-            title="Total de Vendas"
-            value={String(metrics.totalSales)}
-            icon={ShoppingBag}
+            title="Produtos Cadastrados"
+            value={String(products.length)}
+            icon={Package}
             delay={200}
           />
         </div>

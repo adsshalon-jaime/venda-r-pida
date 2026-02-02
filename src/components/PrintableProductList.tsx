@@ -10,7 +10,7 @@ export function PrintableProductList({ products }: PrintableProductListProps) {
   return (
     <div className="print-only hidden p-8 bg-white text-black">
       <div className="print-header">
-        <h1 className="text-2xl font-bold mb-2">Tendas & Lonas</h1>
+        <h1 className="text-2xl font-bold mb-2">Sistema de Vendas</h1>
         <p className="text-gray-600">Catálogo de Produtos</p>
         <p className="text-sm text-gray-500 mt-2">
           Gerado em: {format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}

@@ -33,7 +33,7 @@ export function useSettings() {
         // Set default values if no settings exist
         setSettings({
           id: '',
-          company_name: 'Tendas & Lonas',
+          company_name: 'Sistema de Vendas',
           cnpj: '',
           phone: '',
           theme: 'light',

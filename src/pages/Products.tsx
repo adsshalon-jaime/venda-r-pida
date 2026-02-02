@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Layout } from '@/components/Layout';
 import { ProductList } from '@/components/ProductList';
 import { ProductModal } from '@/components/ProductModal';
+import { ProductViewModal } from '@/components/ProductViewModal';
 import { PrintableProductList } from '@/components/PrintableProductList';
 import { useProducts } from '@/hooks/useProducts';
 import { Product } from '@/types';
@@ -12,7 +13,9 @@ import { toast } from 'sonner';
 export default function Products() {
   const { products, loading, addProduct, updateProduct, deleteProduct } = useProducts();
   const [modalOpen, setModalOpen] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [viewingProduct, setViewingProduct] = useState<Product | null>(null);
 
   const handleSave = async (productData: Omit<Product, 'id' | 'createdAt'>) => {
     try {
@@ -27,6 +30,11 @@ export default function Products() {
     } catch (error) {
       // Error already handled in hook
     }
+  };
+
+  const handleView = (product: Product) => {
+    setViewingProduct(product);
+    setViewModalOpen(true);
   };
 
   const handleEdit = (product: Product) => {
@@ -82,6 +90,7 @@ export default function Products() {
           products={products}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onView={handleView}
           onExport={handleExport}
         />
 
@@ -90,6 +99,12 @@ export default function Products() {
           onOpenChange={setModalOpen}
           product={editingProduct}
           onSave={handleSave}
+        />
+
+        <ProductViewModal
+          open={viewModalOpen}
+          onOpenChange={setViewModalOpen}
+          product={viewingProduct}
         />
 
         <PrintableProductList products={products} />
