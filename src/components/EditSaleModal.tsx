@@ -8,6 +8,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -28,7 +29,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Check, ChevronsUpDown, User, Calculator, Key } from 'lucide-react';
+import { Check, ChevronsUpDown, User, Calculator, Key, ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Product, Customer, Sale } from '@/types';
 import { toast } from 'sonner';
@@ -115,7 +116,8 @@ export function EditSaleModal({ open, onOpenChange, sale, products, customers, o
       totalValue: finalValue,
       customerId: selectedCustomer?.id,
       customerName: selectedCustomer?.name,
-      saleDate: new Date(saleDate),
+      saleDate: new Date(saleDate + 'T00:00:00'),
+      isRental: sale.isRental,
     };
 
     onUpdate(updatedSale);
@@ -202,6 +204,22 @@ export function EditSaleModal({ open, onOpenChange, sale, products, customers, o
                 )}
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Sale Type Badge */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Tipo:</span>
+            {sale?.isRental ? (
+              <Badge className="bg-amber-50 text-amber-700 border-amber-200 flex items-center gap-1">
+                <Key className="h-3 w-3" />
+                Locação
+              </Badge>
+            ) : (
+              <Badge className="bg-primary/10 text-primary flex items-center gap-1">
+                <ShoppingBag className="h-3 w-3" />
+                Venda
+              </Badge>
+            )}
           </div>
 
           {/* Dynamic Fields based on product type */}

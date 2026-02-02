@@ -128,7 +128,7 @@ export function NewSaleModal({
       totalValue: finalValue,
       customerId: selectedCustomer?.id,
       customerName: selectedCustomer?.name,
-      saleDate: new Date(saleDate),
+      saleDate: new Date(saleDate + 'T00:00:00'),
       isRental: saleType === 'rental',
     };
 
