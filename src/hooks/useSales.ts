@@ -29,7 +29,7 @@ export function useSales() {
         totalValue: Number(s.total_value),
         customerId: s.customer_id || undefined,
         customerName: s.customer_name || undefined,
-        saleDate: new Date(s.sale_date),
+        saleDate: new Date(s.sale_date + 'T00:00:00'),
         isRental: s.is_rental || false,
         createdAt: new Date(s.created_at),
       }));
@@ -78,7 +78,7 @@ export function useSales() {
         totalValue: Number(data.total_value),
         customerId: data.customer_id || undefined,
         customerName: data.customer_name || undefined,
-        saleDate: new Date(data.sale_date),
+        saleDate: new Date(data.sale_date + 'T00:00:00'),
         isRental: data.is_rental || false,
         createdAt: new Date(data.created_at),
       };
@@ -142,7 +142,7 @@ export function useSales() {
         totalValue: Number(data.total_value),
         customerId: data.customer_id || undefined,
         customerName: data.customer_name || undefined,
-        saleDate: new Date(data.sale_date),
+        saleDate: new Date(data.sale_date + 'T00:00:00'),
         isRental: data.is_rental || false,
         createdAt: new Date(data.created_at),
       };
