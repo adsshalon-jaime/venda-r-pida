@@ -1,4 +1,4 @@
-import { LayoutDashboard, Package, ShoppingCart, Users, FileText, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, FileText } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,7 +13,11 @@ const navItems = [
   { title: 'Relatórios', url: '/relatorios', icon: FileText },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  className?: string;
+}
+
+export function Sidebar({ className = "" }: SidebarProps) {
   const { logout, userEmail } = useAuth();
   const navigate = useNavigate();
 
@@ -24,7 +28,7 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-64 h-screen bg-card border-r border-border flex flex-col">
+    <aside className={`w-64 h-screen bg-card border-r border-border flex flex-col ${className}`}>
       <div className="p-6 border-b border-border">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
@@ -71,13 +75,12 @@ export function Sidebar() {
           <Settings className="h-5 w-5" />
           <span>Configurações</span>
         </NavLink>
-        
         <Button
           variant="ghost"
-          className="w-full justify-start text-muted-foreground hover:text-destructive"
           onClick={handleLogout}
+          className="w-full justify-start text-muted-foreground hover:text-white hover:bg-[#34414b]"
         >
-          <LogOut className="mr-2 h-5 w-5" />
+          <LogOut className="h-5 w-5 mr-2" />
           Sair
         </Button>
       </div>
