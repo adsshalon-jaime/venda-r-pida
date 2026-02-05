@@ -17,11 +17,20 @@ export function useCustomers() {
 
       if (error) throw error;
 
-      const mappedCustomers: Customer[] = (data || []).map((c) => ({
+      const mappedCustomers: Customer[] = (data || []).map((c: any) => ({
         id: c.id,
         name: c.name,
         phone: c.phone || undefined,
         email: c.email || undefined,
+        cpfCnpj: (c as any).cpf_cnpj || undefined,
+        address: (c as any).street || (c as any).number || (c as any).neighborhood || (c as any).city || (c as any).state || (c as any).zip_code ? {
+          street: (c as any).street,
+          number: (c as any).number,
+          neighborhood: (c as any).neighborhood,
+          city: (c as any).city,
+          state: (c as any).state,
+          zipCode: (c as any).zip_code,
+        } : undefined,
       }));
 
       setCustomers(mappedCustomers);
@@ -41,6 +50,13 @@ export function useCustomers() {
           name: customerData.name,
           phone: customerData.phone || null,
           email: customerData.email || null,
+          cpf_cnpj: customerData.cpfCnpj || null,
+          street: customerData.address?.street || null,
+          number: customerData.address?.number || null,
+          neighborhood: customerData.address?.neighborhood || null,
+          city: customerData.address?.city || null,
+          state: customerData.address?.state || null,
+          zip_code: customerData.address?.zipCode || null,
         })
         .select()
         .single();
@@ -52,6 +68,15 @@ export function useCustomers() {
         name: data.name,
         phone: data.phone || undefined,
         email: data.email || undefined,
+        cpfCnpj: (data as any).cpf_cnpj || undefined,
+        address: (data as any).street || (data as any).number || (data as any).neighborhood || (data as any).city || (data as any).state || (data as any).zip_code ? {
+          street: (data as any).street,
+          number: (data as any).number,
+          neighborhood: (data as any).neighborhood,
+          city: (data as any).city,
+          state: (data as any).state,
+          zipCode: (data as any).zip_code,
+        } : undefined,
       };
 
       setCustomers((prev) => [newCustomer, ...prev]);
@@ -71,6 +96,13 @@ export function useCustomers() {
           name: customerData.name,
           phone: customerData.phone || null,
           email: customerData.email || null,
+          cpf_cnpj: customerData.cpfCnpj || null,
+          street: customerData.address?.street || null,
+          number: customerData.address?.number || null,
+          neighborhood: customerData.address?.neighborhood || null,
+          city: customerData.address?.city || null,
+          state: customerData.address?.state || null,
+          zip_code: customerData.address?.zipCode || null,
         })
         .eq('id', id)
         .select()
@@ -83,6 +115,15 @@ export function useCustomers() {
         name: data.name,
         phone: data.phone || undefined,
         email: data.email || undefined,
+        cpfCnpj: (data as any).cpf_cnpj || undefined,
+        address: (data as any).street || (data as any).number || (data as any).neighborhood || (data as any).city || (data as any).state || (data as any).zip_code ? {
+          street: (data as any).street,
+          number: (data as any).number,
+          neighborhood: (data as any).neighborhood,
+          city: (data as any).city,
+          state: (data as any).state,
+          zipCode: (data as any).zip_code,
+        } : undefined,
       };
 
       setCustomers((prev) =>

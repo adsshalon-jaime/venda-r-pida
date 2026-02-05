@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Search, Mail, Phone, User, Trash2, Edit } from 'lucide-react';
+import { Plus, Search, Mail, Phone, User, Trash2, Edit, FileText, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Layout } from '@/components/Layout';
@@ -26,7 +26,11 @@ export default function Customers() {
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
 
   const filteredCustomers = customers.filter((customer) =>
-    customer.name.toLowerCase().includes(searchQuery.toLowerCase())
+    customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    customer.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    customer.phone?.includes(searchQuery) ||
+    customer.cpfCnpj?.includes(searchQuery) ||
+    customer.address?.city?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleSave = async (customerData: Omit<Customer, 'id'>) => {
@@ -125,6 +129,12 @@ export default function Customers() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold truncate">{customer.name}</h3>
+                    {customer.cpfCnpj && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                        <FileText className="h-3 w-3" />
+                        <span className="font-mono">{customer.cpfCnpj}</span>
+                      </div>
+                    )}
                     {customer.email && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                         <Mail className="h-3 w-3" />
@@ -135,6 +145,22 @@ export default function Customers() {
                       <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                         <Phone className="h-3 w-3" />
                         <span>{customer.phone}</span>
+                      </div>
+                    )}
+                    {customer.address && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                        <MapPin className="h-3 w-3" />
+                        <span className="truncate">
+                          {customer.address.street}, {customer.address.number} - {customer.address.neighborhood}
+                        </span>
+                      </div>
+                    )}
+                    {customer.address && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                        <MapPin className="h-3 w-3" />
+                        <span className="truncate">
+                          {customer.address.city} - {customer.address.state}, {customer.address.zipCode}
+                        </span>
                       </div>
                     )}
                   </div>
