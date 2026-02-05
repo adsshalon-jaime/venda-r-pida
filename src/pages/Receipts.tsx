@@ -318,6 +318,12 @@ export default function Receipts() {
                         <span className="text-xs text-gray-600">Nome:</span>
                         <span className="text-xs font-medium">{selectedCustomer.name}</span>
                       </div>
+                      {selectedCustomer.cpfCnpj && (
+                        <div className="flex justify-between">
+                          <span className="text-xs text-gray-600">CPF/CNPJ:</span>
+                          <span className="text-xs font-medium font-mono">{selectedCustomer.cpfCnpj}</span>
+                        </div>
+                      )}
                       {selectedCustomer.email && (
                         <div className="flex justify-between">
                           <span className="text-xs text-gray-600">Email:</span>
@@ -328,6 +334,15 @@ export default function Receipts() {
                         <div className="flex justify-between">
                           <span className="text-xs text-gray-600">Telefone:</span>
                           <span className="text-xs font-medium">{selectedCustomer.phone}</span>
+                        </div>
+                      )}
+                      {selectedCustomer.address && (
+                        <div className="flex justify-between">
+                          <span className="text-xs text-gray-600">Endereço:</span>
+                          <span className="text-xs font-medium text-right">
+                            {selectedCustomer.address.street}, {selectedCustomer.address.number} - {selectedCustomer.address.neighborhood}<br />
+                            {selectedCustomer.address.city} - {selectedCustomer.address.state}, {selectedCustomer.address.zipCode}
+                          </span>
                         </div>
                       )}
                     </div>
