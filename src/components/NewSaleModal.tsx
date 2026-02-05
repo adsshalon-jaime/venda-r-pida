@@ -28,9 +28,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Check, ChevronsUpDown, User, X, Calculator, Key } from 'lucide-react';
+import { Check, ChevronsUpDown, User, X, Calculator, Key, CreditCard, DollarSign, Smartphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Product, Customer, Sale } from '@/types';
+import { Product, Customer, Sale, PaymentMethod, PaymentInfo } from '@/types';
 import { toast } from 'sonner';
 import { useCurrencyInput } from '@/hooks/useCurrencyInput';
 import { formatCurrency } from '@/utils/currency';
@@ -60,6 +60,11 @@ export function NewSaleModal({
   const [customerSearchOpen, setCustomerSearchOpen] = useState(false);
   const [saleType, setSaleType] = useState<'sale' | 'rental'>('sale');
   const [saleDate, setSaleDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  
+  // Estados para pagamento
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('dinheiro');
+  const [entryValueDisplay, entryValueValue, updateEntryValue, setEntryValueValue] = useCurrencyInput(0);
+  const [installments, setInstallments] = useState<number>(1);
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
@@ -97,8 +102,12 @@ export function NewSaleModal({
       setSelectedCustomerId('');
       setSaleType('sale');
       setSaleDate(new Date().toISOString().split('T')[0]);
+      // Resetar campos de pagamento
+      setPaymentMethod('dinheiro');
+      setEntryValueValue(0);
+      setInstallments(1);
     }
-  }, [open, setCustomValueValue]);
+  }, [open, setCustomValueValue, setEntryValueValue]);
 
   const handleSubmit = () => {
     if (!selectedProduct) {
@@ -110,6 +119,27 @@ export function NewSaleModal({
       toast.error('Informe a quantidade');
       return;
     }
+
+    // Validações para pagamento com cartão
+    if (paymentMethod === 'cartao') {
+      if (entryValueValue > finalValue) {
+        toast.error('Valor da entrada não pode ser maior que o valor total');
+        return;
+      }
+      if (entryValueValue > 0 && installments <= 1) {
+        toast.error('Se houver entrada, informe o número de parcelas');
+        return;
+      }
+    }
+
+    // Criar informações de pagamento
+    const paymentInfo: PaymentInfo | undefined = paymentMethod === 'cartao' ? {
+      method: paymentMethod,
+      entryValue: entryValueValue > 0 ? entryValueValue : undefined,
+      installments: installments > 1 ? installments : undefined,
+    } : {
+      method: paymentMethod,
+    };
 
     const sale: Omit<Sale, 'id' | 'createdAt'> = {
       productId: selectedProduct.id,
@@ -124,6 +154,7 @@ export function NewSaleModal({
       customerName: selectedCustomer?.name,
       saleDate: new Date(saleDate + 'T00:00:00'),
       isRental: saleType === 'rental',
+      paymentInfo,
     };
 
     onSaleComplete(sale);
@@ -393,6 +424,130 @@ export function NewSaleModal({
                     </Command>
                   </PopoverContent>
                 </Popover>
+              </div>
+            )}
+          </div>
+
+          {/* Payment Method */}
+          <div className="space-y-4">
+            <Label>Método de Pagamento</Label>
+            <div className="grid grid-cols-3 gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setPaymentMethod('dinheiro');
+                  setEntryValueValue(0);
+                  setInstallments(1);
+                }}
+                className={cn(
+                  'flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all',
+                  paymentMethod === 'dinheiro'
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-muted hover:border-muted-foreground/50'
+                )}
+              >
+                <DollarSign className="h-5 w-5 mb-1" />
+                <span className="text-xs font-medium">Dinheiro</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPaymentMethod('pix');
+                  setEntryValueValue(0);
+                  setInstallments(1);
+                }}
+                className={cn(
+                  'flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all',
+                  paymentMethod === 'pix'
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-muted hover:border-muted-foreground/50'
+                )}
+              >
+                <Smartphone className="h-5 w-5 mb-1" />
+                <span className="text-xs font-medium">Pix</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('cartao')}
+                className={cn(
+                  'flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all',
+                  paymentMethod === 'cartao'
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-muted hover:border-muted-foreground/50'
+                )}
+              >
+                <CreditCard className="h-5 w-5 mb-1" />
+                <span className="text-xs font-medium">Cartão</span>
+              </button>
+            </div>
+
+            {/* Cartão Payment Options */}
+            {paymentMethod === 'cartao' && (
+              <div className="space-y-3 animate-fade-in">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label>Valor da Entrada (opcional)</Label>
+                    <Input
+                      value={entryValueDisplay}
+                      onChange={(e) => updateEntryValue(e.target.value)}
+                      placeholder="R$ 0,00"
+                      className="font-mono"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Parcelas</Label>
+                    <Select
+                      value={installments.toString()}
+                      onValueChange={(value) => setInstallments(parseInt(value))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">À vista</SelectItem>
+                        <SelectItem value="2">2x</SelectItem>
+                        <SelectItem value="3">3x</SelectItem>
+                        <SelectItem value="4">4x</SelectItem>
+                        <SelectItem value="5">5x</SelectItem>
+                        <SelectItem value="6">6x</SelectItem>
+                        <SelectItem value="7">7x</SelectItem>
+                        <SelectItem value="8">8x</SelectItem>
+                        <SelectItem value="9">9x</SelectItem>
+                        <SelectItem value="10">10x</SelectItem>
+                        <SelectItem value="11">11x</SelectItem>
+                        <SelectItem value="12">12x</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Payment Summary */}
+                {(entryValueValue > 0 || installments > 1) && (
+                  <div className="bg-muted/50 rounded-lg p-3 space-y-1">
+                    {entryValueValue > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span>Entrada:</span>
+                        <span className="font-medium">{formatCurrency(entryValueValue)}</span>
+                      </div>
+                    )}
+                    {installments > 1 && (
+                      <div className="flex justify-between text-sm">
+                        <span>Saldo parcelado:</span>
+                        <span className="font-medium">
+                          {formatCurrency(finalValue - entryValueValue)}
+                        </span>
+                      </div>
+                    )}
+                    {installments > 1 && (
+                      <div className="flex justify-between text-sm">
+                        <span>Valor da parcela:</span>
+                        <span className="font-medium text-primary">
+                          {formatCurrency((finalValue - entryValueValue) / installments)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>

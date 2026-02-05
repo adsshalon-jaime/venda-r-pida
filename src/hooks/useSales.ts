@@ -19,7 +19,7 @@ export function useSales() {
 
       if (error) throw error;
 
-      const mappedSales: Sale[] = (data || []).map((s) => ({
+      const mappedSales: Sale[] = (data || []).map((s: any) => ({
         id: s.id,
         productId: s.product_id || '',
         productName: s.product_name,
@@ -34,6 +34,11 @@ export function useSales() {
         saleDate: new Date(s.sale_date + 'T00:00:00'),
         isRental: s.is_rental || false,
         createdAt: new Date(s.created_at),
+        paymentInfo: s.payment_method ? {
+          method: s.payment_method,
+          entryValue: s.payment_entry_value ? Number(s.payment_entry_value) : undefined,
+          installments: s.payment_installments ? Number(s.payment_installments) : undefined,
+        } : undefined,
       }));
 
       setSales(mappedSales);
@@ -62,6 +67,9 @@ export function useSales() {
           customer_name: saleData.customerName || null,
           sale_date: saleData.saleDate.toISOString().split('T')[0],
           is_rental: saleData.isRental,
+          payment_method: saleData.paymentInfo?.method || null,
+          payment_entry_value: saleData.paymentInfo?.entryValue || null,
+          payment_installments: saleData.paymentInfo?.installments || null,
         })
         .select()
         .single();
@@ -83,6 +91,11 @@ export function useSales() {
         saleDate: new Date(data.sale_date + 'T00:00:00'),
         isRental: data.is_rental || false,
         createdAt: new Date(data.created_at),
+        paymentInfo: (data as any).payment_method ? {
+          method: (data as any).payment_method,
+          entryValue: (data as any).payment_entry_value ? Number((data as any).payment_entry_value) : undefined,
+          installments: (data as any).payment_installments ? Number((data as any).payment_installments) : undefined,
+        } : undefined,
       };
 
       setSales((prev) => [newSale, ...prev]);

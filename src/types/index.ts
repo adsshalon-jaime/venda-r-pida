@@ -27,6 +27,14 @@ export interface Customer {
   };
 }
 
+export type PaymentMethod = 'dinheiro' | 'pix' | 'cartao';
+
+export interface PaymentInfo {
+  method: PaymentMethod;
+  entryValue?: number; // Valor da entrada (para cartão)
+  installments?: number; // Quantidade de parcelas (para cartão)
+}
+
 export interface Sale {
   id: string;
   productId: string;
@@ -42,6 +50,7 @@ export interface Sale {
   saleDate: Date;
   isRental: boolean;
   createdAt: Date;
+  paymentInfo?: PaymentInfo;
 }
 
 export interface DashboardMetrics {
