@@ -304,6 +304,24 @@ export function NewSaleModal({
                           </SelectItem>
                         ))}
                     </div>
+                  <div className="px-2 pb-2 border-t pt-2">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                        Ferragens
+                      </p>
+                      {filteredProducts
+                        .filter((p) => p.category === 'ferragem')
+                        .map((product) => (
+                          <SelectItem key={product.id} value={product.id}>
+                            <div className="flex items-center gap-2">
+                              <span>{product.name}</span>
+                              {product.isRental && (
+                                <Key className="h-3 w-3 text-amber-600" />
+                              )}
+                            </div>
+                            <span className="text-muted-foreground"> - {formatCurrency(product.basePrice)} (kit)</span>
+                          </SelectItem>
+                        ))}
+                    </div>
                   </>
                 )}
               </SelectContent>
