@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Plus, Search, Calendar, Trash2, ShoppingBag, Eye, Edit, Key } from 'lucide-react';
+import { Plus, Search, Calendar, Trash2, ShoppingBag, Eye, Edit, Key, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -51,13 +51,21 @@ export default function Sales() {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [editingSale, setEditingSale] = useState<Sale | null>(null);
+  const [saleType, setSaleType] = useState<'all' | 'sale' | 'rental'>('all');
 
   const isLoading = productsLoading || customersLoading || salesLoading;
 
   const filteredSales = sales.filter(
-    (sale) =>
-      sale.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      sale.customerName?.toLowerCase().includes(searchQuery.toLowerCase())
+    (sale) => {
+      const matchesSearch = sale.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        sale.customerName?.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesType = saleType === 'all' || 
+        (saleType === 'sale' && !sale.isRental) ||
+        (saleType === 'rental' && sale.isRental);
+      
+      return matchesSearch && matchesType;
+    }
   );
 
   const handleView = (sale: Sale) => {
@@ -112,10 +120,52 @@ export default function Sales() {
               Histórico completo de vendas
             </p>
           </div>
-          <Button onClick={() => setSaleModalOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Nova Venda
-          </Button>
+          <div className="flex items-center gap-4">
+            <Button onClick={() => setSaleModalOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Nova Venda
+            </Button>
+            
+            {/* Filtro por tipo */}
+            <div className="flex items-center gap-2">
+              <Label className="text-sm font-medium">Tipo:</Label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSaleType('all')}
+                  className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
+                    saleType === 'all' 
+                      ? 'bg-primary text-primary border-primary' 
+                      : 'border-muted hover:border-primary/50 hover:bg-primary/50'
+                  }`}
+                >
+                  Todos
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSaleType('sale')}
+                  className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
+                    saleType === 'sale' 
+                      ? 'bg-green-600 text-white border-green-600' 
+                      : 'border-muted hover:border-green-600/50 hover:bg-green-50'
+                  }`}
+                >
+                  Vendas
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSaleType('rental')}
+                  className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
+                    saleType === 'rental' 
+                      ? 'bg-blue-600 text-white border-blue-600' 
+                      : 'border-muted hover:border-blue-600/50 hover:bg-blue-50'
+                  }`}
+                >
+                  Locações
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Search */}
@@ -135,9 +185,20 @@ export default function Sales() {
         {filteredSales.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <ShoppingBag className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>Nenhuma venda registrada</p>
+            <p className="text-xl font-semibold mb-2">
+              {saleType === 'all' && 'Nenhuma venda registrada'}
+              {saleType === 'sale' && 'Nenhuma venda registrada'}
+              {saleType === 'rental' && 'Nenhuma locação registrada'}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {saleType === 'all' && 'Registre sua primeira venda'}
+              {saleType === 'sale' && 'Registre sua primeira venda'}
+              {saleType === 'rental' && 'Registre sua primeira locação'}
+            </p>
             <Button variant="outline" className="mt-4" onClick={() => setSaleModalOpen(true)}>
-              Registrar primeira venda
+              {saleType === 'sale' && 'Registrar primeira venda'}
+              {saleType === 'rental' && 'Registrar primeira locação'}
+              {saleType === 'all' && 'Registrar primeira venda'}
             </Button>
           </div>
         ) : (
@@ -149,7 +210,6 @@ export default function Sales() {
                   <TableHead>Produto</TableHead>
                   <TableHead>Cliente</TableHead>
                   <TableHead className="text-right">Detalhes</TableHead>
-                  <TableHead className="text-right">Valor</TableHead>
                   <TableHead className="w-10"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -168,28 +228,28 @@ export default function Sales() {
                     </TableCell>
                     <TableCell>
                       <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium">{sale.productName}</p>
-                          {sale.isRental && (
-                            <Badge
-                              variant="outline"
-                              className="text-xs bg-amber-50 text-amber-700 border-amber-200 flex items-center gap-1"
-                            >
-                              <Key className="h-3 w-3" />
-                              Locação
-                            </Badge>
-                          )}
-                        </div>
+                        <p className="font-medium">{sale.productName}</p>
+                        {sale.isRental && (
+                          <Badge
+                            variant="outline"
+                            className="text-xs bg-blue-50 text-blue-700 border-blue-200 flex items-center gap-1"
+                          >
+                            <Key className="h-3 w-3" />
+                            Locação
+                          </Badge>
+                        )}
                         <Badge
                           variant="secondary"
                           className={cn(
                             "text-xs mt-1",
                             sale.category === 'lona'
-                              ? 'bg-primary/10 text-primary'
-                              : 'bg-chart-2/10 text-chart-2'
+                              ? 'bg-primary/10 text-primary border-primary/20'
+                              : sale.category === 'tenda'
+                              ? 'bg-chart-2/10 text-chart-2 border-chart-2/20'
+                              : 'bg-orange-100 text-orange-600 border-orange-200'
                           )}
                         >
-                          {sale.category === 'lona' ? 'Lona' : 'Tenda'}
+                          {sale.category === 'lona' ? 'Lona' : sale.category === 'tenda' ? 'Tenda' : 'Ferragem'}
                         </Badge>
                       </div>
                     </TableCell>
@@ -198,29 +258,17 @@ export default function Sales() {
                         <span className="text-muted-foreground">Venda Direta</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-right text-muted-foreground">
-                      {sale.squareMeters && (
-                        <span>
-                          {sale.width}m × {sale.length}m = {sale.squareMeters.toFixed(1)} m²
-                        </span>
-                      )}
-                      {sale.quantity && <span>{sale.quantity}x unidade(s)</span>}
-                    </TableCell>
                     <TableCell className="text-right">
-                      <span className="font-semibold text-success">
-                        {formatCurrency(sale.totalValue)}
-                      </span>
+                      <span className="font-semibold text-lg">{formatCurrency(sale.totalValue)}</span>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                      <div className="flex items-center gap-2">
+                        <Eye
+                          className="h-4 w-4 cursor-pointer hover:text-primary"
                           onClick={() => handleView(sale)}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
+                        />
+                        <Edit
+                          className="h-4 w-4 cursor-pointer hover:text-primary ml-2"
                         <Button
                           variant="ghost"
                           size="icon"
