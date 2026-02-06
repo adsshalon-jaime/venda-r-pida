@@ -117,8 +117,7 @@ export default function ContractsPage() {
       return '';
     };
 
-    const contractText = `
-==================================================
+    const contractText = `==================================================
 CONTRATO DE ${isRental ? 'LOCAÇÃO' : 'VENDA'} DE TENDAS
 ==================================================
 
