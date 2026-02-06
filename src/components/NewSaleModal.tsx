@@ -69,22 +69,12 @@ export function NewSaleModal({
   const [dueDate, setDueDate] = useState<string>(''); // Data de vencimento para fiado
 
   const filteredProducts = useMemo(() => {
-    const filtered = products.filter(product => {
+    return products.filter(product => {
       if (saleType === 'rental') {
         return product.isRental;
       }
       return true; // Para venda, mostra todos os produtos
     });
-    
-    // Verificação direta: produtos de ferragem existem?
-    const ferragens = filtered.filter(p => p.category === 'ferragem');
-    console.log('=== VERIFICAÇÃO DE FERRAGENS ===');
-    console.log('Total produtos:', products.length);
-    console.log('Produtos filtrados:', filtered.length);
-    console.log('Ferragens encontradas:', ferragens.length);
-    console.log('Produtos de ferragem:', ferragens.map(p => ({ id: p.id, name: p.name, category: p.category })));
-    
-    return filtered;
   }, [products, saleType]);
 
   const selectedProduct = products.find((p) => p.id === selectedProductId);
