@@ -10,7 +10,6 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useCustomers } from '@/hooks/useCustomers';
 import { Layout } from '@/components/Layout';
-import { jsPDF } from 'jspdf';
 
 interface ContractData {
   clientName: string;
@@ -212,32 +211,38 @@ Assinatura: _______________________________
   const generateContract = () => {
     const contractText = buildContractText();
 
-    // Criar PDF usando jsPDF
-    const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4'
-    });
+    // Criar PDF usando método nativo do navegador
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
     
-    // Configurar fonte para suportar caracteres especiais
-    doc.setFont('helvetica');
-    doc.setFontSize(10);
-    
-    // Adicionar conteúdo do contrato
-    const lines = contractText.split('\n');
-    let yPosition = 20;
-    
-    lines.forEach(line => {
-      if (yPosition > 270) {
-        doc.addPage();
-        yPosition = 20;
-      }
-      doc.text(line, 20, yPosition);
-      yPosition += 5;
-    });
-    
-    // Salvar PDF
-    doc.save(`contrato-${isRental ? 'locacao' : 'venda'}-tenda-${contractData.clientName.replace(/\s+/g, '-').toLowerCase()}-${format(new Date(), 'dd-MM-yyyy')}.pdf`);
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Contrato - ${contractData.clientName}</title>
+        <style>
+          body { font-family: Arial, sans-serif; font-size: 12px; line-height: 1.4; margin: 20px; }
+          h1 { font-size: 18px; font-weight: bold; margin-bottom: 20px; }
+          h2 { font-size: 14px; font-weight: bold; margin-top: 20px; margin-bottom: 10px; }
+          .signature { margin-top: 50px; }
+          @media print {
+            body { margin: 10px; }
+            @page { margin: 20mm; }
+          }
+        </style>
+      </head>
+      <body>
+        <pre style="white-space: pre-wrap; font-family: monospace;">${contractText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+        <script>
+          window.onload = function() {
+            window.print();
+            window.close();
+          }
+        </script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
   };
 
   const printContract = () => {
