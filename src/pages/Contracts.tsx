@@ -78,7 +78,7 @@ export default function ContractsPage() {
     address: 'Rua das Flores, 1234, Centro - São Paulo/SP',
     phone: '(11) 9876-5432',
     email: 'contato@tendaelonexpress.com.br',
-    logo: 'data:image/svg+xml;base64,PHN2ZyB4bWxkQAAAABJRU5ErkJggg=='
+    logo: '/logo.png'
   };
 
   useEffect(() => {
@@ -104,20 +104,21 @@ export default function ContractsPage() {
     }
   }, [selectedClientId, customers]);
 
-  const generateContract = () => {
-    // Função para formatar endereço
-    const formatAddress = (address: any) => {
-      if (!address) return '';
-      if (typeof address === 'string') {
-        return address;
-      }
-      if (address && typeof address === 'object') {
-        return `${address.street || ''}, ${address.number || ''} - ${address.neighborhood || ''}, ${address.city || ''} - ${address.state || ''} - ${address.zipCode || ''}`;
-      }
-      return '';
-    };
+  const formatAddress = (address: ContractData['clientAddress']) => {
+    const parts = [
+      address.street,
+      address.number,
+      address.neighborhood,
+      address.city,
+      address.state,
+      address.zipCode,
+    ].filter(Boolean);
 
-    const contractText = `==================================================
+    return parts.length ? parts.join(', ') : 'Não informado';
+  };
+
+  const buildContractText = () => {
+    return `==================================================
 CONTRATO DE ${isRental ? 'LOCAÇÃO' : 'VENDA'} DE TENDAS
 ==================================================
 
@@ -130,7 +131,7 @@ E-mail: ${companyInfo.email}
 ${isRental ? 'LOCAÇÃO' : 'VENDA'} DE TENDAS
 
 Pelo presente instrumento particular, de um lado:
-CONTRATANTE:
+CONTRATADA:
 Empresa: ${companyInfo.name}
 CNPJ: ${companyInfo.cnpj}
 Endereço: ${companyInfo.address}
@@ -146,83 +147,68 @@ Telefone/WhatsApp: ${contractData.clientPhone}
 E-mail: ${contractData.clientEmail}
 
 As partes acima identificadas têm, entre si, justo e contratado o que segue:
-${isRental ? 'LOCAÇÃO' : 'VENDA'} DE TENDAS
 
-•	Tenda ${contractData.tentType}
-•	${contractData.tentDimensions}
-•	Quantidade: ${contractData.tentQuantity}
+1. OBJETO DO CONTRATO
+O presente contrato tem como objeto a ${isRental ? 'LOCAÇÃO' : 'VENDA'} de TENDAS, sendo elas:
+•\tTenda ${contractData.tentType}
 
 Nos seguintes tamanhos e especificações:
 Tipo de Tenda: ${contractData.tentType}
 Dimensões: ${contractData.tentDimensions}
 Quantidade: ${contractData.tentQuantity}
 
-${isRental ? `
-PRAZO DE LOCAÇÃO:
-Início: ${contractData.rentalStartDate}
-Término: ${contractData.rentalEndDate}
-Período: ${contractData.rentalPeriod}
-` : ''}
+${isRental ? `\n2. PRAZO (APENAS PARA LOCAÇÃO)\nInício: ${contractData.rentalStartDate}\nTérmino: ${contractData.rentalEndDate}\nPeríodo: ${contractData.rentalPeriod}\n` : ''}
 
-VALOR E CONDIÇÕES DE PAGAMENTO:
-O valor total deste contrato é de R$ ${contractData.totalPrice}, referente à:
+3. VALOR E CONDIÇÕES DE PAGAMENTO
+O valor total deste contrato é de R$ ${contractData.totalPrice}, referente a:
 ☐ Venda
 ☐ Locação
 
-${!isRental && contractData.paymentMethod === 'parcelado' ? `
-Forma de pagamento: Parcelado em ${contractData.installments} vezes
-` : ''}
+Forma de pagamento:
+${contractData.paymentMethod === 'vista' ? '☐ À vista' : `☐ Parcelado (especificar): ${contractData.installments}`}
 
-${isRental ? `
-O não pagamento nas datas acordadas poderá acarretar suspensão do serviço ou aplicação de multa.
-` : ''}
+4. OBRIGAÇÕES DA CONTRATADA
+Compete à CONTRATADA:
+•\tFornecer as tendas conforme especificações acordadas;
+•\tRealizar a montagem e desmontagem (quando incluso);
+•\tEntregar o material em boas condições de uso;
+•\tUtilizar materiais adequados e mão de obra qualificada.
 
-OBRIGAÇÕES DA CONTRATADA:
-•	Fornecer as tendas conforme especificações acordadas;
-•	Realizar a montagem e desmontagem (quando incluso);
-•	Entregar o material em boas condições de uso;
-•	Utilizar materiais adequados e de boa qualidade;
-•	Zelar pela conservação do material durante a locação;
-•	Não modificar, desmontar ou transferir a tenda sem autorização;
-•	Responsabilizar-se por danos, perdas, roubos ou queima.
+5. OBRIGAÇÕES DA CONTRATANTE
+Compete à CONTRATANTE:
+•\tDisponibilizar local adequado para instalação da tenda;
+•\tZelar pela conservação do material durante a locação;
+•\tNão modificar, desmontar ou transferir a tenda sem autorização;
+•\tResponsabilizar-se por danos causados por mau uso, intempéries extremas ou terceiros.
 
-OBRIGAÇÕES DA CONTRATANTE:
-•	Disponibilizar local adequado para instalação da tenda;
-•	Zelar pela conservação do material durante a locação;
-•	Não modificar, desmontar ou transferir a tenda sem autorização;
-•	Responsabilizar-se por danos, perdas, roubos ou queima;
-•	Devolver o material em boas condições de conservação e limpeza;
-•	Pagar os valores alugados nos dias acordados;
-•	Comunicar qualquer problema ou necessidade de manutenção.
+6. RESPONSABILIDADE POR DANOS
+Em caso de avarias, perdas, rasgos, queima ou danos estruturais, a CONTRATANTE se compromete a arcar com os custos de reparo ou reposição do material.
 
-RESPONSABILIDADE POR DANOS:
-Em caso de avarias, perdas, rasgos, queima ou danos estruturais, a CONTRATANTE se compromete a arcar com os custos de reparo ou reposição do material, respeitando os valores proporcionais já executados ou custos operacionais envolvidos.
+7. RESCISÃO
+Este contrato poderá ser rescindido por qualquer das partes mediante aviso prévio, respeitando os valores proporcionais já executados ou custos operacionais envolvidos.
 
-FORO:
-Este contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de 30 dias, respeitando os valores proporcionais já executados ou custos operacionais envolvidos.
+8. DISPOSIÇÕES GERAIS
+•\tEste contrato é válido para todo o território nacional;
+•\tO presente instrumento substitui quaisquer acordos verbais;
+•\tAs partes declaram estar de acordo com todas as cláusulas aqui descritas.
 
-DISPOSIÇÕES GERAIS:
-•	Este contrato é válido para todo o território nacional;
-•	O presente instrumento substitui quaisquer acordos verbais;
-•	As partes declaram estar de acordo com todas as cláusulas aqui descritas;
-•	Em caso de litígio, as partes concordam com a competência do Foro da Comarca de ${contractData.contractLocation}.
+9. FORO
+Fica eleito o foro da comarca de ${contractData.contractLocation}, renunciando a qualquer outro, por mais privilegiado que seja.
+
+E, por estarem assim justos e contratados, assinam o presente instrumento em duas vias de igual teor.
 
 Local e data: ${contractData.contractLocation}, ${format(new Date(contractData.contractDate), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
 
-${contractData.witnessName ? `
-TESTEMUNHAS:
-Contratante: ${contractData.clientName} - ${contractData.clientCpfCnpj}
-Testemunha: ${contractData.witnessName} - ${contractData.witnessCpfCnpj}
-` : ''}
+CONTRATANTE:
+Assinatura: _______________________________
 
-ASSINATURAS:
-CONTRATANTE: _______________________________
-CONTRATANTE: _______________________________
-
-E, por estarem assim justos e contratados, assinam o presente instrumento em duas vias de igual teor, na presença das testemunhas abaixo nomeadas e qualificadas.
-
-Local e data: ${contractData.contractLocation}, ${format(new Date(contractData.contractDate), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+CONTRATADA:
+Assinatura: _______________________________
 ==================================================`;
+  };
+
+  const generateContract = () => {
+    const contractText = buildContractText();
 
     const blob = new Blob([contractText], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -236,16 +222,32 @@ Local e data: ${contractData.contractLocation}, ${format(new Date(contractData.c
   };
 
   const printContract = () => {
+    const contractText = buildContractText();
+    const escaped = contractText
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
     const printWindow = window.open('', '_blank');
-    printWindow.document.write(contractContent);
+    if (!printWindow) return;
+    printWindow.document.write(`<pre style="white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; padding: 24px;">${escaped}</pre>`);
     printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
   };
 
   const resetForm = () => {
     setContractData({
       clientName: '',
       clientCpfCnpj: '',
-      clientAddress: '',
+      clientAddress: {
+        street: '',
+        number: '',
+        neighborhood: '',
+        city: '',
+        state: '',
+        zipCode: ''
+      },
       clientPhone: '',
       clientEmail: '',
       tentType: 'piramidal',
