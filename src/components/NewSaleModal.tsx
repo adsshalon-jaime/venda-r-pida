@@ -28,7 +28,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Check, ChevronsUpDown, User, X, Calculator, Key, CreditCard, DollarSign, Smartphone } from 'lucide-react';
+import { Check, ChevronsUpDown, User, X, Calculator, Key, CreditCard, DollarSign, Smartphone, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Product, Customer, Sale, PaymentMethod, PaymentInfo } from '@/types';
 import { toast } from 'sonner';
@@ -65,6 +65,7 @@ export function NewSaleModal({
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('dinheiro');
   const [entryValueDisplay, entryValueValue, updateEntryValue, setEntryValueValue] = useCurrencyInput(0);
   const [installments, setInstallments] = useState<number>(1);
+  const [dueDate, setDueDate] = useState<string>(''); // Data de vencimento para fiado
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
@@ -106,6 +107,7 @@ export function NewSaleModal({
       setPaymentMethod('dinheiro');
       setEntryValueValue(0);
       setInstallments(1);
+      setDueDate('');
     }
   }, [open, setCustomValueValue, setEntryValueValue]);
 
@@ -132,11 +134,41 @@ export function NewSaleModal({
       }
     }
 
+    // Validações para pagamento fiado
+    if (paymentMethod === 'fiado') {
+      if (!selectedCustomer) {
+        toast.error('Para pagamento fiado, é necessário selecionar um cliente');
+        return;
+      }
+      if (!dueDate) {
+        toast.error('Para pagamento fiado, é necessário informar a data de vencimento');
+        return;
+      }
+      
+      const dueDateObj = new Date(dueDate);
+      const today = new Date();
+      const maxDate = new Date();
+      maxDate.setDate(today.getDate() + 30);
+      
+      if (dueDateObj > maxDate) {
+        toast.error('Data de vencimento não pode ser superior a 30 dias');
+        return;
+      }
+      
+      if (dueDateObj < today) {
+        toast.error('Data de vencimento não pode ser anterior a hoje');
+        return;
+      }
+    }
+
     // Criar informações de pagamento
     const paymentInfo: PaymentInfo | undefined = paymentMethod === 'cartao' ? {
       method: paymentMethod,
       entryValue: entryValueValue > 0 ? entryValueValue : undefined,
       installments: installments > 1 ? installments : undefined,
+    } : paymentMethod === 'fiado' ? {
+      method: paymentMethod,
+      dueDate: new Date(dueDate + 'T00:00:00'),
     } : {
       method: paymentMethod,
     };
@@ -431,13 +463,14 @@ export function NewSaleModal({
           {/* Payment Method */}
           <div className="space-y-3">
             <Label className="text-sm">Método de Pagamento</Label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               <button
                 type="button"
                 onClick={() => {
                   setPaymentMethod('dinheiro');
                   setEntryValueValue(0);
                   setInstallments(1);
+                  setDueDate('');
                 }}
                 className={cn(
                   'flex flex-col items-center justify-center p-2 rounded-lg border-2 transition-all text-xs',
@@ -455,6 +488,7 @@ export function NewSaleModal({
                   setPaymentMethod('pix');
                   setEntryValueValue(0);
                   setInstallments(1);
+                  setDueDate('');
                 }}
                 className={cn(
                   'flex flex-col items-center justify-center p-2 rounded-lg border-2 transition-all text-xs',
@@ -468,7 +502,10 @@ export function NewSaleModal({
               </button>
               <button
                 type="button"
-                onClick={() => setPaymentMethod('cartao')}
+                onClick={() => {
+                  setPaymentMethod('cartao');
+                  setDueDate('');
+                }}
                 className={cn(
                   'flex flex-col items-center justify-center p-2 rounded-lg border-2 transition-all text-xs',
                   paymentMethod === 'cartao'
@@ -478,6 +515,23 @@ export function NewSaleModal({
               >
                 <CreditCard className="h-4 w-4 mb-1" />
                 <span className="font-medium">Cartão</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPaymentMethod('fiado');
+                  setEntryValueValue(0);
+                  setInstallments(1);
+                }}
+                className={cn(
+                  'flex flex-col items-center justify-center p-2 rounded-lg border-2 transition-all text-xs',
+                  paymentMethod === 'fiado'
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-muted hover:border-muted-foreground/50'
+                )}
+              >
+                <Calendar className="h-4 w-4 mb-1" />
+                <span className="font-medium">Fiado</span>
               </button>
             </div>
 
@@ -546,6 +600,61 @@ export function NewSaleModal({
                         </span>
                       </div>
                     )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Fiado Payment Options */}
+            {paymentMethod === 'fiado' && (
+              <div className="space-y-2 animate-fade-in">
+                <div className="space-y-1">
+                  <Label className="text-xs">Data de Vencimento (até 30 dias)</Label>
+                  <Input
+                    type="date"
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    max={new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
+                    className="h-9"
+                  />
+                </div>
+
+                {/* Fiado Summary */}
+                {dueDate && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 space-y-1">
+                    <div className="flex items-center gap-2 text-xs text-amber-800">
+                      <Calendar className="h-3 w-3" />
+                      <span className="font-medium">Pagamento Fiado</span>
+                    </div>
+                    <div className="flex justify-between text-xs text-amber-700">
+                      <span>Valor a receber:</span>
+                      <span className="font-medium">{formatCurrency(finalValue)}</span>
+                    </div>
+                    <div className="flex justify-between text-xs text-amber-700">
+                      <span>Vencimento:</span>
+                      <span className="font-medium">
+                        {new Date(dueDate + 'T00:00:00').toLocaleDateString('pt-BR')}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-xs text-amber-700">
+                      <span>Dias restantes:</span>
+                      <span className="font-medium">
+                        {Math.ceil((new Date(dueDate + 'T00:00:00').getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} dias
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {!selectedCustomer && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-2">
+                    <div className="flex items-center gap-2 text-xs text-red-800">
+                      <User className="h-3 w-3" />
+                      <span className="font-medium">Atenção: Selecione um cliente</span>
+                    </div>
+                    <p className="text-xs text-red-700 mt-1">
+                      Para pagamento fiado, é necessário selecionar um cliente acima.
+                    </p>
                   </div>
                 )}
               </div>

@@ -27,12 +27,13 @@ export interface Customer {
   };
 }
 
-export type PaymentMethod = 'dinheiro' | 'pix' | 'cartao';
+export type PaymentMethod = 'dinheiro' | 'pix' | 'cartao' | 'fiado';
 
 export interface PaymentInfo {
   method: PaymentMethod;
   entryValue?: number; // Valor da entrada (para cartão)
   installments?: number; // Quantidade de parcelas (para cartão)
+  dueDate?: Date; // Data de vencimento (para fiado)
 }
 
 export interface Sale {

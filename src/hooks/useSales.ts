@@ -38,6 +38,7 @@ export function useSales() {
           method: s.payment_method,
           entryValue: s.payment_entry_value ? Number(s.payment_entry_value) : undefined,
           installments: s.payment_installments ? Number(s.payment_installments) : undefined,
+          dueDate: s.payment_due_date ? new Date(s.payment_due_date + 'T00:00:00') : undefined,
         } : undefined,
       }));
 
@@ -70,6 +71,7 @@ export function useSales() {
           payment_method: saleData.paymentInfo?.method || null,
           payment_entry_value: saleData.paymentInfo?.entryValue || null,
           payment_installments: saleData.paymentInfo?.installments || null,
+          payment_due_date: saleData.paymentInfo?.dueDate?.toISOString().split('T')[0] || null,
         })
         .select()
         .single();
@@ -95,6 +97,7 @@ export function useSales() {
           method: (data as any).payment_method,
           entryValue: (data as any).payment_entry_value ? Number((data as any).payment_entry_value) : undefined,
           installments: (data as any).payment_installments ? Number((data as any).payment_installments) : undefined,
+          dueDate: (data as any).payment_due_date ? new Date((data as any).payment_due_date + 'T00:00:00') : undefined,
         } : undefined,
       };
 
