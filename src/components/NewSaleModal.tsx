@@ -137,11 +137,11 @@ export function NewSaleModal({
     // Validações para pagamento fiado
     if (paymentMethod === 'fiado') {
       if (!selectedCustomer) {
-        toast.error('Para pagamento fiado, é necessário selecionar um cliente');
+        toast.error('Para venda a prazo, é necessário selecionar um cliente');
         return;
       }
       if (!dueDate) {
-        toast.error('Para pagamento fiado, é necessário informar a data de vencimento');
+        toast.error('Para venda a prazo, é necessário informar a data de vencimento');
         return;
       }
       
@@ -531,7 +531,7 @@ export function NewSaleModal({
                 )}
               >
                 <Calendar className="h-4 w-4 mb-1" />
-                <span className="font-medium">Fiado</span>
+                <span className="font-medium">Venda a Prazo</span>
               </button>
             </div>
 
@@ -625,7 +625,7 @@ export function NewSaleModal({
                   <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 space-y-1">
                     <div className="flex items-center gap-2 text-xs text-amber-800">
                       <Calendar className="h-3 w-3" />
-                      <span className="font-medium">Pagamento Fiado</span>
+                      <span className="font-medium">Venda a Prazo</span>
                     </div>
                     <div className="flex justify-between text-xs text-amber-700">
                       <span>Valor a receber:</span>
@@ -653,7 +653,7 @@ export function NewSaleModal({
                       <span className="font-medium">Atenção: Selecione um cliente</span>
                     </div>
                     <p className="text-xs text-red-700 mt-1">
-                      Para pagamento fiado, é necessário selecionar um cliente acima.
+                      Para venda a prazo, é necessário selecionar um cliente acima.
                     </p>
                   </div>
                 )}
