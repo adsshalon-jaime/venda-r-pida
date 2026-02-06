@@ -164,14 +164,14 @@ export function NewSaleModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] animate-scale-in">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto animate-scale-in">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             {saleType === 'rental' ? 'Nova Locação' : 'Nova Venda'}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-4 py-4">
           {/* Sale Type Selection */}
           <div className="space-y-2">
             <Label>Tipo de Operação</Label>
@@ -280,13 +280,13 @@ export function NewSaleModal({
 
           {/* Sale Date */}
           <div className="space-y-2">
-            <Label>Data da {saleType === 'rental' ? 'Locação' : 'Venda'}</Label>
+            <Label className="text-sm">Data da {saleType === 'rental' ? 'Locação' : 'Venda'}</Label>
             <Input
               type="date"
               value={saleDate}
               onChange={(e) => setSaleDate(e.target.value)}
               max={new Date().toISOString().split('T')[0]}
-              className="h-12"
+              className="h-9"
             />
           </div>
 
@@ -316,16 +316,16 @@ export function NewSaleModal({
 
               {/* Value Field */}
               <div className="space-y-2">
-                <Label>Valor da Venda</Label>
+                <Label className="text-sm">Valor da Venda</Label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium text-sm">
                     R$
                   </span>
                   <Input
                     value={customValueDisplay}
                     onChange={(e) => updateCustomValue(e.target.value)}
                     placeholder="R$ 0,00"
-                    className="pl-10 pr-20"
+                    className="pl-10 pr-20 h-9"
                   />
                   {customValueValue > 0 && (
                     <Button
@@ -354,7 +354,7 @@ export function NewSaleModal({
               <Button
                 type="button"
                 variant="outline"
-                className="w-full justify-start"
+                className="w-full justify-start h-10"
                 onClick={() => setShowCustomerSearch(true)}
               >
                 <User className="mr-2 h-4 w-4" />
@@ -363,7 +363,7 @@ export function NewSaleModal({
             ) : (
               <div className="space-y-2 animate-fade-in">
                 <div className="flex items-center justify-between">
-                  <Label>Cliente</Label>
+                  <Label className="text-sm">Cliente</Label>
                   <Button
                     type="button"
                     variant="ghost"
@@ -382,7 +382,7 @@ export function NewSaleModal({
                       variant="outline"
                       role="combobox"
                       aria-expanded={customerSearchOpen}
-                      className="w-full justify-between"
+                      className="w-full justify-between h-10"
                     >
                       {selectedCustomer?.name || 'Buscar cliente...'}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -429,9 +429,9 @@ export function NewSaleModal({
           </div>
 
           {/* Payment Method */}
-          <div className="space-y-4">
-            <Label>Método de Pagamento</Label>
-            <div className="grid grid-cols-3 gap-3">
+          <div className="space-y-3">
+            <Label className="text-sm">Método de Pagamento</Label>
+            <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => {
@@ -440,14 +440,14 @@ export function NewSaleModal({
                   setInstallments(1);
                 }}
                 className={cn(
-                  'flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all',
+                  'flex flex-col items-center justify-center p-2 rounded-lg border-2 transition-all text-xs',
                   paymentMethod === 'dinheiro'
                     ? 'border-primary bg-primary/10 text-primary'
                     : 'border-muted hover:border-muted-foreground/50'
                 )}
               >
-                <DollarSign className="h-5 w-5 mb-1" />
-                <span className="text-xs font-medium">Dinheiro</span>
+                <DollarSign className="h-4 w-4 mb-1" />
+                <span className="font-medium">Dinheiro</span>
               </button>
               <button
                 type="button"
@@ -457,50 +457,50 @@ export function NewSaleModal({
                   setInstallments(1);
                 }}
                 className={cn(
-                  'flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all',
+                  'flex flex-col items-center justify-center p-2 rounded-lg border-2 transition-all text-xs',
                   paymentMethod === 'pix'
                     ? 'border-primary bg-primary/10 text-primary'
                     : 'border-muted hover:border-muted-foreground/50'
                 )}
               >
-                <Smartphone className="h-5 w-5 mb-1" />
-                <span className="text-xs font-medium">Pix</span>
+                <Smartphone className="h-4 w-4 mb-1" />
+                <span className="font-medium">Pix</span>
               </button>
               <button
                 type="button"
                 onClick={() => setPaymentMethod('cartao')}
                 className={cn(
-                  'flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all',
+                  'flex flex-col items-center justify-center p-2 rounded-lg border-2 transition-all text-xs',
                   paymentMethod === 'cartao'
                     ? 'border-primary bg-primary/10 text-primary'
                     : 'border-muted hover:border-muted-foreground/50'
                 )}
               >
-                <CreditCard className="h-5 w-5 mb-1" />
-                <span className="text-xs font-medium">Cartão</span>
+                <CreditCard className="h-4 w-4 mb-1" />
+                <span className="font-medium">Cartão</span>
               </button>
             </div>
 
             {/* Cartão Payment Options */}
             {paymentMethod === 'cartao' && (
-              <div className="space-y-3 animate-fade-in">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label>Valor da Entrada (opcional)</Label>
+              <div className="space-y-2 animate-fade-in">
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Valor da Entrada (opcional)</Label>
                     <Input
                       value={entryValueDisplay}
                       onChange={(e) => updateEntryValue(e.target.value)}
                       placeholder="R$ 0,00"
-                      className="font-mono"
+                      className="font-mono h-9"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label>Parcelas</Label>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Parcelas</Label>
                     <Select
                       value={installments.toString()}
                       onValueChange={(value) => setInstallments(parseInt(value))}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="h-9">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -523,15 +523,15 @@ export function NewSaleModal({
 
                 {/* Payment Summary */}
                 {(entryValueValue > 0 || installments > 1) && (
-                  <div className="bg-muted/50 rounded-lg p-3 space-y-1">
+                  <div className="bg-muted/50 rounded-lg p-2 space-y-1">
                     {entryValueValue > 0 && (
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-xs">
                         <span>Entrada:</span>
                         <span className="font-medium">{formatCurrency(entryValueValue)}</span>
                       </div>
                     )}
                     {installments > 1 && (
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-xs">
                         <span>Saldo parcelado:</span>
                         <span className="font-medium">
                           {formatCurrency(finalValue - entryValueValue)}
@@ -539,7 +539,7 @@ export function NewSaleModal({
                       </div>
                     )}
                     {installments > 1 && (
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-xs">
                         <span>Valor da parcela:</span>
                         <span className="font-medium text-primary">
                           {formatCurrency((finalValue - entryValueValue) / installments)}
@@ -556,13 +556,13 @@ export function NewSaleModal({
           <div className="flex gap-3 pt-4">
             <Button
               variant="outline"
-              className="flex-1"
+              className="flex-1 h-10"
               onClick={() => onOpenChange(false)}
             >
               Cancelar
             </Button>
             <Button
-              className="flex-1"
+              className="flex-1 h-10"
               onClick={handleSubmit}
               disabled={!selectedProduct || finalValue <= 0}
             >
