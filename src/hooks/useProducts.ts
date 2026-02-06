@@ -44,7 +44,7 @@ export function useProducts() {
         .insert({
           name: productData.name,
           category: productData.category,
-          standard_meterage: productData.standardMeterage,
+          standard_meterage: productData.category === 'ferragem' ? 0 : productData.standardMeterage,
           base_price: productData.basePrice,
           price_per_square_meter: productData.pricePerSquareMeter,
           is_rental: productData.isRental,
@@ -81,7 +81,7 @@ export function useProducts() {
         .update({
           name: productData.name,
           category: productData.category,
-          standard_meterage: productData.standardMeterage,
+          standard_meterage: productData.category === 'ferragem' ? 0 : productData.standardMeterage,
           base_price: productData.basePrice,
           price_per_square_meter: productData.pricePerSquareMeter,
           is_rental: productData.isRental,
