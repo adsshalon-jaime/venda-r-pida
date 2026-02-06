@@ -107,10 +107,14 @@ export default function ContractsPage() {
   const generateContract = () => {
     // Função para formatar endereço
     const formatAddress = (address: any) => {
-      if (!address || typeof address === 'string') {
-        return address || '';
+      if (!address) return '';
+      if (typeof address === 'string') {
+        return address;
       }
-      return `${address.street || ''}, ${address.number || ''} - ${address.neighborhood || ''}, ${address.city || ''} - ${address.state || ''} - ${address.zipCode || ''}`;
+      if (address && typeof address === 'object') {
+        return `${address.street || ''}, ${address.number || ''} - ${address.neighborhood || ''}, ${address.city || ''} - ${address.state || ''} - ${address.zipCode || ''}`;
+      }
+      return '';
     };
 
     const contractText = `
@@ -213,6 +217,7 @@ Testemunha: ${contractData.witnessName} - ${contractData.witnessCpfCnpj}
 ` : ''}
 
 ASSINATURAS:
+CONTRATANTE: _______________________________
 CONTRATANTE: _______________________________
 
 E, por estarem assim justos e contratados, assinam o presente instrumento em duas vias de igual teor, na presença das testemunhas abaixo nomeadas e qualificadas.
@@ -664,9 +669,8 @@ Local e data: ${contractData.contractLocation}, ${format(new Date(contractData.c
 
                   <div className="mt-4">
                     <span className="font-semibold">Endereço:</span>
-                    <p className="text-gray-700">{contractData.clientAddress || 'Não informado'}</p>
+                    <p className="text-gray-700">{formatAddress(contractData.clientAddress)}</p>
                   </div>
-
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <span className="font-semibold">Telefone:</span>
@@ -677,7 +681,6 @@ Local e data: ${contractData.contractLocation}, ${format(new Date(contractData.c
                       <p className="text-gray-700">{contractData.clientEmail || 'Não informado'}</p>
                     </div>
                   </div>
-
                   <div className="mt-4">
                     <span className="font-semibold">Especificações:</span>
                     <p className="text-gray-700">
@@ -686,7 +689,6 @@ Local e data: ${contractData.contractLocation}, ${format(new Date(contractData.c
                       Quantidade: {contractData.tentQuantity || 'Não informado'}
                     </p>
                   </div>
-
                   {isRental && (
                     <div className="mt-4">
                       <span className="font-semibold">Período de Locação:</span>
@@ -697,32 +699,28 @@ Local e data: ${contractData.contractLocation}, ${format(new Date(contractData.c
                       </p>
                     </div>
                   )}
-
                   <div className="mt-4">
                     <span className="font-semibold">Valor Total:</span>
                     <p className="text-gray-700 text-lg font-bold">
                       R$ {contractData.totalPrice || '0,00'}
                     </p>
                   </div>
-
                   <div className="mt-4">
                     <span className="font-semibold">Pagamento:</span>
                     <p className="text-gray-700">
                       {contractData.paymentMethod === 'vista' ? 'À vista' : `Parcelado em ${contractData.installments} vezes`}
                     </p>
                   </div>
-
-                  <div className="mt-4">
-                    <span className="font-semibold">Local do Contrato:</span>
-                    <p className="text-gray-700">
-                      {contractData.contractLocation || 'Não informado'}
-                    </p>
-                  </div>
-
                   <div className="mt-4">
                     <span className="font-semibold">Data do Contrato:</span>
                     <p className="text-gray-700">
                       {contractData.contractDate ? format(new Date(contractData.contractDate), "dd 'de' MMMM 'de' yyyy", { locale: ptBR }) : 'Não informada'}
+                    </p>
+                  </div>
+                  <div className="mt-4">
+                    <span className="font-semibold">Local do Contrato:</span>
+                    <p className="text-gray-700">
+                      {contractData.contractLocation || 'Não informado'}
                     </p>
                   </div>
                 </div>
