@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,11 +8,19 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin, Phone, Mail, Building, User, FileText, Download, Printer } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useCustomers } from '@/hooks/useCustomers';
 
 interface ContractData {
   clientName: string;
   clientCpfCnpj: string;
-  clientAddress: string;
+  clientAddress: {
+    street: string;
+    number: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+    zipCode: string;
+  };
   clientPhone: string;
   clientEmail: string;
   tentType: 'piramidal' | 'sanfonada' | 'retangular';
@@ -31,10 +39,18 @@ interface ContractData {
 }
 
 export default function ContractsPage() {
+  const { customers } = useCustomers();
   const [contractData, setContractData] = useState<ContractData>({
     clientName: '',
     clientCpfCnpj: '',
-    clientAddress: '',
+    clientAddress: {
+      street: '',
+      number: '',
+      neighborhood: '',
+      city: '',
+      state: '',
+      zipCode: ''
+    },
     clientPhone: '',
     clientEmail: '',
     tentType: 'piramidal',
@@ -53,6 +69,40 @@ export default function ContractsPage() {
   });
 
   const [isRental, setIsRental] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState<string>('');
+
+  // Logo e informações da empresa
+  const companyInfo = {
+    name: 'Tenda & Lonas Express',
+    cnpj: '12.345.678/0001-23',
+    address: 'Rua das Flores, 1234, Centro - São Paulo/SP',
+    phone: '(11) 9876-5432',
+    email: 'contato@tendaelonexpress.com.br',
+    logo: 'data:image/svg+xml;base64,PHN2ZyB4bWxkQAAAABJRU5ErkJggg=='
+  };
+
+  useEffect(() => {
+    if (selectedClientId && customers.length > 0) {
+      const selectedCustomer = customers.find(c => c.id === selectedClientId);
+      if (selectedCustomer) {
+        setContractData(prev => ({
+          ...prev,
+          clientName: selectedCustomer.name || '',
+          clientCpfCnpj: selectedCustomer.cpfCnpj || '',
+          clientAddress: {
+            street: selectedCustomer.address?.street || '',
+            number: selectedCustomer.address?.number || '',
+            neighborhood: selectedCustomer.address?.neighborhood || '',
+            city: selectedCustomer.address?.city || '',
+            state: selectedCustomer.address?.state || '',
+            zipCode: selectedCustomer.address?.zipCode || ''
+          },
+          clientPhone: selectedCustomer.phone || '',
+          clientEmail: selectedCustomer.email || ''
+        }));
+      }
+    }
+  }, [selectedClientId, customers]);
 
   const generateContract = () => {
     const contractText = `
@@ -62,20 +112,29 @@ CONTRATO DE ${isRental ? 'LOCAÇÃO' : 'VENDA'} DE TENDAS
 
 ${isRental ? 'LOCAÇÃO' : 'VENDA'} DE TENDAS
 
+${companyInfo.name}
+CNPJ: ${companyInfo.cnpj}
+Endereço: ${companyInfo.address}
+Telefone/WhatsApp: ${companyInfo.phone}
+E-mail: ${companyInfo.email}
+
+${isRental ? 'LOCAÇÃO' : 'VENDA'} DE TENDAS
+
 Pelo presente instrumento particular, de um lado:
 CONTRATANTE:
-Empresa: ${contractData.clientName}
-CNPJ: ${contractData.clientCpfCnpj}
-Endereço: ${contractData.clientAddress}
-Telefone/WhatsApp: ${contractData.clientPhone}
-E-mail: ${contractData.clientEmail}
+Empresa: ${companyInfo.name}
+CNPJ: ${companyInfo.cnpj}
+Endereço: ${companyInfo.address}
+Telefone/WhatsApp: ${companyInfo.phone}
+E-mail: ${companyInfo.email}
 
 E, de outro lado:
 CONTRATANTE:
 Nome/Razão Social: ${contractData.clientName}
 CPF/CNPJ: ${contractData.clientCpfCnpj}
-Endereço: ${contractData.clientAddress}
+Endereço: ${Object.values(contractData.clientAddress).filter(Boolean).join(', ')}
 Telefone/WhatsApp: ${contractData.clientPhone}
+E-mail: ${contractData.clientEmail}
 
 As partes acima identificadas têm, entre si, justo e contratado o que segue:
 ${isRental ? 'LOCAÇÃO' : 'VENDA'} DE TENDAS
@@ -204,20 +263,25 @@ Local e data: ${contractData.contractLocation}, ${format(new Date(contractData.c
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-3 mb-4">
+            {/* Logo da Empresa */}
             <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
-              <Building className="w-8 h-8" />
+              <img 
+                src={companyInfo.logo}
+                alt={companyInfo.name}
+                className="w-10 h-10"
+              />
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Sistema de Contratos
+                {companyInfo.name}
               </h1>
               <p className="text-gray-600 text-lg">
-                Gerencie contratos de vendas e locações de tendas de forma profissional
+                Sistema de Contratos
               </p>
             </div>
           </div>
           <p className="text-gray-500 text-sm">
-            Crie contratos personalizados para seus clientes com logo da empresa
+            Crie contratos personalizados com logo da empresa
           </p>
         </div>
 
@@ -274,61 +338,77 @@ Local e data: ${contractData.contractLocation}, ${format(new Date(contractData.c
               <Separator />
 
               {/* Dados do Cliente */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-4">
+                <Label className="text-base font-semibold">Dados do Cliente</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="clientName">Nome do Cliente</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="clientName"
+                        value={contractData.clientName}
+                        onChange={(e) => setContractData(prev => ({ ...prev, clientName: e.target.value }))}
+                        placeholder="Nome completo do cliente"
+                        className="h-11"
+                      />
+                      <select
+                        id="clientSelect"
+                        value={selectedClientId}
+                        onChange={(e) => setSelectedClientId(e.target.value)}
+                        className="h-11 border border-gray-300 rounded-lg px-3"
+                      >
+                        <option value="">Selecione um cliente...</option>
+                        {customers.map((customer) => (
+                          <option key={customer.id} value={customer.id}>
+                            {customer.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="clientCpfCnpj">CPF/CNPJ</Label>
+                    <Input
+                      id="clientCpfCnpj"
+                      value={contractData.clientCpfCnpj}
+                      onChange={(e) => setContractData(prev => ({ ...prev, clientCpfCnpj: e.target.value }))}
+                      placeholder="CPF para pessoa física ou CNPJ para empresa"
+                      className="h-11"
+                    />
+                  </div>
+                </div>
                 <div className="space-y-2">
-                  <Label htmlFor="clientName">Nome do Cliente</Label>
+                  <Label htmlFor="clientAddress">Endereço Completo</Label>
                   <Input
-                    id="clientName"
-                    value={contractData.clientName}
-                    onChange={(e) => setContractData(prev => ({ ...prev, clientName: e.target.value }))}
-                    placeholder="Nome completo do cliente"
+                    id="clientAddress"
+                    value={contractData.clientAddress.street}
+                    onChange={(e) => setContractData(prev => ({ ...prev, clientAddress: { ...prev.clientAddress, street: e.target.value } }))}
+                    placeholder="Rua, número, bairro, cidade, estado, CEP"
                     className="h-11"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="clientCpfCnpj">CPF/CNPJ</Label>
-                  <Input
-                    id="clientCpfCnpj"
-                    value={contractData.clientCpfCnpj}
-                    onChange={(e) => setContractData(prev => ({ ...prev, clientCpfCnpj: e.target.value }))}
-                    placeholder="CPF para pessoa física ou CNPJ para empresa"
-                    className="h-11"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="clientAddress">Endereço Completo</Label>
-                <Input
-                  id="clientAddress"
-                  value={contractData.clientAddress}
-                  onChange={(e) => setContractData(prev => ({ ...prev, clientAddress: e.target.value }))}
-                  placeholder="Rua, número, bairro, cidade, estado, CEP"
-                  className="h-11"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="clientPhone">Telefone/WhatsApp</Label>
-                  <Input
-                    id="clientPhone"
-                    value={contractData.clientPhone}
-                    onChange={(e) => setContractData(prev => ({ ...prev, clientPhone: e.target.value }))}
-                    placeholder="(DDD) 00000-0000"
-                    className="h-11"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="clientEmail">E-mail</Label>
-                  <Input
-                    id="clientEmail"
-                    type="email"
-                    value={contractData.clientEmail}
-                    onChange={(e) => setContractData(prev => ({ ...prev, clientEmail: e.target.value }))}
-                    placeholder="cliente@exemplo.com"
-                    className="h-11"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="clientPhone">Telefone/WhatsApp</Label>
+                    <Input
+                      id="clientPhone"
+                      value={contractData.clientPhone}
+                      onChange={(e) => setContractData(prev => ({ ...prev, clientPhone: e.target.value }))}
+                      placeholder="(DDD) 00000-0000"
+                      className="h-11"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="clientEmail">E-mail</Label>
+                    <Input
+                      id="clientEmail"
+                      type="email"
+                      value={contractData.clientEmail}
+                      onChange={(e) => setContractData(prev => ({ ...prev, clientEmail: e.target.value }))}
+                      placeholder="cliente@exemplo.com"
+                      className="h-11"
+                    />
+                  </div>
                 </div>
               </div>
 
