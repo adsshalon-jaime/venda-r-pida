@@ -105,12 +105,18 @@ export default function ContractsPage() {
   }, [selectedClientId, customers]);
 
   const generateContract = () => {
+    // Função para formatar endereço
+    const formatAddress = (address: any) => {
+      if (!address || typeof address === 'string') {
+        return address || '';
+      }
+      return `${address.street || ''}, ${address.number || ''} - ${address.neighborhood || ''}, ${address.city || ''} - ${address.state || ''} - ${address.zipCode || ''}`;
+    };
+
     const contractText = `
 ==================================================
 CONTRATO DE ${isRental ? 'LOCAÇÃO' : 'VENDA'} DE TENDAS
 ==================================================
-
-${isRental ? 'LOCAÇÃO' : 'VENDA'} DE TENDAS
 
 ${companyInfo.name}
 CNPJ: ${companyInfo.cnpj}
@@ -132,7 +138,7 @@ E, de outro lado:
 CONTRATANTE:
 Nome/Razão Social: ${contractData.clientName}
 CPF/CNPJ: ${contractData.clientCpfCnpj}
-Endereço: ${Object.values(contractData.clientAddress).filter(Boolean).join(', ')}
+Endereço: ${formatAddress(contractData.clientAddress)}
 Telefone/WhatsApp: ${contractData.clientPhone}
 E-mail: ${contractData.clientEmail}
 
@@ -208,13 +214,11 @@ Testemunha: ${contractData.witnessName} - ${contractData.witnessCpfCnpj}
 
 ASSINATURAS:
 CONTRATANTE: _______________________________
-CONTRATANTE: _______________________________
 
 E, por estarem assim justos e contratados, assinam o presente instrumento em duas vias de igual teor, na presença das testemunhas abaixo nomeadas e qualificadas.
 
 Local e data: ${contractData.contractLocation}, ${format(new Date(contractData.contractDate), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-==================================================
-    `;
+==================================================`;
 
     const blob = new Blob([contractText], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
