@@ -1,4 +1,4 @@
-export type ProductCategory = 'lona' | 'tenda';
+export type ProductCategory = 'lona' | 'tenda' | 'ferragem';
 
 export interface Product {
   id: string;

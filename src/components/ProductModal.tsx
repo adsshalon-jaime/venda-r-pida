@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Product, ProductCategory } from '@/types';
 import { toast } from 'sonner';
-import { Package, Tent } from 'lucide-react';
+import { Package, Tent, Wrench } from 'lucide-react';
 import { formatCurrency } from '@/utils/currency';
 
 interface ProductModalProps {
@@ -78,9 +78,13 @@ export function ProductModal({ open, onOpenChange, product, onSave }: ProductMod
                 <div className="p-2 rounded-xl bg-primary/10">
                   <Package className="h-6 w-6 text-primary" />
                 </div>
-              ) : (
+              ) : category === 'tenda' ? (
                 <div className="p-2 rounded-xl bg-chart-2/10">
                   <Tent className="h-6 w-6 text-chart-2" />
+                </div>
+              ) : (
+                <div className="p-2 rounded-xl bg-orange-100">
+                  <Wrench className="h-6 w-6 text-orange-600" />
                 </div>
               )}
               {product ? 'Editar Produto' : 'Novo Produto'}
@@ -92,7 +96,7 @@ export function ProductModal({ open, onOpenChange, product, onSave }: ProductMod
           {/* Category Selection */}
           <div className="space-y-3">
             <Label className="text-sm font-medium">Categoria</Label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <button
                 type="button"
                 onClick={() => {
@@ -133,6 +137,26 @@ export function ProductModal({ open, onOpenChange, product, onSave }: ProductMod
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-chart-2 rounded-full animate-pulse" />
                 )}
               </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setCategory('ferragem');
+                  setPricePerSquareMeter(false);
+                }}
+                className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 ${
+                  category === 'ferragem'
+                    ? 'border-orange-500 bg-orange-50 shadow-lg shadow-orange-200'
+                    : 'border-border hover:border-orange-300 hover:bg-orange-50/50'
+                }`}
+              >
+                <Wrench className={`h-8 w-8 ${category === 'ferragem' ? 'text-orange-600' : 'text-muted-foreground'}`} />
+                <span className={`font-semibold ${category === 'ferragem' ? 'text-orange-600' : 'text-muted-foreground'}`}>
+                  Ferragem
+                </span>
+                {category === 'ferragem' && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full animate-pulse" />
+                )}
+              </button>
             </div>
           </div>
 
@@ -142,7 +166,7 @@ export function ProductModal({ open, onOpenChange, product, onSave }: ProductMod
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={category === 'lona' ? 'Ex: Lona PVC Térmica' : 'Ex: Tenda Piramidal 3x3m'}
+              placeholder={category === 'lona' ? 'Ex: Lona PVC Térmica' : category === 'tenda' ? 'Ex: Tenda Piramidal 3x3m' : 'Ex: Kit de Ferragens para Tenda'}
               className="h-12 text-base"
             />
           </div>
@@ -150,7 +174,7 @@ export function ProductModal({ open, onOpenChange, product, onSave }: ProductMod
           {/* Base Price */}
           <div className="space-y-2">
             <Label className="text-sm font-medium">
-              Preço Base {category === 'lona' && pricePerSquareMeter ? '(por m²)' : '(unitário)'}
+              Preço Base {category === 'lona' && pricePerSquareMeter ? '(por m²)' : category === 'ferragem' ? '(do kit)' : '(unitário)'}
             </Label>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
@@ -184,6 +208,24 @@ export function ProductModal({ open, onOpenChange, product, onSave }: ProductMod
                 checked={pricePerSquareMeter}
                 onCheckedChange={setPricePerSquareMeter}
               />
+            </div>
+          )}
+
+          {/* Ferragem info - only for ferragem */}
+          {category === 'ferragem' && (
+            <div className="p-4 rounded-xl bg-orange-50 border border-orange-200">
+              <div className="flex items-center gap-2 text-orange-800">
+                <Wrench className="h-4 w-4" />
+                <span className="font-medium">Ferragens para Tendas</span>
+              </div>
+              <p className="text-sm text-orange-700 mt-2">
+                Kits completos com todas as ferragens necessárias para montagem e manutenção de tendas.
+              </p>
+              <div className="mt-3 space-y-1 text-xs text-orange-600">
+                <p>• Inclui: parafusos, porcas, arruelas</p>
+                <p>• Inclui: ferragens de fixação</p>
+                <p>• Inclui: ferragens de ajuste</p>
+              </div>
             </div>
           )}
 

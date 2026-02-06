@@ -25,7 +25,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { MoreHorizontal, Pencil, Trash2, FileText, Package, Tent, Eye } from 'lucide-react';
+import { MoreHorizontal, Pencil, Trash2, FileText, Package, Tent, Eye, Wrench } from 'lucide-react';
 import { Product } from '@/types';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/utils/currency';
@@ -48,7 +48,7 @@ export function ProductList({ products, onEdit, onDelete, onView, onExport }: Pr
         </div>
         <h3 className="text-xl font-semibold mb-2">Nenhum produto cadastrado</h3>
         <p className="text-muted-foreground mb-6">
-          Comece cadastrando seus produtos de lonas e tendas
+          Comece cadastrando seus produtos de lonas, tendas e ferragens
         </p>
       </div>
     );
@@ -64,6 +64,9 @@ export function ProductList({ products, onEdit, onDelete, onView, onExport }: Pr
             </div>
             <div className="w-8 h-8 rounded-lg bg-chart-2/10 flex items-center justify-center border-2 border-background">
               <Tent className="h-4 w-4 text-chart-2" />
+            </div>
+            <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center border-2 border-background">
+              <Wrench className="h-4 w-4 text-orange-600" />
             </div>
           </div>
           <div>
@@ -100,12 +103,16 @@ export function ProductList({ products, onEdit, onDelete, onView, onExport }: Pr
                       "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0",
                       product.category === 'lona' 
                         ? 'bg-primary/10' 
-                        : 'bg-chart-2/10'
+                        : product.category === 'tenda'
+                        ? 'bg-chart-2/10'
+                        : 'bg-orange-100'
                     )}>
                       {product.category === 'lona' ? (
                         <Package className="h-5 w-5 text-primary" />
-                      ) : (
+                      ) : product.category === 'tenda' ? (
                         <Tent className="h-5 w-5 text-chart-2" />
+                      ) : (
+                        <Wrench className="h-5 w-5 text-orange-600" />
                       )}
                     </div>
                     <span className="font-medium">{product.name}</span>
@@ -117,12 +124,14 @@ export function ProductList({ products, onEdit, onDelete, onView, onExport }: Pr
                       variant="secondary"
                       className={cn(
                         "font-medium",
-                        product.category === 'lona'
-                          ? 'bg-primary/10 text-primary hover:bg-primary/20'
-                          : 'bg-chart-2/10 text-chart-2 hover:bg-chart-2/20'
+                        product.category === 'lona' 
+                          ? "bg-primary/10 text-primary border-primary/20" 
+                          : product.category === 'tenda'
+                          ? "bg-chart-2/10 text-chart-2 border-chart-2/20"
+                          : "bg-orange-100 text-orange-600 border-orange-200"
                       )}
                     >
-                      {product.category === 'lona' ? 'Lona' : 'Tenda'}
+                      {product.category === 'lona' ? 'Lona' : product.category === 'tenda' ? 'Tenda' : 'Ferragem'}
                     </Badge>
                     {product.isRental && (
                       <Badge
