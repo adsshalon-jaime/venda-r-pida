@@ -304,7 +304,7 @@ export function NewSaleModal({
                           </SelectItem>
                         ))}
                     </div>
-                  <div className="px-2 pb-2 border-t pt-2">
+                    <div className="px-2 pb-2 border-t pt-2">
                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
                         Ferragens
                       </p>
