@@ -68,12 +68,23 @@ export function NewSaleModal({
   const [dueDate, setDueDate] = useState<string>(''); // Data de vencimento para fiado
 
   const filteredProducts = useMemo(() => {
-    return products.filter(product => {
+    const filtered = products.filter(product => {
       if (saleType === 'rental') {
         return product.isRental;
       }
       return true; // Para venda, mostra todos os produtos
     });
+    
+    // Debug: verificar produtos por categoria
+    console.log('Produtos filtrados:', filtered);
+    console.log('Produtos por categoria:', {
+      total: filtered.length,
+      lonas: filtered.filter(p => p.category === 'lona').length,
+      tendas: filtered.filter(p => p.category === 'tenda').length,
+      ferragens: filtered.filter(p => p.category === 'ferragem').length
+    });
+    
+    return filtered;
   }, [products, saleType]);
 
   const selectedProduct = products.find((p) => p.id === selectedProductId);
