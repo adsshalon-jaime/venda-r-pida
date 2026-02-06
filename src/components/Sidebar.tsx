@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { FileSignature } from 'lucide-react';
 
 const navItems = [
   { title: 'Dashboard', url: '/', icon: LayoutDashboard },
@@ -12,6 +13,7 @@ const navItems = [
   { title: 'Clientes', url: '/clientes', icon: Users },
   { title: 'Relatórios', url: '/relatorios', icon: FileText },
   { title: 'Recibos', url: '/recibos', icon: DollarSign },
+  { title: 'Contratos', url: '/contratos', icon: FileSignature },
 ];
 
 interface SidebarProps {
