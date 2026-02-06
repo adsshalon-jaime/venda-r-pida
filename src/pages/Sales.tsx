@@ -269,11 +269,12 @@ export default function Sales() {
                         />
                         <Edit
                           className="h-4 w-4 cursor-pointer hover:text-primary ml-2"
+                          onClick={() => handleEdit(sale)}
+                        />
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => handleEdit(sale)}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
