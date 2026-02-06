@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -212,6 +213,12 @@ export function NewSaleModal({
           <DialogTitle className="text-xl font-semibold">
             {saleType === 'rental' ? 'Nova Locação' : 'Nova Venda'}
           </DialogTitle>
+          <DialogDescription>
+            {saleType === 'rental' 
+              ? 'Registre uma nova locação de produto' 
+              : 'Registre uma nova venda de produto'
+            }
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
