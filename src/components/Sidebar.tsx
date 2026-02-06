@@ -13,7 +13,6 @@ const navItems = [
   { title: 'Clientes', url: '/clientes', icon: Users },
   { title: 'Relatórios', url: '/relatorios', icon: FileText },
   { title: 'Recibos', url: '/recibos', icon: DollarSign },
-  { title: 'Contratos', url: '/contratos', icon: FileSignature },
 ];
 
 interface SidebarProps {
