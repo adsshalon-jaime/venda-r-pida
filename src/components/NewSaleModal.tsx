@@ -76,14 +76,13 @@ export function NewSaleModal({
       return true; // Para venda, mostra todos os produtos
     });
     
-    // Debug: verificar produtos por categoria
-    console.log('Produtos filtrados:', filtered);
-    console.log('Produtos por categoria:', {
-      total: filtered.length,
-      lonas: filtered.filter(p => p.category === 'lona').length,
-      tendas: filtered.filter(p => p.category === 'tenda').length,
-      ferragens: filtered.filter(p => p.category === 'ferragem').length
-    });
+    // Verificação direta: produtos de ferragem existem?
+    const ferragens = filtered.filter(p => p.category === 'ferragem');
+    console.log('=== VERIFICAÇÃO DE FERRAGENS ===');
+    console.log('Total produtos:', products.length);
+    console.log('Produtos filtrados:', filtered.length);
+    console.log('Ferragens encontradas:', ferragens.length);
+    console.log('Produtos de ferragem:', ferragens.map(p => ({ id: p.id, name: p.name, category: p.category })));
     
     return filtered;
   }, [products, saleType]);
