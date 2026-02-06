@@ -296,6 +296,49 @@ export function useSales() {
     return ((current - previous) / previous) * 100;
   }, []);
 
+  // Funções para vendas a prazo
+  const getCreditSalesMetrics = useCallback(() => {
+    const creditSales = sales.filter(s => s.paymentInfo?.method === 'fiado');
+    
+    // Total de vendas a prazo
+    const totalCreditSales = creditSales.reduce((sum, s) => sum + s.totalValue, 0);
+    
+    // Vendas vencidas (data de vencimento anterior a hoje)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const overdueSales = creditSales.filter(s => {
+      if (!s.paymentInfo?.dueDate) return false;
+      const dueDate = new Date(s.paymentInfo.dueDate);
+      dueDate.setHours(0, 0, 0, 0);
+      return dueDate < today;
+    });
+    
+    const totalOverdue = overdueSales.reduce((sum, s) => sum + s.totalValue, 0);
+    
+    // Vendas a vencer (próximos 7 dias)
+    const nextWeek = new Date();
+    nextWeek.setDate(today.getDate() + 7);
+    
+    const dueSoonSales = creditSales.filter(s => {
+      if (!s.paymentInfo?.dueDate) return false;
+      const dueDate = new Date(s.paymentInfo.dueDate);
+      dueDate.setHours(0, 0, 0, 0);
+      return dueDate >= today && dueDate <= nextWeek;
+    });
+    
+    const totalDueSoon = dueSoonSales.reduce((sum, s) => sum + s.totalValue, 0);
+    
+    return {
+      totalCreditSales,
+      totalOverdue,
+      totalDueSoon,
+      overdueCount: overdueSales.length,
+      dueSoonCount: dueSoonSales.length,
+      creditSalesCount: creditSales.length,
+    };
+  }, [sales]);
+
   useEffect(() => {
     fetchSales();
   }, [fetchSales]);
@@ -306,12 +349,12 @@ export function useSales() {
     addSale,
     updateSale,
     deleteSale,
-    getMetrics,
     getMonthlyMetrics,
     getSalesByMonth,
     getMonthName,
     getPreviousMonth,
     calculateGrowth,
+    getCreditSalesMetrics,
     refetch: fetchSales,
   };
 }

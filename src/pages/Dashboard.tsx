@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { DollarSign, Ruler, ShoppingBag, Plus, Users, Package, TrendingUp } from 'lucide-react';
+import { DollarSign, Ruler, ShoppingBag, Plus, Users, Package, TrendingUp, Calendar, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MetricCard } from '@/components/MetricCard';
 import { ProductDistributionChart } from '@/components/ProductDistributionChart';
 import { RecentSales } from '@/components/RecentSales';
 import { NewSaleModal } from '@/components/NewSaleModal';
+import { OverdueAlert } from '@/components/OverdueAlert';
 import { MonthSelector } from '@/components/MonthSelector';
 import { Layout } from '@/components/Layout';
 import { useProducts } from '@/hooks/useProducts';
@@ -19,11 +20,12 @@ export default function Dashboard() {
   const [selectedMonth, setSelectedMonth] = useState(format(new Date(), 'yyyy-MM'));
   const { products, loading: productsLoading } = useProducts();
   const { customers, loading: customersLoading } = useCustomers();
-  const { sales, loading: salesLoading, addSale, getMonthlyMetrics, getSalesByMonth, getMonthName, getPreviousMonth, calculateGrowth } = useSales();
+  const { sales, loading: salesLoading, addSale, getMonthlyMetrics, getSalesByMonth, getMonthName, getPreviousMonth, calculateGrowth, getCreditSalesMetrics } = useSales();
 
   const currentMonthMetrics = getMonthlyMetrics(selectedMonth);
   const previousMonth = getPreviousMonth(selectedMonth);
   const previousMonthMetrics = getMonthlyMetrics(previousMonth);
+  const creditMetrics = getCreditSalesMetrics();
   
   const isLoading = productsLoading || customersLoading || salesLoading;
 
@@ -77,6 +79,39 @@ export default function Dashboard() {
             delay={300}
           />
         </div>
+
+        {/* Credit Sales Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <MetricCard
+            title="Vendas a Prazo"
+            value={formatCurrency(creditMetrics.totalCreditSales)}
+            change={creditMetrics.creditSalesCount}
+            icon={Calendar}
+            delay={400}
+          />
+          <MetricCard
+            title="Contas Vencidas"
+            value={formatCurrency(creditMetrics.totalOverdue)}
+            change={creditMetrics.overdueCount > 0 ? -creditMetrics.overdueCount : 0}
+            icon={AlertCircle}
+            delay={500}
+          />
+          <MetricCard
+            title="A Vencer (7 dias)"
+            value={formatCurrency(creditMetrics.totalDueSoon)}
+            change={creditMetrics.dueSoonCount}
+            icon={TrendingUp}
+            delay={600}
+          />
+        </div>
+
+        {/* Overdue Alerts */}
+        <OverdueAlert
+          totalOverdue={creditMetrics.totalOverdue}
+          overdueCount={creditMetrics.overdueCount}
+          totalDueSoon={creditMetrics.totalDueSoon}
+          dueSoonCount={creditMetrics.dueSoonCount}
+        />
 
         {/* Charts and Recent Sales */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
