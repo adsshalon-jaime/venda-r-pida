@@ -9,6 +9,8 @@ import { Calendar, MapPin, Phone, Mail, Building, User, FileText, Download, Prin
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useCustomers } from '@/hooks/useCustomers';
+import { Layout } from '@/components/Layout';
+import { jsPDF } from 'jspdf';
 
 interface ContractData {
   clientName: string;
@@ -210,15 +212,32 @@ Assinatura: _______________________________
   const generateContract = () => {
     const contractText = buildContractText();
 
-    const blob = new Blob([contractText], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `contrato-${isRental ? 'locacao' : 'venda'}-tenda-${contractData.clientName.replace(/\s+/g, '-').toLowerCase()}-${format(new Date(), 'dd-MM-yyyy')}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    // Criar PDF usando jsPDF
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+    
+    // Configurar fonte para suportar caracteres especiais
+    doc.setFont('helvetica');
+    doc.setFontSize(10);
+    
+    // Adicionar conteúdo do contrato
+    const lines = contractText.split('\n');
+    let yPosition = 20;
+    
+    lines.forEach(line => {
+      if (yPosition > 270) {
+        doc.addPage();
+        yPosition = 20;
+      }
+      doc.text(line, 20, yPosition);
+      yPosition += 5;
+    });
+    
+    // Salvar PDF
+    doc.save(`contrato-${isRental ? 'locacao' : 'venda'}-tenda-${contractData.clientName.replace(/\s+/g, '-').toLowerCase()}-${format(new Date(), 'dd-MM-yyyy')}.pdf`);
   };
 
   const printContract = () => {
@@ -268,32 +287,33 @@ Assinatura: _______________________________
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-3 mb-4">
-            {/* Logo da Empresa */}
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
-              <img 
-                src={companyInfo.logo}
-                alt={companyInfo.name}
-                className="w-10 h-10"
-              />
+    <Layout>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-8">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-3 mb-4">
+              {/* Logo da Empresa */}
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                <img 
+                  src={companyInfo.logo}
+                  alt={companyInfo.name}
+                  className="w-10 h-10"
+                />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                  {companyInfo.name}
+                </h1>
+                <p className="text-gray-600 text-lg">
+                  Sistema de Contratos
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {companyInfo.name}
-              </h1>
-              <p className="text-gray-600 text-lg">
-                Sistema de Contratos
-              </p>
-            </div>
+            <p className="text-gray-500 text-sm">
+              Crie contratos personalizados com logo da empresa
+            </p>
           </div>
-          <p className="text-gray-500 text-sm">
-            Crie contratos personalizados com logo da empresa
-          </p>
-        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Formulário */}
@@ -730,6 +750,6 @@ Assinatura: _______________________________
           </Card>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }
