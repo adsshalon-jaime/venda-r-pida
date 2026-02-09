@@ -195,7 +195,7 @@ export default function Receipts() {
                     <div className="border-t pt-4">
                       <Label>Cliente</Label>
                       <div className="mt-2 space-y-1">
-                        <p className="font-medium">{selectedCustomer.name}</p>
+                        <p className="font-medium">{selectedCustomer.name || 'Nome não informado'}</p>
                         {selectedCustomer.email && (
                           <p className="text-sm text-muted-foreground">{selectedCustomer.email}</p>
                         )}
@@ -316,7 +316,7 @@ export default function Receipts() {
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-xs text-gray-600">Nome:</span>
-                        <span className="text-xs font-medium">{selectedCustomer.name}</span>
+                        <span className="text-xs font-medium">{selectedCustomer.name || 'Nome não informado'}</span>
                       </div>
                       {selectedCustomer.cpfCnpj && (
                         <div className="flex justify-between">
