@@ -199,6 +199,18 @@ export default function Receipts() {
                       <Label>Cliente</Label>
                       <div className="mt-2 space-y-1">
                         <p className="font-medium">{customerName}</p>
+                        {selectedCustomer?.cpfCnpj && (
+                          <p className="text-sm text-muted-foreground">CPF/CNPJ: {selectedCustomer.cpfCnpj}</p>
+                        )}
+                        {selectedCustomer?.address && (
+                          <p className="text-sm text-muted-foreground">
+                            Endereço: {selectedCustomer.address.street}, {selectedCustomer.address.number}
+                            {selectedCustomer.address.neighborhood && `, ${selectedCustomer.address.neighborhood}`}
+                            {selectedCustomer.address.city && `, ${selectedCustomer.address.city}`}
+                            {selectedCustomer.address.state && ` - ${selectedCustomer.address.state}`}
+                            {selectedCustomer.address.zipCode && ` - ${selectedCustomer.address.zipCode}`}
+                          </p>
+                        )}
                         {selectedCustomer?.email && (
                           <p className="text-sm text-muted-foreground">{selectedCustomer.email}</p>
                         )}
@@ -347,6 +359,7 @@ export default function Receipts() {
                             {selectedCustomer.address.neighborhood && `, ${selectedCustomer.address.neighborhood}`}
                             {selectedCustomer.address.city && `, ${selectedCustomer.address.city}`}
                             {selectedCustomer.address.state && ` - ${selectedCustomer.address.state}`}
+                            {selectedCustomer.address.zipCode && ` - ${selectedCustomer.address.zipCode}`}
                           </span>
                         </div>
                       )}
