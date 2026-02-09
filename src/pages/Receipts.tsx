@@ -32,6 +32,9 @@ export default function Receipts() {
     ? customers.find(c => c.id === selectedSale.customerId)
     : null;
 
+  // Fallback para usar o nome do cliente da venda se não encontrar no customers
+  const customerName = selectedCustomer?.name || selectedSale?.customerName || 'Nome não informado';
+
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -191,15 +194,15 @@ export default function Receipts() {
                     </div>
                   </div>
 
-                  {selectedCustomer && (
+                  {(selectedCustomer || selectedSale?.customerName) && (
                     <div className="border-t pt-4">
                       <Label>Cliente</Label>
                       <div className="mt-2 space-y-1">
-                        <p className="font-medium">{selectedCustomer.name || 'Nome não informado'}</p>
-                        {selectedCustomer.email && (
+                        <p className="font-medium">{customerName}</p>
+                        {selectedCustomer?.email && (
                           <p className="text-sm text-muted-foreground">{selectedCustomer.email}</p>
                         )}
-                        {selectedCustomer.phone && (
+                        {selectedCustomer?.phone && (
                           <p className="text-sm text-muted-foreground">{selectedCustomer.phone}</p>
                         )}
                       </div>
@@ -310,38 +313,40 @@ export default function Receipts() {
                 </div>
 
                 {/* Dados do cliente */}
-                {includeCustomerData && selectedCustomer && (
+                {includeCustomerData && (selectedCustomer || selectedSale?.customerName) && (
                   <div className="mb-8">
                     <h2 className="text-sm font-medium text-gray-700 mb-4">Dados do Cliente</h2>
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-xs text-gray-600">Nome:</span>
-                        <span className="text-xs font-medium">{selectedCustomer.name || 'Nome não informado'}</span>
+                        <span className="text-xs font-medium">{customerName}</span>
                       </div>
-                      {selectedCustomer.cpfCnpj && (
+                      {selectedCustomer?.cpfCnpj && (
                         <div className="flex justify-between">
                           <span className="text-xs text-gray-600">CPF/CNPJ:</span>
                           <span className="text-xs font-medium font-mono">{selectedCustomer.cpfCnpj}</span>
                         </div>
                       )}
-                      {selectedCustomer.email && (
+                      {selectedCustomer?.email && (
                         <div className="flex justify-between">
                           <span className="text-xs text-gray-600">Email:</span>
                           <span className="text-xs font-medium">{selectedCustomer.email}</span>
                         </div>
                       )}
-                      {selectedCustomer.phone && (
+                      {selectedCustomer?.phone && (
                         <div className="flex justify-between">
                           <span className="text-xs text-gray-600">Telefone:</span>
                           <span className="text-xs font-medium">{selectedCustomer.phone}</span>
                         </div>
                       )}
-                      {selectedCustomer.address && (
+                      {selectedCustomer?.address && (
                         <div className="flex justify-between">
                           <span className="text-xs text-gray-600">Endereço:</span>
-                          <span className="text-xs font-medium text-right">
-                            {selectedCustomer.address.street}, {selectedCustomer.address.number} - {selectedCustomer.address.neighborhood}<br />
-                            {selectedCustomer.address.city} - {selectedCustomer.address.state}, {selectedCustomer.address.zipCode}
+                          <span className="text-xs font-medium">
+                            {selectedCustomer.address.street}, {selectedCustomer.address.number}
+                            {selectedCustomer.address.neighborhood && `, ${selectedCustomer.address.neighborhood}`}
+                            {selectedCustomer.address.city && `, ${selectedCustomer.address.city}`}
+                            {selectedCustomer.address.state && ` - ${selectedCustomer.address.state}`}
                           </span>
                         </div>
                       )}
