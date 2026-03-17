@@ -37,9 +37,10 @@ interface ProductListProps {
   onDelete: (productId: string) => void;
   onView: (product: Product) => void;
   onExport: () => void;
+  viewMode?: 'grid' | 'list';
 }
 
-export function ProductList({ products, onEdit, onDelete, onView, onExport }: ProductListProps) {
+export function ProductList({ products, onEdit, onDelete, onView, onExport, viewMode = 'list' }: ProductListProps) {
   if (products.length === 0) {
     return (
       <div className="text-center py-16">
@@ -50,6 +51,112 @@ export function ProductList({ products, onEdit, onDelete, onView, onExport }: Pr
         <p className="text-muted-foreground mb-6">
           Comece cadastrando seus produtos de lonas, tendas e ferragens
         </p>
+      </div>
+    );
+  }
+
+  if (viewMode === 'grid') {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {products.map((product, index) => (
+          <div
+            key={product.id}
+            className="group bg-card border rounded-xl p-5 hover:shadow-lg transition-all duration-300 animate-fade-in hover:border-primary/50"
+            style={{ animationDelay: `${index * 50}ms` }}
+          >
+            {/* Ícone e Badge */}
+            <div className="flex items-start justify-between mb-4">
+              <div className={cn(
+                "w-14 h-14 rounded-xl flex items-center justify-center",
+                product.category === 'lona' 
+                  ? 'bg-primary/10' 
+                  : product.category === 'tenda'
+                  ? 'bg-chart-2/10'
+                  : 'bg-orange-100'
+              )}>
+                {product.category === 'lona' ? (
+                  <Package className="h-7 w-7 text-primary" />
+                ) : product.category === 'tenda' ? (
+                  <Tent className="h-7 w-7 text-chart-2" />
+                ) : (
+                  <Wrench className="h-7 w-7 text-orange-600" />
+                )}
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-40">
+                  <DropdownMenuItem onClick={() => onView(product)} className="gap-2">
+                    <Eye className="h-4 w-4" />
+                    Visualizar
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onEdit(product)} className="gap-2">
+                    <Pencil className="h-4 w-4" />
+                    Editar
+                  </DropdownMenuItem>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <DropdownMenuItem className="text-destructive gap-2" onSelect={(e) => e.preventDefault()}>
+                        <Trash2 className="h-4 w-4" />
+                        Excluir
+                      </DropdownMenuItem>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Excluir produto?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Esta ação não pode ser desfeita. O produto "{product.name}" será removido permanentemente.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => onDelete(product.id)}>Excluir</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+            {/* Nome do Produto */}
+            <h3 className="font-semibold text-lg mb-3 line-clamp-2 min-h-[3.5rem]">{product.name}</h3>
+
+            {/* Badges */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              <Badge
+                variant="secondary"
+                className={cn(
+                  "font-medium",
+                  product.category === 'lona' 
+                    ? "bg-primary/10 text-primary border-primary/20" 
+                    : product.category === 'tenda'
+                    ? "bg-chart-2/10 text-chart-2 border-chart-2/20"
+                    : "bg-orange-100 text-orange-600 border-orange-200"
+                )}
+              >
+                {product.category === 'lona' ? 'Lona' : product.category === 'tenda' ? 'Tenda' : 'Ferragem'}
+              </Badge>
+              {product.isRental && (
+                <Badge variant="outline" className="font-medium text-xs bg-amber-50 text-amber-700 border-amber-200 flex items-center gap-1">
+                  <Key className="h-3 w-3" />
+                  Locação
+                </Badge>
+              )}
+            </div>
+
+            {/* Preço */}
+            <div className="pt-4 border-t">
+              <p className="text-xs text-muted-foreground mb-1">Preço Base</p>
+              <p className="text-2xl font-bold text-primary">
+                {formatCurrency(product.basePrice)}
+                {product.pricePerSquareMeter && <span className="text-sm text-muted-foreground">/m²</span>}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
