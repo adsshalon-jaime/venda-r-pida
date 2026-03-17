@@ -1,11 +1,18 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Plus, Search, Calendar, Trash2, ShoppingBag, Eye, Edit, Key, Filter } from 'lucide-react';
+import { Plus, Search, Calendar, Trash2, ShoppingBag, Eye, Edit, Key, Filter, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -52,11 +59,12 @@ export default function Sales() {
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [editingSale, setEditingSale] = useState<Sale | null>(null);
   const [saleType, setSaleType] = useState<'all' | 'sale' | 'rental'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'lona' | 'tenda' | 'ferragem'>('all');
 
   const isLoading = productsLoading || customersLoading || salesLoading;
 
-  const filteredSales = sales.filter(
-    (sale) => {
+  const filteredSales = useMemo(() => {
+    return sales.filter((sale) => {
       const matchesSearch = sale.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         sale.customerName?.toLowerCase().includes(searchQuery.toLowerCase());
       
@@ -64,9 +72,19 @@ export default function Sales() {
         (saleType === 'sale' && !sale.isRental) ||
         (saleType === 'rental' && sale.isRental);
       
-      return matchesSearch && matchesType;
-    }
-  );
+      const matchesCategory = categoryFilter === 'all' || sale.category === categoryFilter;
+      
+      return matchesSearch && matchesType && matchesCategory;
+    });
+  }, [sales, searchQuery, saleType, categoryFilter]);
+
+  const hasActiveFilters = searchQuery !== '' || saleType !== 'all' || categoryFilter !== 'all';
+
+  const clearFilters = () => {
+    setSearchQuery('');
+    setSaleType('all');
+    setCategoryFilter('all');
+  };
 
   const handleView = (sale: Sale) => {
     setEditingSale(sale);
@@ -117,67 +135,84 @@ export default function Sales() {
           <div>
             <h1 className="text-3xl font-bold">Vendas</h1>
             <p className="text-muted-foreground mt-1">
-              Histórico completo de vendas
+              Histórico completo de vendas e locações
             </p>
           </div>
-          <div className="flex items-center gap-4">
-            <Button onClick={() => setSaleModalOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Nova Venda
-            </Button>
-            
-            {/* Filtro por tipo */}
-            <div className="flex items-center gap-2">
-              <Label className="text-sm font-medium">Tipo:</Label>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSaleType('all')}
-                  className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
-                    saleType === 'all' 
-                      ? 'bg-primary text-primary border-primary' 
-                      : 'border-muted hover:border-primary/50 hover:bg-primary/50'
-                  }`}
-                >
-                  Todos
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSaleType('sale')}
-                  className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
-                    saleType === 'sale' 
-                      ? 'bg-green-600 text-white border-green-600' 
-                      : 'border-muted hover:border-green-600/50 hover:bg-green-50'
-                  }`}
-                >
-                  Vendas
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSaleType('rental')}
-                  className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
-                    saleType === 'rental' 
-                      ? 'bg-blue-600 text-white border-blue-600' 
-                      : 'border-muted hover:border-blue-600/50 hover:bg-blue-50'
-                  }`}
-                >
-                  Locações
-                </button>
-              </div>
-            </div>
-          </div>
+          <Button onClick={() => setSaleModalOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Nova Venda
+          </Button>
         </div>
 
-        {/* Search */}
-        <div className="flex items-center gap-4 mb-6">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por produto ou cliente..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+        {/* Barra de Busca e Filtros */}
+        <div className="mb-6 space-y-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            {/* Busca */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar por produto ou cliente..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            {/* Filtro de Tipo */}
+            <Select value={saleType} onValueChange={(value: any) => setSaleType(value)}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <Filter className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os Tipos</SelectItem>
+                <SelectItem value="sale">Vendas</SelectItem>
+                <SelectItem value="rental">Locações</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Filtro de Categoria */}
+            <Select value={categoryFilter} onValueChange={(value: any) => setCategoryFilter(value)}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas Categorias</SelectItem>
+                <SelectItem value="lona">Lona</SelectItem>
+                <SelectItem value="tenda">Tenda</SelectItem>
+                <SelectItem value="ferragem">Ferragem</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Contador de Resultados */}
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <div className="flex items-center gap-4">
+              <span>
+                {filteredSales.length} {filteredSales.length === 1 ? 'registro' : 'registros'} encontrado{filteredSales.length !== 1 ? 's' : ''}
+              </span>
+              {saleType !== 'all' && (
+                <Badge variant="secondary" className="font-medium">
+                  {saleType === 'sale' ? 'Vendas' : 'Locações'}
+                </Badge>
+              )}
+              {categoryFilter !== 'all' && (
+                <Badge variant="secondary" className="font-medium">
+                  {categoryFilter === 'lona' ? 'Lona' : categoryFilter === 'tenda' ? 'Tenda' : 'Ferragem'}
+                </Badge>
+              )}
+            </div>
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearFilters}
+                className="gap-2"
+              >
+                <X className="h-4 w-4" />
+                Limpar filtros
+              </Button>
+            )}
           </div>
         </div>
 
