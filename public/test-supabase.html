@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Supabase</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Test Supabase Connection</h1>
+    <div id="output"></div>
+    
+    <script>
+        const { createClient } = supabase;
+        const supabaseUrl = 'https://kpcqmwcyxleshekjtxdh.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwY3Ftd2N5eGxlc2hla2p0eGRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwMTI1NDIsImV4cCI6MjA4NTU4ODU0Mn0.E_yPvHfVjWgScG6fCCSQeBG46WkgsshHviPYI_fLxi0';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        
+        const output = document.getElementById('output');
+        
+        async function testConnection() {
+            try {
+                output.innerHTML = '<p>Testing connection...</p>';
+                
+                // Test if table exists
+                const { data, error } = await supabase
+                    .from('employees')
+                    .select('count')
+                    .limit(1);
+                
+                if (error) {
+                    output.innerHTML = `<p style="color: red;">Error: ${JSON.stringify(error)}</p>`;
+                } else {
+                    output.innerHTML = `<p style="color: green;">Connection successful! Data: ${JSON.stringify(data)}</p>`;
+                }
+                
+                // Try to insert test data
+                const testData = {
+                    name: 'Test Employee',
+                    cpf: '12345678901',
+                    address: {
+                        street: 'Test St',
+                        number: '123',
+                        city: 'Test City',
+                        state: 'TS',
+                        zipCode: '12345678'
+                    },
+                    phone: '11999999999',
+                    entry_date: '2024-01-01',
+                    work_hours: '08:00-17:00',
+                    lunch_break: '12:00-13:00',
+                    salary: 1500.00,
+                    work_schedule: ['segunda', 'terca']
+                };
+                
+                const { data: insertData, error: insertError } = await supabase
+                    .from('employees')
+                    .insert([testData])
+                    .select();
+                
+                if (insertError) {
+                    output.innerHTML += `<p style="color: red;">Insert Error: ${JSON.stringify(insertError)}</p>`;
+                } else {
+                    output.innerHTML += `<p style="color: green;">Insert successful! ${JSON.stringify(insertData)}</p>`;
+                }
+                
+            } catch (err) {
+                output.innerHTML = `<p style="color: red;">Exception: ${err.message}</p>`;
+            }
+        }
+        
+        testConnection();
+    </script>
+</body>
+</html>

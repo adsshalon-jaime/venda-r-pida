@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Payroll Supabase</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .error { color: red; }
+        .success { color: green; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Teste de Conexão - Payroll</h1>
+    
+    <div class="section">
+        <h2>1. Testar Conexão</h2>
+        <button onclick="testConnection()">Testar Conexão</button>
+        <div id="connection-result"></div>
+    </div>
+
+    <div class="section">
+        <h2>2. Criar Tabela Payrolls</h2>
+        <button onclick="createPayrollsTable()">Criar Tabela</button>
+        <div id="table-result"></div>
+    </div>
+
+    <div class="section">
+        <h2>3. Verificar Tabelas</h2>
+        <button onclick="checkTables()">Verificar Tabelas</button>
+        <div id="tables-result"></div>
+    </div>
+
+    <div class="section">
+        <h2>4. Testar Inserção</h2>
+        <button onclick="testInsert()">Testar Inserção</button>
+        <div id="insert-result"></div>
+    </div>
+
+    <script>
+        const supabaseUrl = 'https://kpcqmwcyxleshekjtxdh.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwY3Ftd2N5eGxlc2hla2p0eGRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwMTI1NDIsImV4cCI6MjA4NTU4ODU0Mn0.E_yPvHfVjWgScG6fCCSQeBG46WkgsshHviPYI_fLxi0';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        function log(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            element.innerHTML += `<div class="${isError ? 'error' : 'success'}">${message}</div>`;
+        }
+
+        function logJson(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+
+        async function testConnection() {
+            const resultDiv = document.getElementById('connection-result');
+            resultDiv.innerHTML = '';
+            
+            try {
+                const { data, error } = await supabase.from('employees').select('count').single();
+                if (error) throw error;
+                log('connection-result', '✅ Conexão bem-sucedida com Supabase!');
+                logJson('connection-result', data);
+            } catch (error) {
+                log('connection-result', `❌ Erro na conexão: ${error.message}`, true);
+                logJson('connection-result', error);
+            }
+        }
+
+        async function createPayrollsTable() {
+            const resultDiv = document.getElementById('table-result');
+            resultDiv.innerHTML = '';
+
+            const createTableSQL = `
+                -- Create payrolls table
+                CREATE TABLE IF NOT EXISTS payrolls (
+                    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+                    employee_id UUID NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+                    reference_month TEXT NOT NULL,
+                    reference_year INTEGER NOT NULL,
+                    gross_salary DECIMAL(10,2) NOT NULL,
+                    deductions JSONB NOT NULL,
+                    additions JSONB NOT NULL,
+                    net_salary DECIMAL(10,2) NOT NULL,
+                    payment_date TEXT NOT NULL,
+                    employer_name TEXT NOT NULL,
+                    employer_document TEXT NOT NULL,
+                    employer_address TEXT NOT NULL,
+                    created_at TIMESTAMPTZ DEFAULT NOW(),
+                    updated_at TIMESTAMPTZ DEFAULT NOW()
+                );
+
+                -- Create indexes
+                CREATE INDEX IF NOT EXISTS idx_payrolls_employee_id ON payrolls(employee_id);
+                CREATE INDEX IF NOT EXISTS idx_payrolls_reference_date ON payrolls(reference_year, reference_month);
+
+                -- Add RLS
+                ALTER TABLE payrolls ENABLE ROW LEVEL SECURITY;
+
+                -- Create policy
+                CREATE POLICY IF NOT EXISTS "Users can manage payrolls" ON payrolls
+                    FOR ALL USING (auth.role() = 'authenticated')
+                    WITH CHECK (auth.role() = 'authenticated');
+
+                -- Create unique constraint
+                ALTER TABLE payrolls ADD CONSTRAINT IF NOT EXISTS unique_employee_month_year 
+                    UNIQUE (employee_id, reference_month, reference_year);
+            `;
+
+            try {
+                log('table-result', '🔄 Tentando criar tabela payrolls...');
+                
+                // Executar SQL via RPC (se disponível) ou mostrar SQL para executar manualmente
+                log('table-result', '⚠️ Execute o SQL abaixo manualmente no painel Supabase:');
+                logJson('table-result', createTableSQL);
+                
+                // Tentativa de criar via SQL direto (pode não funcionar sem permissões)
+                const { data, error } = await supabase.rpc('exec_sql', { sql: createTableSQL });
+                
+                if (error) {
+                    log('table-result', `⚠️ Não foi possível criar via RPC. Execute manualmente no painel.`, true);
+                    log('table-result', '📋 SQL para executar manualmente no painel Supabase:');
+                    logJson('table-result', createTableSQL);
+                } else {
+                    log('table-result', '✅ Tabela criada com sucesso!');
+                    logJson('table-result', data);
+                }
+            } catch (error) {
+                log('table-result', `❌ Erro: ${error.message}`, true);
+                log('table-result', '📋 SQL para executar manualmente:');
+                logJson('table-result', createTableSQL);
+            }
+        }
+
+        async function checkTables() {
+            const resultDiv = document.getElementById('tables-result');
+            resultDiv.innerHTML = '';
+
+            try {
+                log('tables-result', '🔍 Verificando tabelas existentes...');
+                
+                // Verificar tabela employees
+                const { data: employeesData, error: employeesError } = await supabase.from('employees').select('count').single();
+                if (employeesError) {
+                    log('tables-result', `❌ Erro na tabela employees: ${employeesError.message}`, true);
+                } else {
+                    log('tables-result', `✅ Tabela employees: ${employeesData.count} registros`);
+                }
+
+                // Verificar tabela payrolls
+                const { data: payrollsData, error: payrollsError } = await supabase.from('payrolls').select('count').single();
+                if (payrollsError) {
+                    log('tables-result', `❌ Erro na tabela payrolls: ${payrollsError.message}`, true);
+                    log('tables-result', '📋 A tabela payrolls provavelmente não existe ainda. Execute a criação manualmente.');
+                } else {
+                    log('tables-result', `✅ Tabela payrolls: ${payrollsData.count} registros`);
+                }
+            } catch (error) {
+                log('tables-result', `❌ Erro geral: ${error.message}`, true);
+            }
+        }
+
+        async function testInsert() {
+            const resultDiv = document.getElementById('insert-result');
+            resultDiv.innerHTML = '';
+
+            try {
+                log('insert-result', '🔄 Tentando inserir holerite de teste...');
+                
+                // Primeiro, obter um funcionário existente
+                const { data: employee, error: employeeError } = await supabase.from('employees').select('*').limit(1).single();
+                
+                if (employeeError) {
+                    log('insert-result', `❌ Erro ao buscar funcionário: ${employeeError.message}`, true);
+                    return;
+                }
+
+                log('insert-result', `👤 Usando funcionário: ${employee.name}`);
+
+                // Inserir holerite de teste
+                const testPayroll = {
+                    employee_id: employee.id,
+                    reference_month: '03',
+                    reference_year: 2026,
+                    gross_salary: 2500.00,
+                    deductions: {
+                        inss: 200.00,
+                        fgts: 200.00,
+                        irrf: 50.00,
+                        other: 0,
+                        total: 450.00
+                    },
+                    additions: {
+                        overtime: 0,
+                        bonuses: 0,
+                        vacation: 0,
+                        thirteenth: 0,
+                        other: 0,
+                        total: 0
+                    },
+                    net_salary: 2050.00,
+                    payment_date: '2026-03-20',
+                    employer_name: 'Empresa Teste',
+                    employer_document: '00.000.000/0001-00',
+                    employer_address: 'Rua Teste, 123'
+                };
+
+                const { data, error } = await supabase.from('payrolls').insert([testPayroll]).select().single();
+                
+                if (error) {
+                    log('insert-result', `❌ Erro ao inserir: ${error.message}`, true);
+                    logJson('insert-result', error);
+                } else {
+                    log('insert-result', '✅ Holerite inserido com sucesso!');
+                    logJson('insert-result', data);
+                }
+            } catch (error) {
+                log('insert-result', `❌ Erro geral: ${error.message}`, true);
+            }
+        }
+    </script>
+</body>
+</html>

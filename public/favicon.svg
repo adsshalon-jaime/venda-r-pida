@@ -1,0 +1,20 @@
+<svg viewBox="0 0 1024 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Ondas coloridas -->
+  <path d="M 50 100 Q 300 50 950 80" fill="none" stroke="#FFD700" stroke-width="40" stroke-linecap="round"/>
+  <path d="M 50 140 Q 300 90 950 120" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linecap="round"/>
+  <path d="M 50 170 Q 300 120 950 150" fill="none" stroke="#EF4444" stroke-width="40" stroke-linecap="round"/>
+  <path d="M 50 210 Q 300 160 950 190" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linecap="round"/>
+  <path d="M 50 240 Q 300 190 950 220" fill="none" stroke="#3B82F6" stroke-width="40" stroke-linecap="round"/>
+  <path d="M 50 280 Q 300 230 950 260" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linecap="round"/>
+  <path d="M 50 310 Q 300 260 950 290" fill="none" stroke="#4F46E5" stroke-width="40" stroke-linecap="round"/>
+  
+  <!-- Texto SHALON -->
+  <text x="512" y="450" font-size="140" font-weight="bold" fill="#4F46E5" text-anchor="middle" font-family="Arial, sans-serif">
+    SHALON
+  </text>
+  
+  <!-- Texto Tendas&Coberturas -->
+  <text x="512" y="550" font-size="60" fill="#4F46E5" text-anchor="middle" font-family="Arial, sans-serif">
+    Tendas&amp;Coberturas
+  </text>
+</svg>
