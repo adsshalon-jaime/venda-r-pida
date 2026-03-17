@@ -39,13 +39,13 @@ export function Sidebar({ className = "" }: SidebarProps) {
             <span className="text-xl font-bold text-primary-foreground">S</span>
           </div>
           <div>
-            <h1 className="font-bold text-lg">Sistema de Vendas</h1>
+            <h1 className="font-bold text-lg">Coberturas Shalon</h1>
             <p className="text-xs text-muted-foreground">Painel Administrativo</p>
           </div>
         </div>
       </div>
 
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 p-4 overflow-y-auto">
         <ul className="space-y-1">
           {navItems.map((item) => (
             <li key={item.title}>
@@ -63,8 +63,8 @@ export function Sidebar({ className = "" }: SidebarProps) {
         </ul>
       </nav>
 
-      {/* User info and logout */}
-      <div className="p-4 border-t border-border space-y-3">
+      {/* User info and logout - sempre visível no rodapé */}
+      <div className="p-4 border-t border-border space-y-3 bg-card">
         {userEmail && (
           <div className="px-4 py-2 rounded-lg bg-muted/50">
             <p className="text-xs text-muted-foreground">Logado como</p>
@@ -82,10 +82,10 @@ export function Sidebar({ className = "" }: SidebarProps) {
         <Button
           variant="ghost"
           onClick={handleLogout}
-          className="w-full justify-start text-muted-foreground hover:text-white hover:bg-[#34414b]"
+          className="w-full justify-start text-muted-foreground hover:text-white hover:bg-[#34414b] transition-colors"
         >
-          <LogOut className="h-5 w-5 mr-2" />
-          Sair
+          <LogOut className="h-5 w-5 mr-3" />
+          <span className="font-medium">Sair</span>
         </Button>
       </div>
     </aside>
