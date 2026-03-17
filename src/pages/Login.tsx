@@ -72,12 +72,30 @@ export default function Login() {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-6">
-            <img 
-              src="/logo.png" 
-              alt="Tendas Carpa - Indústria Brasileira de Tendas Carpa" 
-              className="h-20 w-auto"
-            />
+            <div className="w-64 h-32 flex items-center justify-center">
+              <svg viewBox="0 0 1024 600" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                {/* Ondas coloridas */}
+                <path d="M 50 100 Q 300 50 950 80" fill="none" stroke="#FFD700" strokeWidth="40" strokeLinecap="round"/>
+                <path d="M 50 140 Q 300 90 950 120" fill="none" stroke="#FFFFFF" strokeWidth="15" strokeLinecap="round"/>
+                <path d="M 50 170 Q 300 120 950 150" fill="none" stroke="#EF4444" strokeWidth="40" strokeLinecap="round"/>
+                <path d="M 50 210 Q 300 160 950 190" fill="none" stroke="#FFFFFF" strokeWidth="15" strokeLinecap="round"/>
+                <path d="M 50 240 Q 300 190 950 220" fill="none" stroke="#3B82F6" strokeWidth="40" strokeLinecap="round"/>
+                <path d="M 50 280 Q 300 230 950 260" fill="none" stroke="#FFFFFF" strokeWidth="15" strokeLinecap="round"/>
+                <path d="M 50 310 Q 300 260 950 290" fill="none" stroke="#4F46E5" strokeWidth="40" strokeLinecap="round"/>
+                
+                {/* Texto SHALON */}
+                <text x="512" y="450" fontSize="140" fontWeight="bold" fill="#4F46E5" textAnchor="middle" fontFamily="Arial, sans-serif">
+                  SHALON
+                </text>
+                
+                {/* Texto Tendas&Coberturas */}
+                <text x="512" y="550" fontSize="60" fill="#4F46E5" textAnchor="middle" fontFamily="Arial, sans-serif">
+                  Tendas&amp;Coberturas
+                </text>
+              </svg>
+            </div>
           </div>
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">Coberturas Shalon</h1>
           <p className="text-sm text-muted-foreground">Painel Administrativo</p>
         </div>
 
@@ -154,7 +172,7 @@ export default function Login() {
         </div>
 
         <p className="text-center text-sm text-muted-foreground mt-6">
-          Sistema de gestão para vendas de tendas e lonas
+          Sistema de gestão - Coberturas Shalon
         </p>
       </div>
     </div>
