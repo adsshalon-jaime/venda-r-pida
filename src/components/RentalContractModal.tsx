@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/select';
 import { RentalContractDocument } from './RentalContractDocument';
 import { Customer } from '@/types';
+import { useSettings } from '@/hooks/useSettings';
 import { toast } from 'sonner';
 
 interface RentalItem {
@@ -35,6 +36,7 @@ interface RentalContractModalProps {
 }
 
 export function RentalContractModal({ open, onOpenChange, customers }: RentalContractModalProps) {
+  const { settings } = useSettings();
   const [step, setStep] = useState<'form' | 'preview'>('form');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [items, setItems] = useState<RentalItem[]>([
@@ -119,10 +121,17 @@ export function RentalContractModal({ open, onOpenChange, customers }: RentalCon
     window.print();
   };
 
-  const contract = selectedCustomer
+  const contract = selectedCustomer && settings
     ? {
         contractNumber: `LC-${format(new Date(), 'yyyyMMddHHmmss')}`,
         contractDate: new Date(),
+        companyData: {
+          name: settings.company_name || 'Coberturas Shalon',
+          cnpj: settings.cnpj || 'Não informado',
+          address: 'Palmas - TO',
+          phone: settings.phone || 'Não informado',
+          email: 'contato@coberturasshalon.com.br',
+        },
         customerName: selectedCustomer.name,
         customerDocument: selectedCustomer.cpfCnpj || 'Não informado',
         customerAddress: selectedCustomer.address 

@@ -9,9 +9,18 @@ interface RentalItem {
   total: number;
 }
 
+interface CompanyData {
+  name: string;
+  cnpj: string;
+  address: string;
+  phone: string;
+  email?: string;
+}
+
 interface RentalContract {
   contractNumber: string;
   contractDate: Date;
+  companyData: CompanyData;
   customerName: string;
   customerDocument: string;
   customerAddress: string;
@@ -61,15 +70,14 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
       <div className="border-b-4 border-primary pb-6 mb-8">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-primary mb-2">Coberturas Shalon</h1>
+            <h1 className="text-3xl font-bold text-primary mb-2">{contract.companyData.name}</h1>
             <p className="text-sm text-slate-600 font-medium">Tendas & Coberturas</p>
           </div>
           <div className="text-right text-sm text-slate-600">
-            <p className="font-semibold">CNPJ: 00.000.000/0001-00</p>
-            <p>Rua Exemplo, 123 - Centro</p>
-            <p>Cidade - Estado - CEP 00000-000</p>
-            <p>Tel: (00) 0000-0000</p>
-            <p>contato@coberturasshalon.com.br</p>
+            <p className="font-semibold">CNPJ: {contract.companyData.cnpj}</p>
+            <p>{contract.companyData.address}</p>
+            <p>Tel: {contract.companyData.phone}</p>
+            {contract.companyData.email && <p>{contract.companyData.email}</p>}
           </div>
         </div>
       </div>
@@ -256,29 +264,96 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
         <h3 className="text-lg font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">
           CLÁUSULAS CONTRATUAIS
         </h3>
-        <div className="space-y-3">
-          <p>
-            <strong>CLÁUSULA 1ª - DO OBJETO:</strong> O presente contrato tem por objeto a locação dos
-            itens descritos acima, pelo período estabelecido.
-          </p>
-          <p>
-            <strong>CLÁUSULA 2ª - DA RESPONSABILIDADE:</strong> O LOCATÁRIO se responsabiliza pela
-            guarda e conservação dos itens locados, devendo devolvê-los nas mesmas condições em que os
-            recebeu.
-          </p>
-          <p>
-            <strong>CLÁUSULA 3ª - DOS DANOS:</strong> Qualquer dano causado aos itens locados será de
-            responsabilidade do LOCATÁRIO, que deverá arcar com os custos de reparo ou reposição.
-          </p>
-          <p>
-            <strong>CLÁUSULA 4ª - DA DEVOLUÇÃO:</strong> Os itens deverão ser devolvidos na data
-            estabelecida. O atraso na devolução implicará em cobrança proporcional ao período excedente.
-          </p>
-          <p>
-            <strong>CLÁUSULA 5ª - DO PAGAMENTO:</strong> O pagamento deverá ser efetuado conforme a
-            forma estabelecida neste contrato, sendo condição essencial para a retirada dos itens.
-          </p>
+        <div className="space-y-4">
+          <div>
+            <p className="font-bold text-sm mb-2">1. DO OBJETO</p>
+            <p>O presente contrato tem por objeto a locação dos itens descritos acima, pelo período estabelecido.</p>
+          </div>
+
+          <div>
+            <p className="font-bold text-sm mb-2">2. DO PRAZO</p>
+            <p>O prazo de locação será de {contract.rentalDuration} {contract.rentalPeriod === 'day' ? (contract.rentalDuration > 1 ? 'dias' : 'dia') : contract.rentalPeriod === 'week' ? (contract.rentalDuration > 1 ? 'semanas' : 'semana') : (contract.rentalDuration > 1 ? 'meses' : 'mês')}, com início em {format(contract.startDate, 'dd/MM/yyyy')} e término em {format(contract.endDate, 'dd/MM/yyyy')}.</p>
+          </div>
+
+          <div>
+            <p className="font-bold text-sm mb-2">3. DO PAGAMENTO</p>
+            <p>O pagamento deverá ser efetuado conforme a forma estabelecida neste contrato ({getPaymentMethodLabel(contract.paymentMethod)}), sendo condição essencial para a retirada dos itens.</p>
+          </div>
+
+          <div>
+            <p className="font-bold text-sm mb-2">4. OBRIGAÇÕES DA CONTRATADA</p>
+            <p className="mb-1">Compete à CONTRATADA:</p>
+            <ul className="list-disc ml-5 space-y-1">
+              <li>Fornecer as tendas conforme especificações acordadas;</li>
+              <li>Realizar a montagem e desmontagem (quando incluso);</li>
+              <li>Entregar o material em boas condições de uso;</li>
+              <li>Utilizar materiais adequados e mão de obra qualificada.</li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-bold text-sm mb-2">5. OBRIGAÇÕES DA CONTRATANTE</p>
+            <p className="mb-1">Compete à CONTRATANTE:</p>
+            <ul className="list-disc ml-5 space-y-1">
+              <li>Disponibilizar local adequado para instalação da tenda;</li>
+              <li>Zelar pela conservação do material durante a locação;</li>
+              <li>Não modificar, desmontar ou transferir a tenda sem autorização;</li>
+              <li>Responsabilizar-se por danos causados por mau uso, intempéries extremas ou terceiros.</li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-bold text-sm mb-2">6. RESPONSABILIDADE POR DANOS</p>
+            <p className="mb-2"><strong>CLÁUSULA – RESPONSABILIDADE POR INTEMPÉRIES, DANOS E MANUTENÇÃO</strong></p>
+            <p className="mb-2">A LOCATÁRIA declara estar ciente de que as estruturas objeto deste contrato (tendas, galpões lonados ou similares) estão sujeitas a ações da natureza e a fatores externos imprevisíveis.</p>
+            
+            <p className="font-semibold mt-2 mb-1">6.1. Intempéries e Caso Fortuito / Força Maior</p>
+            <p className="mb-2">A LOCATÁRIA assume integral responsabilidade por quaisquer danos decorrentes de eventos climáticos ou naturais ocorridos após a instalação da estrutura, tais como, mas não se limitando a: tempestades, vendavais, rajadas de vento acima do recomendado tecnicamente, chuvas intensas, granizo, enchentes, descargas elétricas, queda de árvores, deslizamentos, alagamentos ou quaisquer outros eventos caracterizados como caso fortuito ou força maior.</p>
+            
+            <p className="font-semibold mt-2 mb-1">6.2. Furto, Roubo, Vandalismo ou Mau Uso</p>
+            <p className="mb-2">A LOCATÁRIA será integralmente responsável por perdas, danos, extravios, furtos, roubos, atos de vandalismo, incêndio ou qualquer dano causado por terceiros, funcionários, prepostos ou participantes do evento, obrigando-se a ressarcir a LOCADORA pelo valor de reposição ou reparo do material danificado.</p>
+            
+            <p className="font-semibold mt-2 mb-1">6.3. Danos Estruturais ou Necessidade de Reparo</p>
+            <p className="mb-2">Constatado qualquer dano à estrutura, lona, ferragens ou acessórios durante o período de locação, a LOCATÁRIA deverá comunicar imediatamente a LOCADORA, ficando responsável pelo custo integral de reparo ou substituição das peças danificadas.</p>
+            
+            <p className="font-semibold mt-2 mb-1">6.4. Manutenção Técnica e Deslocamento</p>
+            <p className="mb-2">Caso seja necessária visita técnica para manutenção corretiva, ajustes, reparos ou avaliação técnica durante o período de locação, por motivo não decorrente de defeito de fabricação ou falha comprovada de instalação, a LOCATÁRIA arcará com os custos de deslocamento da equipe técnica, incluindo transporte, alimentação e demais despesas operacionais, sendo o valor previamente acordado entre as partes.</p>
+            
+            <p className="font-semibold mt-2 mb-1">6.5. Recomendações Técnicas</p>
+            <p className="mb-2">A LOCATÁRIA compromete-se a respeitar as orientações técnicas fornecidas pela LOCADORA quanto ao uso adequado da estrutura, especialmente no que se refere à capacidade de resistência a ventos e à necessidade de evacuação preventiva em condições climáticas adversas.</p>
+            
+            <p className="font-semibold mt-2 mb-1">6.6. Ressarcimento</p>
+            <p>Eventuais valores devidos poderão ser cobrados imediatamente após constatação dos danos, mediante apresentação de relatório técnico e orçamento correspondente.</p>
+          </div>
+
+          <div>
+            <p className="font-bold text-sm mb-2">7. RESCISÃO</p>
+            <p>Este contrato poderá ser rescindido por qualquer das partes mediante aviso prévio, respeitando os valores proporcionais já executados ou custos operacionais envolvidos.</p>
+          </div>
+
+          <div>
+            <p className="font-bold text-sm mb-2">8. DISPOSIÇÕES GERAIS</p>
+            <ul className="list-disc ml-5 space-y-1">
+              <li>Este contrato é válido para todo o território nacional;</li>
+              <li>O presente instrumento substitui quaisquer acordos verbais;</li>
+              <li>As partes declaram estar de acordo com todas as cláusulas aqui descritas.</li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-bold text-sm mb-2">9. FORO</p>
+            <p>Fica eleito o foro da comarca de Palmas/TO, renunciando a qualquer outro, por mais privilegiado que seja, para dirimir dúvidas oriundas deste contrato.</p>
+          </div>
+
+          <div className="mt-4">
+            <p className="text-center font-semibold">E, por estarem assim justos e contratados, assinam o presente instrumento em duas vias de igual teor.</p>
+          </div>
         </div>
+      </div>
+
+      {/* Local e Data */}
+      <div className="mt-8 mb-4 text-center text-sm">
+        <p>Palmas/TO, {format(contract.contractDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</p>
       </div>
 
       {/* Assinaturas */}
@@ -286,14 +361,14 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
         <div className="grid grid-cols-2 gap-12 text-center">
           <div>
             <div className="border-t-2 border-slate-400 pt-2 mt-16">
-              <p className="font-bold text-slate-800">Coberturas Shalon</p>
-              <p className="text-xs text-slate-600">LOCADOR</p>
+              <p className="font-bold text-slate-800">{contract.companyData.name}</p>
+              <p className="text-xs text-slate-600">LOCADORA (CONTRATADA)</p>
             </div>
           </div>
           <div>
             <div className="border-t-2 border-slate-400 pt-2 mt-16">
               <p className="font-bold text-slate-800">{contract.customerName}</p>
-              <p className="text-xs text-slate-600">LOCATÁRIO</p>
+              <p className="text-xs text-slate-600">LOCATÁRIA (CONTRATANTE)</p>
             </div>
           </div>
         </div>
@@ -306,7 +381,7 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
           legislação vigente.
         </p>
         <p className="mt-1">
-          Coberturas Shalon - Tendas & Coberturas | CNPJ: 00.000.000/0001-00
+          {contract.companyData.name} - Tendas & Coberturas | CNPJ: {contract.companyData.cnpj}
         </p>
       </div>
     </div>
