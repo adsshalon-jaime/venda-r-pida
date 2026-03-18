@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileText, Eye, Printer, Calendar, MapPin, Search, Filter } from 'lucide-react';
+import { FileText, Eye, Printer, Calendar, MapPin, Search, Filter, CheckCircle, Trash2 } from 'lucide-react';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,17 +17,29 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { useSales } from '@/hooks/useSales';
 import { ServiceOrder } from '@/components/ServiceOrder';
 import { Sale } from '@/types';
 import { formatCurrency } from '@/utils/currency';
 
 export default function ServiceOrders() {
-  const { sales, loading } = useSales();
+  const { sales, loading, markAsRemoved, deleteSale } = useSales();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'completed'>('all');
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [selectedSale, setSelectedSale] = useState<Sale | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [saleToDelete, setSaleToDelete] = useState<Sale | null>(null);
 
   // Filtrar apenas vendas de locação que têm OS
   const rentalSales = sales.filter(sale => 
@@ -43,8 +55,8 @@ export default function ServiceOrders() {
 
     const matchesStatus = 
       statusFilter === 'all' ||
-      (statusFilter === 'pending' && !sale.rentalInfo?.removed) ||
-      (statusFilter === 'completed' && sale.rentalInfo?.removed);
+      (statusFilter === 'pending' && !sale.rentalInfo?.isRemoved) ||
+      (statusFilter === 'completed' && sale.rentalInfo?.isRemoved);
 
     return matchesSearch && matchesStatus;
   });
@@ -54,8 +66,25 @@ export default function ServiceOrders() {
     setViewModalOpen(true);
   };
 
+  const handleMarkAsCompleted = async (saleId: string) => {
+    await markAsRemoved(saleId);
+  };
+
+  const handleDeleteClick = (sale: Sale) => {
+    setSaleToDelete(sale);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (saleToDelete) {
+      await deleteSale(saleToDelete.id);
+      setDeleteDialogOpen(false);
+      setSaleToDelete(null);
+    }
+  };
+
   const getStatusBadge = (sale: Sale) => {
-    if (sale.rentalInfo?.removed) {
+    if (sale.rentalInfo?.isRemoved) {
       return <Badge className="bg-green-600">Concluída</Badge>;
     }
 
@@ -217,8 +246,29 @@ export default function ServiceOrders() {
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => handleViewOS(sale)}
+                            title="Visualizar OS"
                           >
                             <Eye className="h-4 w-4" />
+                          </Button>
+                          {!sale.rentalInfo?.isRemoved && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
+                              onClick={() => handleMarkAsCompleted(sale.id)}
+                              title="Marcar como Concluída"
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </Button>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            onClick={() => handleDeleteClick(sale)}
+                            title="Excluir OS"
+                          >
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </td>
@@ -241,6 +291,34 @@ export default function ServiceOrders() {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Dialog de Confirmação de Exclusão */}
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+              <AlertDialogDescription>
+                Tem certeza que deseja excluir a Ordem de Serviço <strong>#{saleToDelete?.rentalInfo?.serviceOrderNumber}</strong>?
+                <br /><br />
+                Esta ação não pode ser desfeita e removerá permanentemente:
+                <ul className="list-disc list-inside mt-2 space-y-1">
+                  <li>A ordem de serviço</li>
+                  <li>O registro de locação</li>
+                  <li>Todas as informações relacionadas</li>
+                </ul>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleConfirmDelete}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Excluir
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </Layout>
   );
