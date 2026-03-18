@@ -38,6 +38,7 @@ import { useRentalContracts } from '@/hooks/useRentalContracts';
 import { useSettings } from '@/hooks/useSettings';
 import { RentalContract } from '@/types';
 import { formatCurrency } from '@/utils/currency';
+import { printContract } from '@/utils/printContract';
 import { cn } from '@/lib/utils';
 
 export default function Contracts() {
@@ -314,7 +315,38 @@ export default function Contracts() {
                 </div>
                 <Button
                   variant="outline"
-                  onClick={() => window.print()}
+                  onClick={() => {
+                    if (viewingContract && settings) {
+                      printContract({
+                        contractNumber: viewingContract.contractNumber,
+                        contractDate: viewingContract.contractDate,
+                        companyData: {
+                          name: settings.company_name || 'Coberturas Shalon',
+                          cnpj: settings.cnpj || 'Não informado',
+                          address: 'Palmas - TO',
+                          phone: settings.phone || 'Não informado',
+                        },
+                        customerName: viewingContract.customerName,
+                        customerDocument: viewingContract.customerDocument || '',
+                        customerAddress: viewingContract.customerAddress || '',
+                        customerCity: viewingContract.customerCity || '',
+                        customerState: viewingContract.customerState || '',
+                        customerPhone: viewingContract.customerPhone || '',
+                        customerReference: viewingContract.customerReference,
+                        items: viewingContract.items,
+                        rentalPeriod: viewingContract.rentalPeriod,
+                        rentalDuration: viewingContract.rentalDuration,
+                        startDate: viewingContract.startDate,
+                        endDate: viewingContract.endDate,
+                        subtotal: viewingContract.subtotal,
+                        shippingFee: viewingContract.shippingFee,
+                        assemblyFee: viewingContract.assemblyFee,
+                        totalValue: viewingContract.totalValue,
+                        paymentMethod: viewingContract.paymentMethod,
+                        pixKey: viewingContract.pixKey,
+                      });
+                    }
+                  }}
                   className="gap-2"
                 >
                   <Printer className="h-4 w-4" />

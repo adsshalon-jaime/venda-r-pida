@@ -21,6 +21,7 @@ import { RentalContractDocument } from './RentalContractDocument';
 import { Customer } from '@/types';
 import { useSettings } from '@/hooks/useSettings';
 import { useRentalContracts } from '@/hooks/useRentalContracts';
+import { printContract } from '@/utils/printContract';
 import { toast } from 'sonner';
 
 interface RentalItem {
@@ -120,7 +121,8 @@ export function RentalContractModal({ open, onOpenChange, customers }: RentalCon
   };
 
   const handlePrint = () => {
-    window.print();
+    if (!contract) return;
+    printContract(contract);
   };
 
   const handleSaveContract = async () => {
