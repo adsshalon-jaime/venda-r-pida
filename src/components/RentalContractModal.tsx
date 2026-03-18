@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { RentalContractDocument } from './RentalContractDocument';
-import { Customer } from '@/types';
+import { Customer, RentalContract } from '@/types';
 import { useSettings } from '@/hooks/useSettings';
 import { useRentalContracts } from '@/hooks/useRentalContracts';
 import { printContract } from '@/utils/printContract';
@@ -35,11 +35,12 @@ interface RentalContractModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   customers: Customer[];
+  editingContract?: RentalContract | null;
 }
 
-export function RentalContractModal({ open, onOpenChange, customers }: RentalContractModalProps) {
+export function RentalContractModal({ open, onOpenChange, customers, editingContract }: RentalContractModalProps) {
   const { settings } = useSettings();
-  const { addContract } = useRentalContracts();
+  const { addContract, updateContract } = useRentalContracts();
   const [step, setStep] = useState<'form' | 'preview'>('form');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [items, setItems] = useState<RentalItem[]>([
@@ -52,6 +53,34 @@ export function RentalContractModal({ open, onOpenChange, customers }: RentalCon
   const [assemblyFee, setAssemblyFee] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState<'pix' | 'card' | 'cash'>('pix');
   const [pixKey, setPixKey] = useState('');
+
+  // Preencher formulário ao editar
+  useEffect(() => {
+    if (editingContract && open) {
+      const customer = customers.find(c => c.id === editingContract.customerId);
+      if (customer) setSelectedCustomer(customer);
+      setItems(editingContract.items);
+      setRentalPeriod(editingContract.rentalPeriod);
+      setRentalDuration(editingContract.rentalDuration);
+      setStartDate(format(editingContract.startDate, 'yyyy-MM-dd'));
+      setShippingFee(editingContract.shippingFee);
+      setAssemblyFee(editingContract.assemblyFee);
+      setPaymentMethod(editingContract.paymentMethod);
+      setPixKey(editingContract.pixKey || '');
+    } else if (!open) {
+      // Reset ao fechar
+      setStep('form');
+      setSelectedCustomer(null);
+      setItems([{ name: '', quantity: 1, unitPrice: 0, total: 0 }]);
+      setRentalPeriod('day');
+      setRentalDuration(1);
+      setStartDate(format(new Date(), 'yyyy-MM-dd'));
+      setShippingFee(0);
+      setAssemblyFee(0);
+      setPaymentMethod('pix');
+      setPixKey('');
+    }
+  }, [editingContract, open, customers]);
 
   const calculateEndDate = () => {
     const start = new Date(startDate);
@@ -129,42 +158,57 @@ export function RentalContractModal({ open, onOpenChange, customers }: RentalCon
     if (!contract) return;
 
     try {
-      await addContract({
-        contractNumber: contract.contractNumber,
-        contractDate: contract.contractDate,
-        customerId: selectedCustomer?.id,
-        customerName: contract.customerName,
-        customerDocument: contract.customerDocument,
-        customerAddress: contract.customerAddress,
-        customerCity: contract.customerCity,
-        customerState: contract.customerState,
-        customerPhone: contract.customerPhone,
-        customerReference: contract.customerReference,
-        items: contract.items,
-        rentalPeriod: contract.rentalPeriod,
-        rentalDuration: contract.rentalDuration,
-        startDate: contract.startDate,
-        endDate: contract.endDate,
-        subtotal: contract.subtotal,
-        shippingFee: contract.shippingFee,
-        assemblyFee: contract.assemblyFee,
-        totalValue: contract.totalValue,
-        paymentMethod: contract.paymentMethod,
-        pixKey: contract.pixKey,
-      });
+      if (editingContract) {
+        // Atualizar contrato existente
+        await updateContract(editingContract.id, {
+          customerId: selectedCustomer?.id,
+          customerName: contract.customerName,
+          customerDocument: contract.customerDocument,
+          customerAddress: contract.customerAddress,
+          customerCity: contract.customerCity,
+          customerState: contract.customerState,
+          customerPhone: contract.customerPhone,
+          customerReference: contract.customerReference,
+          items: contract.items,
+          rentalPeriod: contract.rentalPeriod,
+          rentalDuration: contract.rentalDuration,
+          startDate: contract.startDate,
+          endDate: contract.endDate,
+          subtotal: contract.subtotal,
+          shippingFee: contract.shippingFee,
+          assemblyFee: contract.assemblyFee,
+          totalValue: contract.totalValue,
+          paymentMethod: contract.paymentMethod,
+          pixKey: contract.pixKey,
+        });
+      } else {
+        // Criar novo contrato
+        await addContract({
+          contractNumber: contract.contractNumber,
+          contractDate: contract.contractDate,
+          customerId: selectedCustomer?.id,
+          customerName: contract.customerName,
+          customerDocument: contract.customerDocument,
+          customerAddress: contract.customerAddress,
+          customerCity: contract.customerCity,
+          customerState: contract.customerState,
+          customerPhone: contract.customerPhone,
+          customerReference: contract.customerReference,
+          items: contract.items,
+          rentalPeriod: contract.rentalPeriod,
+          rentalDuration: contract.rentalDuration,
+          startDate: contract.startDate,
+          endDate: contract.endDate,
+          subtotal: contract.subtotal,
+          shippingFee: contract.shippingFee,
+          assemblyFee: contract.assemblyFee,
+          totalValue: contract.totalValue,
+          paymentMethod: contract.paymentMethod,
+          pixKey: contract.pixKey,
+        });
+      }
       
       onOpenChange(false);
-      // Reset form
-      setStep('form');
-      setSelectedCustomer(null);
-      setItems([{ name: '', quantity: 1, unitPrice: 0, total: 0 }]);
-      setRentalPeriod('day');
-      setRentalDuration(1);
-      setStartDate(format(new Date(), 'yyyy-MM-dd'));
-      setShippingFee(0);
-      setAssemblyFee(0);
-      setPaymentMethod('pix');
-      setPixKey('');
     } catch (error) {
       console.error('Error saving contract:', error);
     }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, FileText, Calendar, User, Eye, Trash2, Search, Printer } from 'lucide-react';
+import { Plus, FileText, Calendar, User, Eye, Trash2, Search, Printer, Edit } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
@@ -48,6 +48,7 @@ export default function Contracts() {
   const [contractModalOpen, setContractModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [viewingContract, setViewingContract] = useState<RentalContract | null>(null);
+  const [editingContract, setEditingContract] = useState<RentalContract | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredContracts = contracts.filter((contract) => {
@@ -59,6 +60,16 @@ export default function Contracts() {
   const handleView = (contract: RentalContract) => {
     setViewingContract(contract);
     setViewModalOpen(true);
+  };
+
+  const handleEdit = (contract: RentalContract) => {
+    setEditingContract(contract);
+    setContractModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setContractModalOpen(false);
+    setEditingContract(null);
   };
 
   const handleDelete = async (contractId: string) => {
@@ -181,10 +192,18 @@ export default function Contracts() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleView(contract)}
                           className="h-8 w-8"
+                          onClick={() => handleView(contract)}
                         >
                           <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-blue-600 hover:text-blue-700"
+                          onClick={() => handleEdit(contract)}
+                        >
+                          <Edit className="h-4 w-4" />
                         </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
@@ -300,8 +319,9 @@ export default function Contracts() {
 
         <RentalContractModal
           open={contractModalOpen}
-          onOpenChange={setContractModalOpen}
+          onOpenChange={handleCloseModal}
           customers={customers}
+          editingContract={editingContract}
         />
 
         {/* Modal de Visualização */}
