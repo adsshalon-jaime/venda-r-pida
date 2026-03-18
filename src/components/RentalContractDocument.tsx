@@ -70,23 +70,32 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
         @media print {
           @page {
             size: A4;
-            margin: 1.5cm;
+            margin: 1cm 1.5cm;
+          }
+          
+          * {
+            print-color-adjust: exact !important;
+            -webkit-print-color-adjust: exact !important;
+            color-adjust: exact !important;
           }
           
           body {
-            print-color-adjust: exact;
-            -webkit-print-color-adjust: exact;
-          }
-          
-          #rental-contract-document {
-            max-width: 100% !important;
             margin: 0 !important;
             padding: 0 !important;
           }
           
+          #rental-contract-document {
+            max-width: 100% !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 1cm !important;
+            font-size: 9pt !important;
+            line-height: 1.3 !important;
+          }
+          
           .print-section {
-            page-break-inside: avoid;
-            break-inside: avoid;
+            page-break-inside: auto;
+            break-inside: auto;
           }
           
           .print-page-break {
@@ -97,6 +106,60 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
           .print-avoid-break {
             page-break-inside: avoid;
             break-inside: avoid;
+            orphans: 3;
+            widows: 3;
+          }
+          
+          h1, h2, h3 {
+            page-break-after: avoid;
+            break-after: avoid;
+          }
+          
+          table {
+            page-break-inside: auto;
+          }
+          
+          tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+          }
+          
+          /* Reduzir tamanhos de fonte para impressão */
+          h1 { font-size: 16pt !important; }
+          h2 { font-size: 14pt !important; }
+          h3 { font-size: 11pt !important; }
+          p, td, th, li { font-size: 9pt !important; }
+          .text-xs { font-size: 7pt !important; }
+          .text-sm { font-size: 8pt !important; }
+          .text-lg { font-size: 10pt !important; }
+          .text-xl { font-size: 11pt !important; }
+          .text-2xl { font-size: 12pt !important; }
+          
+          /* Reduzir espaçamentos */
+          .mb-8 { margin-bottom: 0.5cm !important; }
+          .mb-6 { margin-bottom: 0.4cm !important; }
+          .mb-4 { margin-bottom: 0.3cm !important; }
+          .mb-2 { margin-bottom: 0.2cm !important; }
+          .mt-8 { margin-top: 0.5cm !important; }
+          .mt-12 { margin-top: 0.6cm !important; }
+          .p-6 { padding: 0.4cm !important; }
+          .p-8 { padding: 0.5cm !important; }
+          .space-y-4 > * + * { margin-top: 0.3cm !important; }
+          .space-y-3 > * + * { margin-top: 0.2cm !important; }
+          .space-y-2 > * + * { margin-top: 0.15cm !important; }
+          
+          /* Garantir visibilidade de bordas e cores */
+          .border, .border-b-4, .border-t-2, .border-b-2 {
+            border-color: #000 !important;
+          }
+          
+          .bg-slate-50, .bg-blue-50, .bg-green-50 {
+            background-color: #f8f9fa !important;
+          }
+          
+          /* Ocultar elementos desnecessários */
+          .print\\:hidden {
+            display: none !important;
           }
         }
       `}</style>
