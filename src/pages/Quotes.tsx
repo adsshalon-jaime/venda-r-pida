@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { NewQuoteModal } from '@/components/NewQuoteModal';
 import { EditQuoteModal } from '@/components/EditQuoteModal';
 import { QuoteDocument } from '@/components/QuoteDocument';
+import { RemovalTracker } from '@/components/RemovalTracker';
 import { useQuotes } from '@/hooks/useQuotes';
 import { useCustomers } from '@/hooks/useCustomers';
 import { useSales } from '@/hooks/useSales';
@@ -35,7 +36,7 @@ export default function Quotes() {
 
   const { quotes, loading, addQuote, updateQuote, updateQuoteStatus, deleteQuote, getQuotesMetrics } = useQuotes();
   const { customers } = useCustomers();
-  const { addSale } = useSales();
+  const { sales, addSale, markAsRemoved } = useSales();
 
   const metrics = getQuotesMetrics();
 
@@ -209,6 +210,14 @@ export default function Quotes() {
           >
             Convertidos ({metrics.convertedCount})
           </Button>
+        </div>
+
+        {/* Acompanhamento de Remoções */}
+        <div className="mb-6">
+          <RemovalTracker
+            sales={sales}
+            onMarkAsRemoved={markAsRemoved}
+          />
         </div>
 
         {/* Lista de Orçamentos */}

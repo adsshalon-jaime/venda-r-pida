@@ -7,7 +7,7 @@ import { ProductDistributionChart } from '@/components/ProductDistributionChart'
 import { RecentSales } from '@/components/RecentSales';
 import { NewSaleModal } from '@/components/NewSaleModal';
 import { OverdueAlert } from '@/components/OverdueAlert';
-import { RentalAlert } from '@/components/RentalAlert';
+import { RemovalTracker } from '@/components/RemovalTracker';
 import { ServiceOrder } from '@/components/ServiceOrder';
 import { MonthSelector } from '@/components/MonthSelector';
 import { Layout } from '@/components/Layout';
@@ -144,10 +144,9 @@ export default function Dashboard() {
           onMarkAsPaid={markSaleAsPaid}
         />
 
-        {/* Rental Alerts - Alertas de Locação */}
-        <RentalAlert
-          pendingRemovals={getPendingRemovals()}
-          onViewServiceOrder={handleViewServiceOrder}
+        {/* Rental Tracker - Acompanhamento de Remoções com Contador */}
+        <RemovalTracker
+          sales={sales}
           onMarkAsRemoved={handleMarkAsRemoved}
         />
 
