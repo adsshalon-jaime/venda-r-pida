@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FileText, Eye, Printer, Calendar, MapPin, Search, Filter, CheckCircle, Trash2 } from 'lucide-react';
 import { Layout } from '@/components/Layout';
+import { RemovalTracker } from '@/components/RemovalTracker';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -158,6 +159,14 @@ export default function ServiceOrders() {
           <p className="text-sm text-muted-foreground">
             {filteredSales.length} {filteredSales.length === 1 ? 'ordem de serviço' : 'ordens de serviço'} encontrada{filteredSales.length !== 1 ? 's' : ''}
           </p>
+        </div>
+
+        {/* Acompanhamento de Remoções */}
+        <div className="mb-6">
+          <RemovalTracker
+            sales={sales}
+            onMarkAsRemoved={markAsRemoved}
+          />
         </div>
 
         {/* Lista de OS */}
