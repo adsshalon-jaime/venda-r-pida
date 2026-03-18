@@ -115,8 +115,18 @@ export function RemovalTracker({ sales, onMarkAsRemoved }: RemovalTrackerProps) 
     setViewModalOpen(true);
   };
 
+  // TESTE: Sempre renderizar algo para debug
   if (activeRentals.length === 0) {
-    return null;
+    return (
+      <div className="bg-blue-50 border-2 border-blue-300 rounded-xl p-4 mb-6">
+        <p className="text-blue-800 font-semibold">
+          🔍 RemovalTracker está funcionando! Nenhuma locação ativa pendente no momento.
+        </p>
+        <p className="text-sm text-blue-600 mt-1">
+          Total de vendas: {sales.length} | Locações: {sales.filter(s => s.isRental).length} | Com rentalInfo: {sales.filter(s => s.rentalInfo).length}
+        </p>
+      </div>
+    );
   }
 
   return (
