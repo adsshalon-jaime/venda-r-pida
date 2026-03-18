@@ -14,6 +14,7 @@ import Payroll from "./pages/Payroll";
 import Reports from "./pages/Reports";
 import Receipts from "./pages/Receipts";
 import Quotes from "./pages/Quotes";
+import Contracts from "./pages/Contracts";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/relatorios" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
             <Route path="/recibos" element={<ProtectedRoute><Receipts /></ProtectedRoute>} />
             <Route path="/orcamentos" element={<ProtectedRoute><Quotes /></ProtectedRoute>} />
+            <Route path="/contratos" element={<ProtectedRoute><Contracts /></ProtectedRoute>} />
             <Route path="/configuracoes" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<NotFound />} />
