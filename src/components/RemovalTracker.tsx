@@ -54,9 +54,26 @@ export function RemovalTracker({ sales, onMarkAsRemoved }: RemovalTrackerProps) 
   const upcomingRentals = activeRentals.filter(sale => {
     const removalDate = new Date(sale.rentalInfo!.removalDate);
     removalDate.setHours(0, 0, 0, 0);
-    const daysRemaining = Math.ceil((removalDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    return daysRemaining > 2 && daysRemaining <= 7;
+    const daysUntilRemoval = Math.ceil((removalDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    return daysUntilRemoval >= 3 && daysUntilRemoval <= 7;
   });
+
+  // Log temporário para debug
+  console.log('📊 Categorização das locações:', {
+    total: activeRentals.length,
+    expiradas: expiredRentals.length,
+    hoje: todayRentals.length,
+    urgentes: urgentRentals.length,
+    proximas: upcomingRentals.length,
+  });
+
+  if (activeRentals.length > 0) {
+    console.log('🔍 Detalhes da primeira locação:', {
+      cliente: activeRentals[0].customerName,
+      dataRemocao: activeRentals[0].rentalInfo?.removalDate,
+      diasRestantes: Math.ceil((new Date(activeRentals[0].rentalInfo!.removalDate).getTime() - today.getTime()) / (1000 * 60 * 60 * 24)),
+    });
+  }
 
   // Notificar sobre serviços expirados
   useEffect(() => {
