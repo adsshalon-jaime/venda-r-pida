@@ -47,6 +47,14 @@ export function RemovalTracker({ sales, onMarkAsRemoved }: RemovalTrackerProps) 
     });
   });
 
+  console.log('🎯 ACTIVE RENTAL THAT SHOULD APPEAR:', activeRentals.length > 0 ? {
+    customer: activeRentals[0].customerName,
+    product: activeRentals[0].productName,
+    deliveryDate: activeRentals[0].rentalInfo?.deliveryDate,
+    removalDate: activeRentals[0].rentalInfo?.removalDate,
+    serviceOrderNumber: activeRentals[0].rentalInfo?.serviceOrderNumber,
+  } : 'NONE');
+
   // Separar por status
   const today = new Date();
   today.setHours(0, 0, 0, 0);
