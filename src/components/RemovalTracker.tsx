@@ -58,23 +58,6 @@ export function RemovalTracker({ sales, onMarkAsRemoved }: RemovalTrackerProps) 
     return daysUntilRemoval >= 3 && daysUntilRemoval <= 7;
   });
 
-  // Log temporário para debug
-  console.log('📊 Categorização das locações:', {
-    total: activeRentals.length,
-    expiradas: expiredRentals.length,
-    hoje: todayRentals.length,
-    urgentes: urgentRentals.length,
-    proximas: upcomingRentals.length,
-  });
-
-  if (activeRentals.length > 0) {
-    console.log('🔍 Detalhes da primeira locação:', {
-      cliente: activeRentals[0].customerName,
-      dataRemocao: activeRentals[0].rentalInfo?.removalDate,
-      diasRestantes: Math.ceil((new Date(activeRentals[0].rentalInfo!.removalDate).getTime() - today.getTime()) / (1000 * 60 * 60 * 24)),
-    });
-  }
-
   // Notificar sobre serviços expirados
   useEffect(() => {
     expiredRentals.forEach(sale => {
@@ -240,6 +223,41 @@ export function RemovalTracker({ sales, onMarkAsRemoved }: RemovalTrackerProps) 
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {upcomingRentals.map(sale => (
+              <RemovalCountdown 
+                key={sale.id} 
+                sale={sale} 
+                onViewDetails={handleViewDetails}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Todas as Locações Ativas (mais de 7 dias) */}
+      {activeRentals.length > 0 && 
+       expiredRentals.length === 0 && 
+       todayRentals.length === 0 && 
+       urgentRentals.length === 0 && 
+       upcomingRentals.length === 0 && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5 shadow-sm">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="bg-blue-100 rounded-full p-2">
+              <Truck className="h-5 w-5 text-blue-600" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold text-blue-800">📦 Locações Ativas</h3>
+                <span className="text-xl font-bold text-blue-600">
+                  {activeRentals.length}
+                </span>
+              </div>
+              <p className="text-sm text-blue-700">
+                Acompanhe todas as locações em andamento.
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {activeRentals.map(sale => (
               <RemovalCountdown 
                 key={sale.id} 
                 sale={sale} 
