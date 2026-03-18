@@ -31,7 +31,7 @@ export default function ServiceOrders() {
 
   // Filtrar apenas vendas de locação que têm OS
   const rentalSales = sales.filter(sale => 
-    sale.category === 'rental' && sale.rentalInfo?.serviceOrderNumber
+    sale.isRental && sale.rentalInfo?.serviceOrderNumber
   );
 
   // Aplicar filtros
