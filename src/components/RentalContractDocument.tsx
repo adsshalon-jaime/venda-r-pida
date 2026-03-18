@@ -74,9 +74,6 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
           }
           
           * {
-            print-color-adjust: economy !important;
-            -webkit-print-color-adjust: economy !important;
-            color-adjust: economy !important;
             box-shadow: none !important;
           }
           
@@ -203,32 +200,26 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
             border-width: 0.5pt !important;
           }
           
-          /* Forçar TODOS os backgrounds a serem brancos */
-          div[class*="bg-"],
+          /* Remover backgrounds coloridos */
           .bg-slate-50,
           .bg-blue-50,
           .bg-green-50,
-          .bg-slate-100,
-          .bg-primary,
-          .bg-white,
-          .bg-muted {
+          .bg-slate-100 {
             background-color: white !important;
             background-image: none !important;
-            background: white !important;
           }
           
-          /* Simplificar TODAS as cores de texto */
-          * {
-            color: black !important;
+          /* Manter cores de texto visíveis */
+          h1, h2, h3, h4, h5, h6 {
+            color: #000 !important;
           }
           
-          .text-primary,
-          .text-slate-600,
-          .text-slate-700,
-          .text-slate-800,
-          .text-slate-500,
-          .text-muted-foreground {
-            color: black !important;
+          p, span, td, th, li, div {
+            color: #1a1a1a !important;
+          }
+          
+          .text-primary {
+            color: #000 !important;
           }
           
           /* Remover arredondamentos */
