@@ -28,6 +28,25 @@ export function RemovalTracker({ sales, onMarkAsRemoved }: RemovalTrackerProps) 
     !sale.rentalInfo?.isRemoved
   );
 
+  // Log temporário para debug
+  console.log('=== REMOVAL TRACKER DEBUG ===');
+  console.log('Total sales:', sales.length);
+  console.log('Sales with isRental=true:', sales.filter(s => s.isRental).length);
+  console.log('Sales with rentalInfo:', sales.filter(s => s.rentalInfo).length);
+  console.log('Active rentals (filtered):', activeRentals.length);
+  
+  // Mostrar todas as vendas de locação (isRental=true)
+  const rentalSales = sales.filter(s => s.isRental);
+  rentalSales.forEach((sale, i) => {
+    console.log(`Rental ${i}:`, {
+      customer: sale.customerName,
+      isRental: sale.isRental,
+      hasRentalInfo: !!sale.rentalInfo,
+      removalDate: sale.rentalInfo?.removalDate,
+      isRemoved: sale.rentalInfo?.isRemoved,
+    });
+  });
+
   // Separar por status
   const today = new Date();
   today.setHours(0, 0, 0, 0);
