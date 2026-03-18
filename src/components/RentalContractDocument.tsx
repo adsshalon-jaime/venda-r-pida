@@ -74,15 +74,17 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
           }
           
           * {
-            print-color-adjust: exact !important;
-            -webkit-print-color-adjust: exact !important;
-            color-adjust: exact !important;
+            print-color-adjust: economy !important;
+            -webkit-print-color-adjust: economy !important;
+            color-adjust: economy !important;
+            box-shadow: none !important;
           }
           
           html, body {
             margin: 0 !important;
             padding: 0 !important;
             background: white !important;
+            color: black !important;
           }
           
           /* Ocultar elementos específicos da UI */
@@ -181,28 +183,53 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
           .space-y-3 > * + * { margin-top: 0.12cm !important; }
           .space-y-2 > * + * { margin-top: 0.1cm !important; }
           
-          /* Remover bordas grossas e backgrounds coloridos */
-          .border-b-4 { border-bottom: 1pt solid #333 !important; }
-          .border-t-2 { border-top: 1pt solid #666 !important; }
-          .border-b-2 { border-bottom: 1pt solid #666 !important; }
-          .border { border: 0.5pt solid #ccc !important; }
+          /* Remover TODAS as bordas coloridas */
+          .border-b-4,
+          .border-t-2,
+          .border-b-2,
+          .border-t,
+          .border-b,
+          .border-l,
+          .border-r,
+          .border,
+          .border-primary,
+          .border-slate-200,
+          .border-slate-300,
+          .border-blue-200,
+          .border-blue-300,
+          .border-green-200,
+          .border-green-300 {
+            border-color: #d1d5db !important;
+            border-width: 0.5pt !important;
+          }
           
-          /* Remover backgrounds coloridos */
+          /* Forçar TODOS os backgrounds a serem brancos */
+          div[class*="bg-"],
           .bg-slate-50,
           .bg-blue-50,
           .bg-green-50,
           .bg-slate-100,
-          .bg-primary {
-            background-color: transparent !important;
-            background: none !important;
+          .bg-primary,
+          .bg-white,
+          .bg-muted {
+            background-color: white !important;
+            background-image: none !important;
+            background: white !important;
           }
           
-          /* Simplificar cores */
-          .text-primary { color: #000 !important; }
+          /* Simplificar TODAS as cores de texto */
+          * {
+            color: black !important;
+          }
+          
+          .text-primary,
           .text-slate-600,
           .text-slate-700,
-          .text-slate-800 { color: #333 !important; }
-          .text-muted-foreground { color: #666 !important; }
+          .text-slate-800,
+          .text-slate-500,
+          .text-muted-foreground {
+            color: black !important;
+          }
           
           /* Remover arredondamentos */
           .rounded-lg,
