@@ -70,7 +70,7 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
         @media print {
           @page {
             size: A4;
-            margin: 1cm 1.5cm;
+            margin: 0.8cm 1.2cm;
           }
           
           * {
@@ -82,6 +82,7 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
           html, body {
             margin: 0 !important;
             padding: 0 !important;
+            background: white !important;
           }
           
           /* Ocultar elementos específicos da UI */
@@ -110,9 +111,10 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
             max-width: 100% !important;
             width: 100% !important;
             margin: 0 !important;
-            padding: 1cm !important;
-            font-size: 9pt !important;
-            line-height: 1.3 !important;
+            padding: 0 !important;
+            font-size: 8.5pt !important;
+            line-height: 1.25 !important;
+            background: white !important;
           }
           
           .print-section {
@@ -147,37 +149,64 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
           }
           
           /* Reduzir tamanhos de fonte para impressão */
-          h1 { font-size: 16pt !important; }
-          h2 { font-size: 14pt !important; }
-          h3 { font-size: 11pt !important; }
-          p, td, th, li { font-size: 9pt !important; }
+          h1 { font-size: 14pt !important; margin-bottom: 0.15cm !important; }
+          h2 { font-size: 12pt !important; margin-bottom: 0.12cm !important; }
+          h3 { font-size: 10pt !important; margin-bottom: 0.1cm !important; }
+          p, td, th, li { font-size: 8.5pt !important; line-height: 1.25 !important; }
           .text-xs { font-size: 7pt !important; }
-          .text-sm { font-size: 8pt !important; }
-          .text-lg { font-size: 10pt !important; }
-          .text-xl { font-size: 11pt !important; }
-          .text-2xl { font-size: 12pt !important; }
+          .text-sm { font-size: 7.5pt !important; }
+          .text-lg { font-size: 9pt !important; }
+          .text-xl { font-size: 10pt !important; }
+          .text-2xl { font-size: 11pt !important; }
+          .text-3xl { font-size: 13pt !important; }
           
-          /* Reduzir espaçamentos */
-          .mb-8 { margin-bottom: 0.5cm !important; }
-          .mb-6 { margin-bottom: 0.4cm !important; }
-          .mb-4 { margin-bottom: 0.3cm !important; }
-          .mb-2 { margin-bottom: 0.2cm !important; }
-          .mt-8 { margin-top: 0.5cm !important; }
-          .mt-12 { margin-top: 0.6cm !important; }
-          .p-6 { padding: 0.4cm !important; }
-          .p-8 { padding: 0.5cm !important; }
-          .space-y-4 > * + * { margin-top: 0.3cm !important; }
-          .space-y-3 > * + * { margin-top: 0.2cm !important; }
-          .space-y-2 > * + * { margin-top: 0.15cm !important; }
+          /* Reduzir espaçamentos drasticamente */
+          .mb-8 { margin-bottom: 0.25cm !important; }
+          .mb-6 { margin-bottom: 0.2cm !important; }
+          .mb-4 { margin-bottom: 0.15cm !important; }
+          .mb-2 { margin-bottom: 0.1cm !important; }
+          .mt-8 { margin-top: 0.25cm !important; }
+          .mt-12 { margin-top: 0.3cm !important; }
+          .mt-16 { margin-top: 0.4cm !important; }
+          .pt-8 { padding-top: 0.25cm !important; }
+          .pb-6 { padding-bottom: 0.2cm !important; }
+          .p-6 { padding: 0.2cm !important; }
+          .p-8 { padding: 0 !important; }
+          .p-3 { padding: 0.1cm !important; }
+          .p-4 { padding: 0.15cm !important; }
+          .gap-4 { gap: 0.15cm !important; }
+          .gap-8 { gap: 0.2cm !important; }
+          .gap-12 { gap: 0.3cm !important; }
+          .space-y-4 > * + * { margin-top: 0.15cm !important; }
+          .space-y-3 > * + * { margin-top: 0.12cm !important; }
+          .space-y-2 > * + * { margin-top: 0.1cm !important; }
           
-          /* Garantir visibilidade de bordas e cores */
-          .border, .border-b-4, .border-t-2, .border-b-2 {
-            border-color: #000 !important;
+          /* Remover bordas grossas e backgrounds coloridos */
+          .border-b-4 { border-bottom: 1pt solid #333 !important; }
+          .border-t-2 { border-top: 1pt solid #666 !important; }
+          .border-b-2 { border-bottom: 1pt solid #666 !important; }
+          .border { border: 0.5pt solid #ccc !important; }
+          
+          /* Remover backgrounds coloridos */
+          .bg-slate-50,
+          .bg-blue-50,
+          .bg-green-50,
+          .bg-slate-100,
+          .bg-primary {
+            background-color: transparent !important;
+            background: none !important;
           }
           
-          .bg-slate-50, .bg-blue-50, .bg-green-50 {
-            background-color: #f8f9fa !important;
-          }
+          /* Simplificar cores */
+          .text-primary { color: #000 !important; }
+          .text-slate-600,
+          .text-slate-700,
+          .text-slate-800 { color: #333 !important; }
+          .text-muted-foreground { color: #666 !important; }
+          
+          /* Remover arredondamentos */
+          .rounded-lg,
+          .rounded-xl { border-radius: 0 !important; }
           
           /* Ocultar elementos desnecessários */
           .print\\:hidden {
