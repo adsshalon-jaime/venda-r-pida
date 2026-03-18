@@ -65,9 +65,44 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
   };
 
   return (
-    <div className="bg-white p-8 max-w-4xl mx-auto" id="rental-contract-document">
+    <>
+      <style>{`
+        @media print {
+          @page {
+            size: A4;
+            margin: 1.5cm;
+          }
+          
+          body {
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+          }
+          
+          #rental-contract-document {
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          
+          .print-section {
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+          
+          .print-page-break {
+            page-break-after: always;
+            break-after: always;
+          }
+          
+          .print-avoid-break {
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+        }
+      `}</style>
+      <div className="bg-white p-8 max-w-4xl mx-auto" id="rental-contract-document">
       {/* Cabeçalho da Empresa */}
-      <div className="border-b-4 border-primary pb-6 mb-8">
+      <div className="border-b-4 border-primary pb-6 mb-8 print-avoid-break">
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-3xl font-bold text-primary mb-2">{contract.companyData.name}</h1>
@@ -83,7 +118,7 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
       </div>
 
       {/* Título do Contrato */}
-      <div className="text-center mb-8">
+      <div className="text-center mb-8 print-avoid-break">
         <h2 className="text-2xl font-bold text-slate-800 mb-2">
           CONTRATO DE LOCAÇÃO DE TENDAS E COBERTURAS
         </h2>
@@ -99,7 +134,7 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
       </div>
 
       {/* Dados do Cliente */}
-      <div className="mb-8 bg-slate-50 p-6 rounded-lg border border-slate-200">
+      <div className="mb-8 bg-slate-50 p-6 rounded-lg border border-slate-200 print-avoid-break">
         <h3 className="text-lg font-bold text-slate-800 mb-4 border-b border-slate-300 pb-2">
           DADOS DO LOCATÁRIO
         </h3>
@@ -136,7 +171,7 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
       </div>
 
       {/* Período de Locação */}
-      <div className="mb-8 bg-blue-50 p-6 rounded-lg border border-blue-200">
+      <div className="mb-8 bg-blue-50 p-6 rounded-lg border border-blue-200 print-avoid-break">
         <h3 className="text-lg font-bold text-slate-800 mb-4 border-b border-blue-300 pb-2">
           PERÍODO DE LOCAÇÃO
         </h3>
@@ -175,7 +210,7 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
       </div>
 
       {/* Itens Locados */}
-      <div className="mb-8">
+      <div className="mb-8 print-section">
         <h3 className="text-lg font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">
           ITENS LOCADOS
         </h3>
@@ -204,7 +239,7 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
       </div>
 
       {/* Valores */}
-      <div className="mb-8 bg-slate-50 p-6 rounded-lg border border-slate-200">
+      <div className="mb-8 bg-slate-50 p-6 rounded-lg border border-slate-200 print-avoid-break">
         <h3 className="text-lg font-bold text-slate-800 mb-4 border-b border-slate-300 pb-2">
           VALORES
         </h3>
@@ -239,7 +274,7 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
       </div>
 
       {/* Forma de Pagamento */}
-      <div className="mb-8 bg-green-50 p-6 rounded-lg border border-green-200">
+      <div className="mb-8 bg-green-50 p-6 rounded-lg border border-green-200 print-avoid-break">
         <h3 className="text-lg font-bold text-slate-800 mb-4 border-b border-green-300 pb-2">
           FORMA DE PAGAMENTO
         </h3>
@@ -260,7 +295,7 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
       </div>
 
       {/* Cláusulas do Contrato */}
-      <div className="mb-8 text-xs text-slate-700 leading-relaxed">
+      <div className="mb-8 text-xs text-slate-700 leading-relaxed print-section">
         <h3 className="text-lg font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">
           CLÁUSULAS CONTRATUAIS
         </h3>
@@ -352,12 +387,12 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
       </div>
 
       {/* Local e Data */}
-      <div className="mt-8 mb-4 text-center text-sm">
+      <div className="mt-8 mb-4 text-center text-sm print-avoid-break">
         <p>Palmas/TO, {format(contract.contractDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</p>
       </div>
 
       {/* Assinaturas */}
-      <div className="mt-12 pt-8 border-t-2 border-slate-300">
+      <div className="mt-12 pt-8 border-t-2 border-slate-300 print-avoid-break">
         <div className="grid grid-cols-2 gap-12 text-center">
           <div>
             <div className="border-t-2 border-slate-400 pt-2 mt-16">
@@ -375,7 +410,7 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
       </div>
 
       {/* Rodapé */}
-      <div className="mt-8 pt-4 border-t border-slate-200 text-center text-xs text-slate-500">
+      <div className="mt-8 pt-4 border-t border-slate-200 text-center text-xs text-slate-500 print-avoid-break">
         <p>
           Este contrato foi gerado eletronicamente e é válido sem assinaturas digitais conforme
           legislação vigente.
@@ -385,5 +420,6 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
         </p>
       </div>
     </div>
+    </>
   );
 }
