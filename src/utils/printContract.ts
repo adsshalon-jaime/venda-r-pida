@@ -108,7 +108,7 @@ export function printContract(contract: PrintContractData) {
     .sig-line { border-top: 1px solid #333; padding-top: 4px; text-align: center; }
     .sig-name { font-weight: bold; font-size: 9pt; }
     .sig-role { font-size: 8pt; color: #555; }
-    .footer { border-top: 1px solid #d1d5db; margin-top: 14px; padding-top: 6px; text-align: center; font-size: 7.5pt; color: #666; }
+    .footer { border-top: 2px solid #333; margin-top: 40px; padding-top: 8px; text-align: center; font-size: 8pt; color: #444; line-height: 1.6; }
   </style>
 </head>
 <body>
@@ -265,7 +265,7 @@ export function printContract(contract: PrintContractData) {
 
   <!-- Rodapé -->
   <div class="footer">
-    <p>${contract.companyData.name} — Tendas &amp; Coberturas | CNPJ: ${contract.companyData.cnpj}</p>
+    <p><strong>Coberturas Shalon - Palmas/TO</strong> &mdash; Tendas &amp; Coberturas &nbsp;|&nbsp; CNPJ: 44.458.233/0001-08</p>
     <p>Este contrato foi gerado eletronicamente e é válido conforme legislação vigente.</p>
   </div>
 </body>
