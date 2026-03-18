@@ -44,10 +44,10 @@ export function MetricCard({
         backgroundSize: '24px 24px'
       }} />
       
-      <div className="relative flex items-start justify-between">
-        <div className="space-y-1.5 sm:space-y-2 flex-1">
-          <p className="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider">{title}</p>
-          <p className="text-xl sm:text-2xl font-bold tracking-tight bg-gradient-to-br from-slate-900 to-slate-700 bg-clip-text text-transparent">
+      <div className="relative flex items-start justify-between gap-3">
+        <div className="space-y-1.5 sm:space-y-2 flex-1 min-w-0">
+          <p className="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider line-clamp-2">{title}</p>
+          <p className="text-lg sm:text-xl lg:text-2xl font-bold tracking-tight bg-gradient-to-br from-slate-900 to-slate-700 bg-clip-text text-transparent break-words">
             {value}
           </p>
           {change !== undefined && (

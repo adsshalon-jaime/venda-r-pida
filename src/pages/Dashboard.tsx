@@ -67,7 +67,7 @@ export default function Dashboard() {
         </div>
 
         {/* Metrics Grid - Cards principais */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
           <MetricCard
             title={`Faturamento de ${getMonthName(selectedMonth)}`}
             value={formatCurrency(currentMonthMetrics.monthlyRevenue)}
@@ -106,7 +106,7 @@ export default function Dashboard() {
         </div>
 
         {/* Credit Sales Metrics - Cards de vendas a prazo */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
           <MetricCard
             title="Vendas a Prazo"
             value={formatCurrency(creditMetrics.totalCreditSales)}
@@ -154,7 +154,7 @@ export default function Dashboard() {
         />
 
         {/* Charts and Recent Sales */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 mt-6 sm:mt-8">
           <ProductDistributionChart
             lonasSold={currentMonthMetrics.lonasSold}
             tendasSold={currentMonthMetrics.tendasSold}

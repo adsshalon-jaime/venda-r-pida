@@ -19,9 +19,10 @@ const navItems = [
 
 interface SidebarProps {
   className?: string;
+  onNavigate?: () => void;
 }
 
-export function Sidebar({ className = "" }: SidebarProps) {
+export function Sidebar({ className = "", onNavigate }: SidebarProps) {
   const { logout, userEmail } = useAuth();
   const navigate = useNavigate();
 
@@ -54,6 +55,7 @@ export function Sidebar({ className = "" }: SidebarProps) {
                 end={item.url === '/'}
                 className="flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-[#34414b] hover:text-white transition-colors"
                 activeClassName="bg-primary/10 text-primary font-medium"
+                onClick={onNavigate}
               >
                 <item.icon className="h-5 w-5" />
                 <span>{item.title}</span>
@@ -75,6 +77,7 @@ export function Sidebar({ className = "" }: SidebarProps) {
           to="/configuracoes"
           className="flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-[#34414b] hover:text-white transition-colors"
           activeClassName="bg-primary/10 text-primary font-medium"
+          onClick={onNavigate}
         >
           <Settings className="h-5 w-5" />
           <span>Configurações</span>
