@@ -49,7 +49,7 @@ export default function Settings() {
     <Layout>
       <div className="p-8 max-w-2xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Configurações</h1>
+          <h1 className="text-2xl font-bold text-slate-800">Configurações</h1>
           <p className="text-muted-foreground mt-1">
             Personalize seu painel administrativo
           </p>

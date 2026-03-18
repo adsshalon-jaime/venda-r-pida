@@ -53,12 +53,10 @@ export default function Dashboard() {
         {/* Header com design moderno */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
           <div className="space-y-1">
-            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 bg-clip-text text-transparent">
-              Dashboard
-            </h1>
-            <p className="text-xs text-slate-500 font-medium">
-              Visão geral do seu negócio em tempo real
-            </p>
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
+              <p className="text-sm text-slate-600 mt-1">Visão geral do seu negócio</p>
+            </div>
           </div>
           <MonthSelector 
             selectedMonth={selectedMonth} 

@@ -98,10 +98,8 @@ export default function Products() {
       <div className="p-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Produtos</h1>
-            <p className="text-muted-foreground mt-1">
-              Gerencie seu catálogo de tendas e lonas
-            </p>
+            <h1 className="text-2xl font-bold text-slate-800">Produtos</h1>
+            <p className="text-sm text-slate-600 mt-1">Gerencie seu catálogo de produtos e lonas</p>
           </div>
           <Button onClick={handleOpenModal}>
             <Plus className="mr-2 h-4 w-4" />

@@ -82,10 +82,8 @@ export default function Customers() {
       <div className="p-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Clientes</h1>
-            <p className="text-muted-foreground mt-1">
-              Sua base de clientes cadastrados
-            </p>
+            <h1 className="text-2xl font-bold text-slate-800">Clientes</h1>
+            <p className="text-sm text-slate-600 mt-1">Gerencie sua base de clientes</p>
           </div>
           <Button onClick={handleOpenModal}>
             <Plus className="mr-2 h-4 w-4" />

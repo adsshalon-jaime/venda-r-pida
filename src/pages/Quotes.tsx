@@ -147,6 +147,7 @@ export default function Quotes() {
               <span className="text-xs font-semibold text-slate-500 uppercase">Total</span>
               <FileText className="h-4 w-4 text-slate-600" />
             </div>
+            <h1 className="text-2xl font-bold text-slate-800">Orçamentos</h1>
             <p className="text-2xl font-bold text-slate-900">{metrics.totalQuotes}</p>
           </div>
 
@@ -217,7 +218,7 @@ export default function Quotes() {
           ) : filteredQuotes.length === 0 ? (
             <div className="p-8 text-center">
               <FileText className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-              <p className="text-slate-500">Nenhum orçamento encontrado</p>
+              <p className="text-sm text-slate-600 mt-1">Gerencie seus orçamentos</p>
               <p className="text-xs text-slate-400 mt-1">
                 Clique em "Novo Orçamento" para começar
               </p>

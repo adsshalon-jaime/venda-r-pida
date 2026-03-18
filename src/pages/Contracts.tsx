@@ -97,7 +97,7 @@ export default function Contracts() {
       <div className="p-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Contratos de Locação</h1>
+            <h1 className="text-2xl font-bold text-slate-800">Contratos de Locação</h1>
             <p className="text-muted-foreground mt-1">
               Gere contratos profissionais de locação de tendas
             </p>
@@ -128,7 +128,7 @@ export default function Contracts() {
         {filteredContracts.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-xl border">
             <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-            <p className="text-xl font-semibold mb-2">Nenhum contrato encontrado</p>
+            <p className="text-sm text-slate-600 mt-1">Gerencie contratos de locação de tendas</p>
             <p className="text-sm text-muted-foreground mb-6">
               {searchQuery ? 'Tente ajustar sua busca' : 'Comece criando seu primeiro contrato de locação'}
             </p>
