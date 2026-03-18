@@ -88,8 +88,23 @@ export function RemovalTracker({ sales, onMarkAsRemoved }: RemovalTrackerProps) 
     setViewModalOpen(true);
   };
 
+  // Se não há locações ativas, mostrar mensagem informativa
   if (activeRentals.length === 0) {
-    return null;
+    return (
+      <div className="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6 text-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="bg-slate-200 rounded-full p-3">
+            <Truck className="h-8 w-8 text-slate-400" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-700 text-lg">Nenhuma Locação Pendente</h3>
+            <p className="text-sm text-slate-500 mt-1">
+              Quando você criar uma locação de tenda, o acompanhamento de remoção aparecerá aqui.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
