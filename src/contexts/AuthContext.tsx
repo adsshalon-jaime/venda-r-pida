@@ -10,10 +10,16 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Credenciais válidas (em produção, isso seria validado no backend)
-const VALID_CREDENTIALS = {
-  email: 'contato@nacionaltendas.com',
-  password: 'Nacional101020@',
-};
+const VALID_CREDENTIALS = [
+  {
+    email: 'contato@nacionaltendas.com',
+    password: 'Nacional101020@',
+  },
+  {
+    email: 'admin@nacionaltendas.com',
+    password: 'Jaime101020@',
+  },
+];
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -34,9 +40,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = (email: string, password: string) => {
     const normalizedEmail = email.trim().toLowerCase();
-    const normalizedValidEmail = VALID_CREDENTIALS.email.toLowerCase();
 
-    if (normalizedEmail === normalizedValidEmail && password === VALID_CREDENTIALS.password) {
+    const validUser = VALID_CREDENTIALS.find(
+      (cred) => cred.email.toLowerCase() === normalizedEmail && cred.password === password
+    );
+
+    if (validUser) {
       setIsAuthenticated(true);
       setUserEmail(email.trim());
       return { success: true };
