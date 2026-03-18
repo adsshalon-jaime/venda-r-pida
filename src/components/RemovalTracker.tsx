@@ -28,6 +28,10 @@ export function RemovalTracker({ sales, onMarkAsRemoved }: RemovalTrackerProps) 
     !sale.rentalInfo?.isRemoved
   );
 
+  console.log('RemovalTracker - Total sales:', sales.length);
+  console.log('RemovalTracker - Active rentals:', activeRentals.length);
+  console.log('RemovalTracker - Sales:', sales);
+
   // Separar por status
   const today = new Date();
   today.setHours(0, 0, 0, 0);
