@@ -82,27 +82,18 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
           html, body {
             margin: 0 !important;
             padding: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
           }
           
-          /* Ocultar TODOS os elementos exceto o documento do contrato */
-          body > *:not(#__next):not(script):not(style) {
+          /* Ocultar elementos específicos da UI */
+          nav,
+          aside,
+          header:not(#rental-contract-document header),
+          .print\\:hidden,
+          [data-radix-dialog-overlay] {
             display: none !important;
           }
           
-          #__next > *:not([id*="radix"]):not([data-radix-portal]) {
-            display: none !important;
-          }
-          
-          /* Garantir que apenas o conteúdo do portal (modal) apareça */
-          [data-radix-portal] {
-            position: static !important;
-            width: 100% !important;
-            height: auto !important;
-          }
-          
-          /* Ocultar overlay e elementos do modal */
+          /* Ajustar modal para impressão */
           [role="dialog"] {
             position: static !important;
             max-width: 100% !important;
@@ -112,13 +103,7 @@ export function RentalContractDocument({ contract }: RentalContractDocumentProps
             border: none !important;
             box-shadow: none !important;
             background: white !important;
-          }
-          
-          /* Ocultar cabeçalho do dialog e botões */
-          [role="dialog"] > div:first-child,
-          [role="dialog"] button,
-          .print\\:hidden {
-            display: none !important;
+            overflow: visible !important;
           }
           
           #rental-contract-document {
