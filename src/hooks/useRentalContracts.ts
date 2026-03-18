@@ -49,9 +49,9 @@ export function useRentalContracts() {
       }));
 
       setContracts(formattedContracts);
-    } catch (error) {
-      console.error('Error loading contracts:', error);
-      toast.error('Erro ao carregar contratos');
+    } catch (error: any) {
+      console.error('Error loading contracts:', error?.message || error?.code || JSON.stringify(error));
+      toast.error(`Erro ao carregar contratos: ${error?.message || 'Verifique o console'}`);
     } finally {
       setLoading(false);
     }
@@ -92,9 +92,10 @@ export function useRentalContracts() {
       toast.success('Contrato criado com sucesso!');
       await loadContracts();
       return data;
-    } catch (error) {
-      console.error('Error adding contract:', error);
-      toast.error('Erro ao criar contrato');
+    } catch (error: any) {
+      const msg = error?.message || error?.code || JSON.stringify(error);
+      console.error('Error adding contract:', msg);
+      toast.error(`Erro ao criar contrato: ${msg}`);
       throw error;
     }
   };
@@ -134,9 +135,10 @@ export function useRentalContracts() {
 
       toast.success('Contrato atualizado com sucesso!');
       await loadContracts();
-    } catch (error) {
-      console.error('Error updating contract:', error);
-      toast.error('Erro ao atualizar contrato');
+    } catch (error: any) {
+      const msg = error?.message || error?.code || JSON.stringify(error);
+      console.error('Error updating contract:', msg);
+      toast.error(`Erro ao atualizar contrato: ${msg}`);
       throw error;
     }
   };
@@ -152,9 +154,10 @@ export function useRentalContracts() {
 
       toast.success('Contrato excluído com sucesso!');
       await loadContracts();
-    } catch (error) {
-      console.error('Error deleting contract:', error);
-      toast.error('Erro ao excluir contrato');
+    } catch (error: any) {
+      const msg = error?.message || error?.code || JSON.stringify(error);
+      console.error('Error deleting contract:', msg);
+      toast.error(`Erro ao excluir contrato: ${msg}`);
       throw error;
     }
   };
