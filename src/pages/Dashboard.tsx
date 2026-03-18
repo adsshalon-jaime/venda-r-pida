@@ -144,12 +144,6 @@ export default function Dashboard() {
           onMarkAsPaid={markSaleAsPaid}
         />
 
-        {/* Rental Tracker - Acompanhamento de Remoções com Contador */}
-        <RemovalTracker
-          sales={sales}
-          onMarkAsRemoved={handleMarkAsRemoved}
-        />
-
         {/* Charts and Recent Sales */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 mt-6 sm:mt-8">
           <ProductDistributionChart
@@ -160,6 +154,14 @@ export default function Dashboard() {
             sales={getSalesByMonth(selectedMonth).slice(0, 5)} 
             showMonthBadge={true}
             selectedMonth={selectedMonth}
+          />
+        </div>
+
+        {/* Rental Tracker - Acompanhamento de Remoções com Contador */}
+        <div className="mt-6 sm:mt-8">
+          <RemovalTracker
+            sales={sales}
+            onMarkAsRemoved={handleMarkAsRemoved}
           />
         </div>
       </div>

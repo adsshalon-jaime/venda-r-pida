@@ -28,33 +28,6 @@ export function RemovalTracker({ sales, onMarkAsRemoved }: RemovalTrackerProps) 
     !sale.rentalInfo?.isRemoved
   );
 
-  // Log temporário para debug
-  console.log('=== REMOVAL TRACKER DEBUG ===');
-  console.log('Total sales:', sales.length);
-  console.log('Sales with isRental=true:', sales.filter(s => s.isRental).length);
-  console.log('Sales with rentalInfo:', sales.filter(s => s.rentalInfo).length);
-  console.log('Active rentals (filtered):', activeRentals.length);
-  
-  // Mostrar todas as vendas de locação (isRental=true)
-  const rentalSales = sales.filter(s => s.isRental);
-  rentalSales.forEach((sale, i) => {
-    console.log(`Rental ${i}:`, {
-      customer: sale.customerName,
-      isRental: sale.isRental,
-      hasRentalInfo: !!sale.rentalInfo,
-      removalDate: sale.rentalInfo?.removalDate,
-      isRemoved: sale.rentalInfo?.isRemoved,
-    });
-  });
-
-  console.log('🎯 ACTIVE RENTAL THAT SHOULD APPEAR:', activeRentals.length > 0 ? {
-    customer: activeRentals[0].customerName,
-    product: activeRentals[0].productName,
-    deliveryDate: activeRentals[0].rentalInfo?.deliveryDate,
-    removalDate: activeRentals[0].rentalInfo?.removalDate,
-    serviceOrderNumber: activeRentals[0].rentalInfo?.serviceOrderNumber,
-  } : 'NONE');
-
   // Separar por status
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -115,18 +88,8 @@ export function RemovalTracker({ sales, onMarkAsRemoved }: RemovalTrackerProps) 
     setViewModalOpen(true);
   };
 
-  // TESTE: Sempre renderizar algo para debug
   if (activeRentals.length === 0) {
-    return (
-      <div className="bg-blue-50 border-2 border-blue-300 rounded-xl p-4 mb-6">
-        <p className="text-blue-800 font-semibold">
-          🔍 RemovalTracker está funcionando! Nenhuma locação ativa pendente no momento.
-        </p>
-        <p className="text-sm text-blue-600 mt-1">
-          Total de vendas: {sales.length} | Locações: {sales.filter(s => s.isRental).length} | Com rentalInfo: {sales.filter(s => s.rentalInfo).length}
-        </p>
-      </div>
-    );
+    return null;
   }
 
   return (
