@@ -36,15 +36,14 @@ export function Sidebar({ className = "", onNavigate }: SidebarProps) {
   return (
     <aside className={`w-64 h-screen bg-card border-r border-border flex flex-col ${className}`}>
       <div className="p-6 border-b border-border">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-            <span className="text-xl font-bold text-primary-foreground">S</span>
-          </div>
-          <div>
-            <h1 className="font-bold text-lg">Coberturas Shalon</h1>
-            <p className="text-xs text-muted-foreground">Painel Administrativo</p>
-          </div>
+        <div className="flex items-center justify-center">
+          <img 
+            src="/logo.png" 
+            alt="Coberturas Shalon" 
+            className="h-16 w-auto object-contain"
+          />
         </div>
+        <p className="text-xs text-muted-foreground text-center mt-3">Painel Administrativo</p>
       </div>
 
       <nav className="flex-1 p-4 overflow-y-auto">
