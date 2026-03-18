@@ -164,3 +164,37 @@ export interface Payroll {
   employerAddress: string;
   createdAt: Date;
 }
+
+export interface RentalContractItem {
+  name: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+}
+
+export interface RentalContract {
+  id: string;
+  contractNumber: string;
+  contractDate: Date;
+  customerId?: string;
+  customerName: string;
+  customerDocument?: string;
+  customerAddress?: string;
+  customerCity?: string;
+  customerState?: string;
+  customerPhone?: string;
+  customerReference?: string;
+  items: RentalContractItem[];
+  rentalPeriod: 'day' | 'week' | 'month';
+  rentalDuration: number;
+  startDate: Date;
+  endDate: Date;
+  subtotal: number;
+  shippingFee: number;
+  assemblyFee: number;
+  totalValue: number;
+  paymentMethod: 'pix' | 'card' | 'cash';
+  pixKey?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

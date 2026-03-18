@@ -20,6 +20,7 @@ import {
 import { RentalContractDocument } from './RentalContractDocument';
 import { Customer } from '@/types';
 import { useSettings } from '@/hooks/useSettings';
+import { useRentalContracts } from '@/hooks/useRentalContracts';
 import { toast } from 'sonner';
 
 interface RentalItem {
@@ -37,6 +38,7 @@ interface RentalContractModalProps {
 
 export function RentalContractModal({ open, onOpenChange, customers }: RentalContractModalProps) {
   const { settings } = useSettings();
+  const { addContract } = useRentalContracts();
   const [step, setStep] = useState<'form' | 'preview'>('form');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [items, setItems] = useState<RentalItem[]>([
@@ -119,6 +121,51 @@ export function RentalContractModal({ open, onOpenChange, customers }: RentalCon
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleSaveContract = async () => {
+    if (!contract) return;
+
+    try {
+      await addContract({
+        contractNumber: contract.contractNumber,
+        contractDate: contract.contractDate,
+        customerId: selectedCustomer?.id,
+        customerName: contract.customerName,
+        customerDocument: contract.customerDocument,
+        customerAddress: contract.customerAddress,
+        customerCity: contract.customerCity,
+        customerState: contract.customerState,
+        customerPhone: contract.customerPhone,
+        customerReference: contract.customerReference,
+        items: contract.items,
+        rentalPeriod: contract.rentalPeriod,
+        rentalDuration: contract.rentalDuration,
+        startDate: contract.startDate,
+        endDate: contract.endDate,
+        subtotal: contract.subtotal,
+        shippingFee: contract.shippingFee,
+        assemblyFee: contract.assemblyFee,
+        totalValue: contract.totalValue,
+        paymentMethod: contract.paymentMethod,
+        pixKey: contract.pixKey,
+      });
+      
+      onOpenChange(false);
+      // Reset form
+      setStep('form');
+      setSelectedCustomer(null);
+      setItems([{ name: '', quantity: 1, unitPrice: 0, total: 0 }]);
+      setRentalPeriod('day');
+      setRentalDuration(1);
+      setStartDate(format(new Date(), 'yyyy-MM-dd'));
+      setShippingFee(0);
+      setAssemblyFee(0);
+      setPaymentMethod('pix');
+      setPixKey('');
+    } catch (error) {
+      console.error('Error saving contract:', error);
+    }
   };
 
   const contract = selectedCustomer && settings
@@ -369,9 +416,13 @@ export function RentalContractModal({ open, onOpenChange, customers }: RentalCon
               <Button variant="outline" onClick={() => setStep('form')}>
                 Voltar
               </Button>
-              <Button onClick={handlePrint}>
+              <Button variant="outline" onClick={handlePrint}>
                 <Printer className="h-4 w-4 mr-2" />
-                Imprimir Contrato
+                Imprimir
+              </Button>
+              <Button onClick={handleSaveContract}>
+                <FileText className="h-4 w-4 mr-2" />
+                Salvar Contrato
               </Button>
             </div>
             {contract && <RentalContractDocument contract={contract} />}
