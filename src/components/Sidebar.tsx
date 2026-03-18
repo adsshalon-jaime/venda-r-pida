@@ -1,4 +1,4 @@
-import { LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, FileText, DollarSign, UserCheck, Receipt, FileSignature, ScrollText } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, FileText, DollarSign, UserCheck, Receipt, FileSignature, ScrollText, ClipboardList } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,6 +12,7 @@ const navItems = [
   { title: 'Clientes', url: '/clientes', icon: Users },
   { title: 'Orçamentos', url: '/orcamentos', icon: FileSignature },
   { title: 'Contratos', url: '/contratos', icon: ScrollText },
+  { title: 'Ordens de Serviço', url: '/ordens-servico', icon: ClipboardList },
   { title: 'Funcionários', url: '/funcionarios', icon: UserCheck },
   { title: 'Holerites', url: '/holerites', icon: Receipt },
   { title: 'Relatórios', url: '/relatorios', icon: FileText },
