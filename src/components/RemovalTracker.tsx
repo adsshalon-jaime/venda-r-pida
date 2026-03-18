@@ -95,15 +95,18 @@ export function RemovalTracker({ sales, onMarkAsRemoved }: RemovalTrackerProps) 
   // Se não há locações ativas, mostrar mensagem informativa
   if (activeRentals.length === 0) {
     return (
-      <div className="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6 text-center">
+      <div className="bg-red-500 border-4 border-yellow-400 rounded-xl p-6 text-center" style={{ minHeight: '200px', backgroundColor: '#ef4444' }}>
         <div className="flex flex-col items-center gap-3">
-          <div className="bg-slate-200 rounded-full p-3">
-            <Truck className="h-8 w-8 text-slate-400" />
+          <div className="bg-white rounded-full p-3">
+            <Truck className="h-8 w-8 text-red-600" />
           </div>
           <div>
-            <h3 className="font-semibold text-slate-700 text-lg">Nenhuma Locação Pendente</h3>
-            <p className="text-sm text-slate-500 mt-1">
-              Quando você criar uma locação de tenda, o acompanhamento de remoção aparecerá aqui.
+            <h3 className="font-bold text-white text-2xl">🔥 TESTE: RemovalTracker AQUI! 🔥</h3>
+            <p className="text-lg text-white mt-2 font-semibold">
+              Se você está vendo este card VERMELHO, o componente está funcionando!
+            </p>
+            <p className="text-sm text-white mt-2">
+              Active rentals: {activeRentals.length} | Total sales: {sales.length}
             </p>
           </div>
         </div>
@@ -112,7 +115,11 @@ export function RemovalTracker({ sales, onMarkAsRemoved }: RemovalTrackerProps) 
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" style={{ minHeight: '100px', backgroundColor: '#fef3c7', border: '4px solid #f59e0b', borderRadius: '12px', padding: '20px' }}>
+      <div className="bg-yellow-100 border-4 border-orange-500 rounded-xl p-4 mb-4">
+        <h2 className="text-2xl font-bold text-orange-600">🎯 ALERTA DE LOCAÇÃO ATIVA DETECTADA!</h2>
+        <p className="text-orange-700 font-semibold">Total de locações ativas: {activeRentals.length}</p>
+      </div>
       {/* Remoções Expiradas */}
       {expiredRentals.length > 0 && (
         <div className="bg-red-50 border-2 border-red-300 rounded-xl p-5 animate-fade-in shadow-lg">
