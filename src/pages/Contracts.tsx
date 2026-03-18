@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, FileText, Calendar, User, Eye, Trash2, Search } from 'lucide-react';
+import { Plus, FileText, Calendar, User, Eye, Trash2, Search, Printer } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
@@ -305,11 +305,21 @@ export default function Contracts() {
 
         {/* Modal de Visualização */}
         <Dialog open={viewModalOpen} onOpenChange={setViewModalOpen}>
-          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-2xl">
-                <FileText className="h-6 w-6 text-primary" />
-                Visualizar Contrato
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto print:max-w-full print:max-h-full print:overflow-visible">
+            <DialogHeader className="print:hidden">
+              <DialogTitle className="flex items-center justify-between text-2xl">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-6 w-6 text-primary" />
+                  Visualizar Contrato
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => window.print()}
+                  className="gap-2"
+                >
+                  <Printer className="h-4 w-4" />
+                  Imprimir
+                </Button>
               </DialogTitle>
             </DialogHeader>
             {viewingContract && settings && (
