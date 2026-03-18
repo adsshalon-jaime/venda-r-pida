@@ -21,12 +21,16 @@ export function RemovalTracker({ sales, onMarkAsRemoved }: RemovalTrackerProps) 
   const [selectedSale, setSelectedSale] = useState<Sale | null>(null);
   const [expiredNotified, setExpiredNotified] = useState<Set<string>>(new Set());
 
+  console.log('🔥 RemovalTracker RENDERIZADO!', { totalSales: sales.length });
+
   // Filtrar apenas locações ativas (não removidas)
   const activeRentals = sales.filter(sale => 
     sale.isRental && 
     sale.rentalInfo?.removalDate && 
     !sale.rentalInfo?.isRemoved
   );
+
+  console.log('🔥 Active rentals:', activeRentals.length);
 
   // Separar por status
   const today = new Date();
