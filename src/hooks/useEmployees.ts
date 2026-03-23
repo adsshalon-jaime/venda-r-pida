@@ -96,17 +96,51 @@ export function useEmployees() {
 
   const updateEmployee = async (id: string, employeeData: Partial<Employee>) => {
     try {
+      console.log('Updating employee:', employeeData);
+      
+      // Transformar os dados para o formato do banco (snake_case)
+      const dbData: any = {};
+      
+      if (employeeData.name !== undefined) dbData.name = employeeData.name;
+      if (employeeData.cpf !== undefined) dbData.cpf = employeeData.cpf;
+      if (employeeData.address !== undefined) dbData.address = employeeData.address;
+      if (employeeData.phone !== undefined) dbData.phone = employeeData.phone;
+      if (employeeData.backupPhone !== undefined) dbData.backup_phone = employeeData.backupPhone;
+      if (employeeData.entryDate !== undefined) dbData.entry_date = employeeData.entryDate;
+      if (employeeData.exitDate !== undefined) dbData.exit_date = employeeData.exitDate;
+      if (employeeData.workHours !== undefined) dbData.work_hours = employeeData.workHours;
+      if (employeeData.lunchBreak !== undefined) dbData.lunch_break = employeeData.lunchBreak;
+      if (employeeData.salary !== undefined) dbData.salary = employeeData.salary;
+      if (employeeData.workSchedule !== undefined) dbData.work_schedule = employeeData.workSchedule;
+      
+      console.log('Transformed data for DB:', dbData);
+      
       const { data, error } = await supabase
         .from('employees')
-        .update(employeeData)
+        .update(dbData)
         .eq('id', id)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating employee:', error);
+        throw error;
+      }
+      
+      console.log('Employee updated successfully:', data);
       
       if (data) {
-        setEmployees(prev => prev.map(emp => emp.id === id ? data : emp));
+        // Transformar os dados de volta para o formato do frontend
+        const frontendData = {
+          ...data,
+          backupPhone: data.backup_phone,
+          entryDate: data.entry_date,
+          exitDate: data.exit_date,
+          workHours: data.work_hours,
+          lunchBreak: data.lunch_break,
+          workSchedule: data.work_schedule,
+        };
+        setEmployees(prev => prev.map(emp => emp.id === id ? frontendData : emp));
       }
     } catch (error) {
       console.error('Error updating employee:', error);
