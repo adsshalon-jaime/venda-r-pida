@@ -49,6 +49,16 @@ export default function PayrollPage() {
     payroll.referenceYear.toString().includes(searchQuery)
   );
 
+  // Combinar holerites e adiantamentos para exibição na aba Holerites
+  const allReceipts = [
+    ...filteredPayrolls.map(p => ({ ...p, type: 'payroll' as const })),
+    ...advances.map(a => ({ ...a, type: 'advance' as const }))
+  ].sort((a, b) => {
+    const dateA = new Date(a.createdAt || a.paymentDate);
+    const dateB = new Date(b.createdAt || b.paymentDate);
+    return dateB.getTime() - dateA.getTime();
+  });
+
   const handleGeneratePayroll = (employee: Employee) => {
     setSelectedEmployee(employee);
     setModalOpen(true);
@@ -304,17 +314,17 @@ export default function PayrollPage() {
           </div>
         )}
 
-        {/* Payroll List */}
-        {filteredPayrolls.length === 0 && !modalOpen ? (
+        {/* Payroll and Advances List */}
+        {allReceipts.length === 0 && !modalOpen ? (
           <div className="text-center py-16">
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <FileText className="h-12 w-12 text-gray-400" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              {searchQuery ? 'Nenhum holerite encontrado' : 'Nenhum holerite gerado'}
+              {searchQuery ? 'Nenhum recibo encontrado' : 'Nenhum recibo gerado'}
             </h3>
             <p className="text-gray-500 mb-6">
-              {searchQuery ? 'Tente ajustar sua busca' : 'Comece gerando o primeiro holerite'}
+              {searchQuery ? 'Tente ajustar sua busca' : 'Comece gerando holerites ou adiantamentos'}
             </p>
             {!searchQuery && (
               <Button onClick={() => setModalOpen(true)} variant="outline" className="h-11">
@@ -325,42 +335,43 @@ export default function PayrollPage() {
           </div>
         ) : !modalOpen && (
           <div className="space-y-4">
-            {filteredPayrolls.map((payroll) => (
-              <Card key={payroll.id} className="hover:shadow-md transition-shadow">
+            {allReceipts.map((receipt) => receipt.type === 'payroll' ? (
+              <Card key={`payroll-${receipt.id}`} className="hover:shadow-md transition-shadow border-green-200">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-4 mb-2">
-                        <h3 className="text-lg font-semibold">{payroll.employee.name}</h3>
+                        <Badge className="bg-green-600">Holerite</Badge>
+                        <h3 className="text-lg font-semibold">{receipt.employee.name}</h3>
                         <Badge variant="outline">
-                          {getMonthName(payroll.referenceMonth)}/{payroll.referenceYear}
+                          {getMonthName(receipt.referenceMonth)}/{receipt.referenceYear}
                         </Badge>
                         <Badge variant="secondary">
-                          {new Date(payroll.paymentDate).toLocaleDateString('pt-BR')}
+                          {new Date(receipt.paymentDate).toLocaleDateString('pt-BR')}
                         </Badge>
                       </div>
                       
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
                         <div>
                           <span className="text-gray-600">Salário Bruto: </span>
-                          <span className="font-medium">{formatCurrency(payroll.grossSalary)}</span>
+                          <span className="font-medium">{formatCurrency(receipt.grossSalary)}</span>
                         </div>
                         <div>
                           <span className="text-gray-600">Deduções: </span>
                           <span className="font-medium text-red-600">
-                            {formatCurrency(payroll.deductions.total)}
+                            {formatCurrency(receipt.deductions.total)}
                           </span>
                         </div>
                         <div>
                           <span className="text-gray-600">Adicionais: </span>
                           <span className="font-medium text-green-600">
-                            {formatCurrency(payroll.additions.total)}
+                            {formatCurrency(receipt.additions.total)}
                           </span>
                         </div>
                         <div>
                           <span className="text-gray-600">Salário Líquido: </span>
                           <span className="font-bold text-blue-600 text-lg">
-                            {formatCurrency(payroll.netSalary)}
+                            {formatCurrency(receipt.netSalary)}
                           </span>
                         </div>
                       </div>
@@ -370,7 +381,7 @@ export default function PayrollPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setViewingPayroll(payroll)}
+                        onClick={() => setViewingPayroll(receipt)}
                       >
                         <Eye className="h-4 w-4 mr-1" />
                         Visualizar
@@ -379,30 +390,97 @@ export default function PayrollPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleEditPayroll(payroll)}
-                        className="text-orange-600 hover:text-orange-700"
+                        onClick={() => setEditingPayroll(receipt)}
                       >
                         <Edit className="h-4 w-4 mr-1" />
                         Editar
                       </Button>
-                      
+
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
-                            <Trash2 className="h-4 w-4 mr-1" />
-                            Excluir
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Excluir holerite?</AlertDialogTitle>
+                            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Esta ação não pode ser desfeita. O holerite será removido permanentemente.
+                              Tem certeza que deseja excluir este holerite? Esta ação não pode ser desfeita.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDeletePayroll(payroll.id)}>
+                            <AlertDialogAction onClick={() => handleDeletePayroll(receipt.id)}>
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card key={`advance-${receipt.id}`} className="hover:shadow-md transition-shadow border-purple-200">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-4 mb-2">
+                        <Badge className="bg-purple-600">Adiantamento</Badge>
+                        <h3 className="text-lg font-semibold">{receipt.employee.name}</h3>
+                        <Badge variant="outline">
+                          {getMonthName(receipt.referenceMonth)}/{receipt.referenceYear}
+                        </Badge>
+                        <Badge variant="secondary">
+                          {new Date(receipt.paymentDate).toLocaleDateString('pt-BR')}
+                        </Badge>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-600">Salário Base: </span>
+                          <span className="font-medium">{formatCurrency(receipt.grossSalary)}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Porcentagem: </span>
+                          <span className="font-medium text-purple-600">{receipt.advancePercentage}%</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Valor Adiantado: </span>
+                          <span className="font-bold text-purple-600 text-lg">
+                            {formatCurrency(receipt.advanceAmount)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-2 ml-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setViewingAdvance(receipt)}
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        Visualizar
+                      </Button>
+
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja excluir este recibo de adiantamento? Esta ação não pode ser desfeita.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDeleteAdvance(receipt.id)}>
                               Excluir
                             </AlertDialogAction>
                           </AlertDialogFooter>
@@ -415,8 +493,7 @@ export default function PayrollPage() {
             ))}
           </div>
         )}
-
-          </TabsContent>
+      </TabsContent>
 
           {/* ABA DE ADIANTAMENTOS */}
           <TabsContent value="adiantamentos">
