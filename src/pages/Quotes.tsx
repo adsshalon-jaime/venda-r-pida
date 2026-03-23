@@ -292,17 +292,15 @@ export default function Quotes() {
                               <Eye className="h-4 w-4" />
                             </Button>
 
-                            {(quote.status === 'pending' || quote.status === 'approved') && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleEditQuote(quote)}
-                                className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                                title="Editar"
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditQuote(quote)}
+                              className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                              title="Editar"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
 
                             {quote.status === 'pending' && (
                               <>
@@ -340,17 +338,15 @@ export default function Quotes() {
                               </Button>
                             )}
 
-                            {quote.status !== 'converted' && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleDeleteQuote(quote.id)}
-                                className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                title="Excluir"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteQuote(quote.id)}
+                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              title="Excluir"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
                         </td>
                       </tr>
