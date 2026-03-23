@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Layout } from '@/components/Layout';
 import { useEmployees } from '@/hooks/useEmployees';
 import { usePayroll } from '@/hooks/usePayroll';
+import { useSalaryAdvances } from '@/hooks/useSalaryAdvances';
 import { Employee, Payroll } from '@/types';
 import { PayrollModal } from '@/components/PayrollModal';
 import { PayrollSlip } from '@/components/PayrollSlip';
@@ -29,6 +30,7 @@ import {
 export default function PayrollPage() {
   const { employees } = useEmployees();
   const { payrolls, loading, generatePayroll, deletePayroll, updatePayroll } = usePayroll();
+  const { advances, loading: advancesLoading, generateAdvance, deleteAdvance } = useSalaryAdvances();
   const [searchQuery, setSearchQuery] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
@@ -39,7 +41,6 @@ export default function PayrollPage() {
   const [advanceModalOpen, setAdvanceModalOpen] = useState(false);
   const [selectedEmployeeForAdvance, setSelectedEmployeeForAdvance] = useState<Employee | null>(null);
   const [viewingAdvance, setViewingAdvance] = useState<any>(null);
-  const [advances, setAdvances] = useState<any[]>([]);
 
   const filteredPayrolls = payrolls.filter((payroll) =>
     payroll.employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -99,27 +100,11 @@ export default function PayrollPage() {
     try {
       if (!selectedEmployeeForAdvance) return;
       
-      // Simular salvamento (será implementado com o hook real depois)
-      const newAdvance = {
-        id: Math.random().toString(),
-        employee: selectedEmployeeForAdvance,
-        employeeId: selectedEmployeeForAdvance.id,
-        referenceMonth: advanceData.month,
-        referenceYear: advanceData.year,
-        advanceAmount: (selectedEmployeeForAdvance.salary * advanceData.advancePercentage) / 100,
-        advancePercentage: advanceData.advancePercentage,
-        grossSalary: selectedEmployeeForAdvance.salary,
-        paymentDate: new Date().toISOString(),
-        employerName: advanceData.employerData.name,
-        employerDocument: advanceData.employerData.document,
-        employerAddress: advanceData.employerData.address,
-        usedInPayroll: false,
-        payrollId: null,
-        createdAt: new Date().toISOString(),
-      };
+      // Salvar no banco de dados usando o hook
+      await generateAdvance(selectedEmployeeForAdvance, advanceData);
       
-      setAdvances(prev => [newAdvance, ...prev]);
-      toast.success('Recibo de adiantamento gerado com sucesso!');
+      toast.success('Recibo de adiantamento gerado e salvo com sucesso!');
+      setAdvanceModalOpen(false);
       setSelectedEmployeeForAdvance(null);
     } catch (error) {
       console.error('Error generating advance:', error);
@@ -129,7 +114,7 @@ export default function PayrollPage() {
 
   const handleDeleteAdvance = async (advanceId: string) => {
     try {
-      setAdvances(prev => prev.filter(adv => adv.id !== advanceId));
+      await deleteAdvance(advanceId);
       toast.success('Recibo de adiantamento excluído');
     } catch (error) {
       console.error('Error deleting advance:', error);
