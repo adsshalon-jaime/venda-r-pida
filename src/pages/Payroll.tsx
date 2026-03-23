@@ -50,6 +50,10 @@ export default function PayrollPage() {
   );
 
   // Combinar holerites e adiantamentos para exibição na aba Holerites
+  console.log('🔍 DEBUG - Payrolls:', filteredPayrolls.length);
+  console.log('🔍 DEBUG - Advances:', advances.length);
+  console.log('🔍 DEBUG - Advances data:', advances);
+  
   const allReceipts = [
     ...filteredPayrolls.map(p => ({ ...p, type: 'payroll' as const })),
     ...advances.map(a => ({ ...a, type: 'advance' as const }))
@@ -58,6 +62,9 @@ export default function PayrollPage() {
     const dateB = new Date(b.createdAt || b.paymentDate);
     return dateB.getTime() - dateA.getTime();
   });
+  
+  console.log('🔍 DEBUG - All receipts combined:', allReceipts.length);
+  console.log('🔍 DEBUG - All receipts data:', allReceipts);
 
   const handleGeneratePayroll = (employee: Employee) => {
     setSelectedEmployee(employee);
